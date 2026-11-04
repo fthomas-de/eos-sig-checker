@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-11-04
+
 ### Added
 
 - A page to paste the probe scanner and get every line back, site type and

@@ -6,8 +6,8 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Version: `0.0.1`, 2026-11-04, nothing committed yet beyond GitHub's
-  initial commit.
+- Version: `0.0.1`, 2026-11-04, the first release (see `CHANGELOG.md`
+  under 0.0.1). Pushed to `origin/main`.
 - What the app does today: one page with two equal panes. Left: paste the
   probe scanner (English client). Right: the same lines as a table, site
   type and name filled in from the shared list (green), invalid lines red
@@ -22,8 +22,14 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## Open
 
-- Catalogues de/ru/zh_Hans do not exist yet: `tools/translate.py` creates
-  them at the first `/commit`. The glossary already holds every message.
+- Catalogues de/ru/zh_Hans are complete and compiled; the `.mo` files are
+  tracked (GitHub's `*.mo` ignore entry was removed on purpose).
+- `.gitignore` lists `*.pot` twice (GitHub's block and the eos block):
+  harmless, drop one at the next change.
+- The subtitle under the page title is a small grey line; the user checked
+  it and keeps it that way.
+- Next sensible steps: a real Ctrl+V from the EVE client, a look at the
+  light theme, then deploy to the live instance (README's install section).
 - Checked in the browser on 2026-11-04 (1440 px wide, dark theme): equal
   panes, auto-check on paste, resolving, red invalid line, skip count,
   signal colours, server limit 200/429/200 against the real Redis. Not
@@ -69,7 +75,8 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 - Installed editable (`--no-deps`), `'eos_sig_checker',` in
   `INSTALLED_APPS`, cleanup task in `CELERYBEAT_SCHEDULE` (11:15 daily),
-  migration 0001 applied, static collected.
+  migration 0001 applied, static collected. The Celery worker was not
+  restarted since: it picks the cleanup task up at its next start.
 - Migration 0001 depends on `eveonline 0001_initial` on purpose (edited after
   makemigrations): the newest eveonline migration would force the newest AA.
 
@@ -90,3 +97,6 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   limit answers the second post with 429.
 - The form field keeps `strip=False`: the trailing tabs of an unscanned line
   are columns.
+- Through the WSL bridge (`bash -lc '...'`) pipes, `|` in regexes and `%`
+  formats break the quoting, and a chained `git commit` once failed without
+  a word: run git commands on their own, longer ones as a script file.
