@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
 
-from . import urls
+from . import urls, views
 
 
 class SigCheckerMenuItem(MenuItemHook):
@@ -17,9 +17,8 @@ class SigCheckerMenuItem(MenuItemHook):
         )
 
     def render(self, request):
-        user = request.user
         # the index sends whoever may only manage the list on to the settings
-        if not (user.has_perm("eos_sig_checker.basic_access") or user.has_perm("eos_sig_checker.manage_settings")):
+        if not views.has_access(request.user):
             return ""
         return MenuItemHook.render(self, request)
 

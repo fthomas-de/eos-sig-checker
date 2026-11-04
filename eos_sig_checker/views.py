@@ -29,6 +29,11 @@ NAV_SIGNATURES = "signatures"
 NAV_SETTINGS = "settings"
 
 
+def has_access(user) -> bool:
+    """Either permission opens the app: the menu entry and the index both ask this."""
+    return user.has_perm(BASIC_ACCESS) or user.has_perm(MANAGE_SETTINGS)
+
+
 def _render(request, template, context, nav, status=200):
     return render(request, template, {"version": __version__, "nav": nav, **context}, status=status)
 
@@ -72,7 +77,7 @@ def _tracked_character(request) -> int | None:
 
 
 @login_required
-@user_passes_test(lambda user: user.has_perm(BASIC_ACCESS) or user.has_perm(MANAGE_SETTINGS))
+@user_passes_test(has_access)
 def index(request):
     # the menu entry leads here; whoever may only manage the list lands on
     # the settings instead of a page that refuses them
@@ -121,7 +126,8 @@ def index(request):
         "copy_text": _copy_text(output) if output else "",
         "max_age_days": max_age_days(),
         "characters": tracking.trackable_characters(request.user),
-        "tracked_character_id": character_id if location or tracking_error else None,
+        # locate() returns or raises, so a named character always has a location or an error
+        "tracked_character_id": character_id,
         "location": location,
         "tracking_error": tracking_error,
         "location_interval_ms": LOCATION_INTERVAL_SECONDS * 1000,

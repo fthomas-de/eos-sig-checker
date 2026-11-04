@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Less code for the same behaviour: the list of trackable characters is one
+  database query instead of three (the two ID lists were loaded into Python
+  only to be passed back as `IN` lists); the menu entry and the main page
+  share one permission check (`views.has_access`) instead of two copies that
+  could drift apart; the parser's `_check` returns the `Invalid` row itself,
+  so `parse` needs no type switch; the main page no longer guards the
+  tracked character with a condition that was always true (`locate` either
+  returns a position or raises).
+
 ## [0.0.3] - 2026-11-04
 
 ### Added

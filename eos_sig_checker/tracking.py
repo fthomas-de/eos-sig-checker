@@ -44,13 +44,10 @@ def trackable_characters(user):
 
     Only existing tokens count - the app asks for none of its own.
     """
-    owned = CharacterOwnership.objects.filter(user=user).values_list("character__character_id", flat=True)
-    with_token = (
-        Token.objects.filter(user=user, character_id__in=list(owned))
-        .require_scopes([SCOPE])
-        .values_list("character_id", flat=True)
+    with_token = Token.objects.filter(user=user).require_scopes([SCOPE]).values("character_id")
+    return EveCharacter.objects.filter(character_ownership__user=user, character_id__in=with_token).order_by(
+        "character_name"
     )
-    return EveCharacter.objects.filter(character_id__in=list(with_token)).order_by("character_name")
 
 
 def _token(user, character_id: int) -> Token | None:

@@ -82,29 +82,32 @@ class Skipped:
     language. Neither stored nor shown; the page only counts them."""
 
 
-def _check(line: str):
+def _check(line: str) -> Line | Invalid | Skipped:
+    # control characters other than the tab never come from the client
+    if any((ord(char) < 32 and char != "\t") or ord(char) == 127 for char in line):
+        return _invalid(line, _("The line holds control characters."))
     columns = [column.strip() for column in line.split("\t")]
     if len(columns) >= 2 and SIGNATURE_ID.fullmatch(columns[0]) and columns[1] not in GROUPS:
         return Skipped()
     if len(columns) != 6:
-        return _("Expected 6 tab-separated columns, as the probe scanner copies them.")
+        return _invalid(line, _("Expected 6 tab-separated columns, as the probe scanner copies them."))
 
     signature_id, group, site_type, name, signal, distance = columns
     if not SIGNATURE_ID.fullmatch(signature_id):
-        return _("The signature ID must look like ABC-123.")
+        return _invalid(line, _("The signature ID must look like ABC-123."))
     if site_type and not SITE_TYPE.fullmatch(site_type):
-        return _("The site type holds characters a site type never has.")
+        return _invalid(line, _("The site type holds characters a site type never has."))
     if name and not NAME.fullmatch(name):
-        return _("The name holds characters a site name never has.")
+        return _invalid(line, _("The name holds characters a site name never has."))
     if name and not site_type:
-        return _("A name without a site type does not come from the probe scanner.")
+        return _invalid(line, _("A name without a site type does not come from the probe scanner."))
 
     match = SIGNAL.fullmatch(signal)
     value = Decimal(f"{match.group(1)}.{match.group(2) or 0}") if match else None
     if value is None or value > 100:
-        return _("The scan strength must be a percentage between 0 and 100.")
+        return _invalid(line, _("The scan strength must be a percentage between 0 and 100."))
     if not DISTANCE.fullmatch(distance):
-        return _("The distance must be a number with AU, km or m.")
+        return _invalid(line, _("The distance must be a number with AU, km or m."))
 
     return Line(signature_id, group, site_type, name, value, distance, signal)
 
@@ -114,20 +117,10 @@ def parse(text: str) -> list[Line | Invalid | Skipped]:
 
     The caller limits the length (forms.PasteForm); this only reads.
     """
-    rows = []
-    for raw in text.splitlines():
-        if not raw.strip():
-            continue
-        # control characters other than the tab never come from the client
-        if any((ord(char) < 32 and char != "\t") or ord(char) == 127 for char in raw):
-            rows.append(Invalid(_shorten(raw), str(_("The line holds control characters."))))
-            continue
-        result = _check(raw)
-        rows.append(result if isinstance(result, (Line, Skipped)) else Invalid(_shorten(raw), str(result)))
-    return rows
+    return [_check(raw) for raw in text.splitlines() if raw.strip()]
 
 
-def _shorten(raw: str) -> str:
+def _invalid(raw: str, error) -> Invalid:
     # an invalid line is shown back to its author, not stored; long junk is cut
     printable = "".join(char if char.isprintable() else " " for char in raw.replace("\t", " "))
-    return printable[:120]
+    return Invalid(printable[:120], str(error))
