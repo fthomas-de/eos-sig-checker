@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 16:17+0000\n"
-"PO-Revision-Date: 2026-11-04 16:17+0000\n"
+"POT-Creation-Date: 2026-11-04 18:37+0000\n"
+"PO-Revision-Date: 2026-11-04 18:37+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: zh_Hans\n"
 "Language: zh_Hans\n"
@@ -16,72 +16,97 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: auth_hooks.py:13 templates/eos_sig_checker/index.html:5
-#: templates/eos_sig_checker/index.html:9
+#: auth_hooks.py:13 templates/eos_sig_checker/base.html:4
+#: templates/eos_sig_checker/base.html:10
+#: templates/eos_sig_checker/base.html:25
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:11
+#: forms.py:25
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:19
+#: forms.py:33
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
 msgstr "在 Probe Scanner 中选中结果，用 Ctrl+C 复制并粘贴到这里。"
 
-#: forms.py:30
+#: forms.py:44
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
 msgstr[0] "每次粘贴最多 %(max)d 行。"
 
-#: models.py:13
+#: models.py:23
 msgid "Can paste and resolve signatures"
 msgstr "可以粘贴并解析信号"
 
-#: models.py:40
+#: models.py:24
+msgid "Can change the settings and delete all signatures"
+msgstr "可以更改设置并删除所有信号"
+
+#: models.py:34
+msgid "Keep signatures (days)"
+msgstr "信号保留（天）"
+
+#: models.py:36
+msgid ""
+"Days a signature counts after its last check. After that it is ignored and "
+"removed by the daily cleanup."
+msgstr "信号在最后一次检查后有效的天数。之后它将被忽略，并由每日清理删除。"
+
+#: models.py:43
+msgctxt "eos-sig-checker"
+msgid "Configuration"
+msgstr "配置"
+
+#: models.py:73
 msgid "Signature"
 msgstr "信号"
 
-#: models.py:41
+#: models.py:74 templates/eos_sig_checker/base.html:15
 msgid "Signatures"
 msgstr "信号"
 
-#: parser.py:86
+#: parser.py:90
 msgid "Expected 6 tab-separated columns, as the probe scanner copies them."
 msgstr "应为 6 个以制表符分隔的列，与 Probe Scanner 复制的格式相同。"
 
-#: parser.py:90
+#: parser.py:94
 msgid "The signature ID must look like ABC-123."
 msgstr "信号 ID 必须形如 ABC-123。"
 
-#: parser.py:92
+#: parser.py:96
 msgid "The site type holds characters a site type never has."
 msgstr "站点类型包含站点类型中不会出现的字符。"
 
-#: parser.py:94
+#: parser.py:98
 msgid "The name holds characters a site name never has."
 msgstr "名称包含站点名称中不会出现的字符。"
 
-#: parser.py:96
+#: parser.py:100
 msgid "A name without a site type does not come from the probe scanner."
 msgstr "没有站点类型的名称不可能来自 Probe Scanner。"
 
-#: parser.py:101
+#: parser.py:105
 msgid "The scan strength must be a percentage between 0 and 100."
 msgstr "扫描强度必须是 0 到 100 之间的百分比。"
 
-#: parser.py:103
+#: parser.py:107
 msgid "The distance must be a number with AU, km or m."
 msgstr "距离必须是带有 AU、km 或 m 的数字。"
 
-#: parser.py:119
+#: parser.py:123
 msgid "The line holds control characters."
 msgstr "该行包含控制字符。"
 
-#: templates/eos_sig_checker/index.html:15
+#: templates/eos_sig_checker/base.html:18
+msgctxt "eos-sig-checker"
+msgid "Settings"
+msgstr "设置"
+
+#: templates/eos_sig_checker/index.html:8
 #, python-format
 msgid ""
 "Signatures are shared with everybody who has access and count for %(days)s "
@@ -91,79 +116,88 @@ msgid_plural ""
 "days after their last check."
 msgstr[0] "信号与所有有权限的人共享，在最后一次检查后 %(days)s 天内有效。"
 
-#: templates/eos_sig_checker/index.html:26
+#: templates/eos_sig_checker/index.html:19
 msgid "Pasting checks on its own"
 msgstr "粘贴后会自动检查"
 
-#: templates/eos_sig_checker/index.html:27
+#: templates/eos_sig_checker/index.html:20
 msgid "Check"
 msgstr "检查"
 
-#: templates/eos_sig_checker/index.html:45
+#: templates/eos_sig_checker/index.html:38
 msgid "Result"
 msgstr "结果"
 
-#: templates/eos_sig_checker/index.html:48
+#: templates/eos_sig_checker/index.html:41
 msgid "Copied"
 msgstr "已复制"
 
-#: templates/eos_sig_checker/index.html:49
+#: templates/eos_sig_checker/index.html:42
 msgid "Copy the completed list in the probe scanner format"
 msgstr "以 Probe Scanner 格式复制补全后的列表"
 
-#: templates/eos_sig_checker/index.html:50
+#: templates/eos_sig_checker/index.html:43
 msgid "Copy"
 msgstr "复制"
 
-#: templates/eos_sig_checker/index.html:61
+#: templates/eos_sig_checker/index.html:54
+#: templates/eos_sig_checker/signatures.html:14
+#: templates/eos_sig_checker/signatures.html:31
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:62
+#: templates/eos_sig_checker/index.html:55
+#: templates/eos_sig_checker/signatures.html:32
 msgctxt "eos-sig-checker"
 msgid "Kind"
 msgstr "种类"
 
-#: templates/eos_sig_checker/index.html:63
+#: templates/eos_sig_checker/index.html:56
+#: templates/eos_sig_checker/signatures.html:18
+#: templates/eos_sig_checker/signatures.html:33
 msgctxt "eos-sig-checker"
 msgid "Group"
 msgstr "分组"
 
-#: templates/eos_sig_checker/index.html:64
+#: templates/eos_sig_checker/index.html:57
+#: templates/eos_sig_checker/signatures.html:22
+#: templates/eos_sig_checker/signatures.html:34
 msgctxt "eos-sig-checker"
 msgid "Name"
 msgstr "名称"
 
-#: templates/eos_sig_checker/index.html:65
+#: templates/eos_sig_checker/index.html:58
+#: templates/eos_sig_checker/signatures.html:35
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "信号强度"
 
-#: templates/eos_sig_checker/index.html:66
+#: templates/eos_sig_checker/index.html:59
 msgid "Distance"
 msgstr "距离"
 
-#: templates/eos_sig_checker/index.html:67
+#: templates/eos_sig_checker/index.html:60
+#: templates/eos_sig_checker/signatures.html:37
 msgid "Last checked"
 msgstr "上次检查"
 
-#: templates/eos_sig_checker/index.html:93
+#: templates/eos_sig_checker/index.html:86
 msgid "new"
 msgstr "新"
 
-#: templates/eos_sig_checker/index.html:103
+#: templates/eos_sig_checker/index.html:96
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
 msgstr "将 Probe Scanner 内容粘贴到左侧并点击检查：每一行都会显示在这里，已有人扫描过的会补全分组和名称。"
 
-#: templates/eos_sig_checker/index.html:109
+#: templates/eos_sig_checker/index.html:102
 #: templates/eos_sig_checker/partials/resolved-cell.html:4
 msgid "filled in from the shared list"
 msgstr "从共享列表补全"
 
-#: templates/eos_sig_checker/index.html:115
+#: templates/eos_sig_checker/index.html:108
 #, python-format
 msgid ""
 "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
@@ -174,6 +208,70 @@ msgid_plural ""
 msgstr[0] ""
 "已跳过 %(counter)s 行：不是英文客户端的 Cosmic Signature 或 Cosmic Anomaly（舰船、建筑、其他客户端语言）。"
 
-#: views.py:50
+#: templates/eos_sig_checker/settings.html:11
+msgid "Cleanup"
+msgstr "清理"
+
+#: templates/eos_sig_checker/settings.html:15
+msgctxt "eos-sig-checker"
+msgid "Save"
+msgstr "保存"
+
+#: templates/eos_sig_checker/settings.html:23
+#: templates/eos_sig_checker/settings.html:31
+#: templates/eos_sig_checker/settings.html:43
+msgid "Delete all signatures"
+msgstr "删除所有信号"
+
+#: templates/eos_sig_checker/settings.html:27
+#, python-format
+msgid ""
+"The shared list holds %(counter)s signature. Deleting empties it for "
+"everybody at once; it cannot be undone."
+msgid_plural ""
+"The shared list holds %(counter)s signatures. Deleting empties it for "
+"everybody at once; it cannot be undone."
+msgstr[0] "共享列表中有 %(counter)s 个信号。删除会立即为所有人清空列表，且无法撤销。"
+
+#: templates/eos_sig_checker/settings.html:44
+#: templates/eos_sig_checker/settings.html:50
+msgctxt "eos-sig-checker"
+msgid "Cancel"
+msgstr "取消"
+
+#: templates/eos_sig_checker/settings.html:47
+#, python-format
+msgid "Delete %(counter)s signature from the shared list?"
+msgid_plural "Delete all %(counter)s signatures from the shared list?"
+msgstr[0] "从共享列表中删除全部 %(counter)s 个信号？"
+
+#: templates/eos_sig_checker/settings.html:51
+msgctxt "eos-sig-checker"
+msgid "Delete"
+msgstr "删除"
+
+#: templates/eos_sig_checker/signatures.html:36
+msgid "First seen"
+msgstr "首次发现"
+
+#: templates/eos_sig_checker/signatures.html:38
+msgid "Checked by"
+msgstr "检查者"
+
+#: templates/eos_sig_checker/signatures.html:53
+msgid "expired"
+msgstr "已过期"
+
+#: views.py:71
 msgid "Too many checks: wait a second and press Check again."
 msgstr "检查过于频繁：请等待一秒后再次点击检查。"
+
+#: views.py:111
+msgid "Settings saved."
+msgstr "设置已保存。"
+
+#: views.py:125
+#, python-format
+msgid "Deleted %(count)d signature."
+msgid_plural "Deleted %(count)d signatures."
+msgstr[0] "已删除 %(count)d 个信号。"

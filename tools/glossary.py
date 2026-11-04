@@ -124,9 +124,66 @@ TRANSLATIONS = {
         "дополнено из общего списка",
         "从共享列表补全",
     ),
+    # settings page
+    "Can change the settings and delete all signatures": (
+        "Kann die Einstellungen ändern und alle Signaturen löschen",
+        "Может менять настройки и удалять все сигнатуры",
+        "可以更改设置并删除所有信号",
+    ),
+    "Configuration": ("Konfiguration", "Конфигурация", "配置"),
+    "Settings": ("Einstellungen", "Настройки", "设置"),
+    "Keep signatures (days)": (
+        "Signaturen behalten (Tage)",
+        "Хранить сигнатуры (дней)",
+        "信号保留（天）",
+    ),
+    "Days a signature counts after its last check. After that it is ignored and removed by the daily cleanup.": (
+        "Tage, die eine Signatur nach ihrer letzten Prüfung gilt. Danach wird sie ignoriert und von der täglichen Bereinigung entfernt.",
+        "Сколько дней сигнатура действует после последней проверки. Затем она игнорируется и удаляется ежедневной очисткой.",
+        "信号在最后一次检查后有效的天数。之后它将被忽略，并由每日清理删除。",
+    ),
+    "Cleanup": ("Bereinigung", "Очистка", "清理"),
+    "Save": ("Speichern", "Сохранить", "保存"),
+    "Settings saved.": ("Einstellungen gespeichert.", "Настройки сохранены.", "设置已保存。"),
+    "Delete all signatures": ("Alle Signaturen löschen", "Удалить все сигнатуры", "删除所有信号"),
+    "Cancel": ("Abbrechen", "Отмена", "取消"),
+    "Delete": ("Löschen", "Удалить", "删除"),
+    # signature list
+    "First seen": ("Zuerst gesehen", "Впервые замечена", "首次发现"),
+    "Checked by": ("Geprüft von", "Проверил", "检查者"),
+    "expired": ("abgelaufen", "истекла", "已过期"),
 }
 
 PLURALS = {
+    "Deleted %(count)d signature.": (
+        ["%(count)d Signatur gelöscht.", "%(count)d Signaturen gelöscht."],
+        ["Удалена %(count)d сигнатура.", "Удалено %(count)d сигнатуры.", "Удалено %(count)d сигнатур."],
+        ["已删除 %(count)d 个信号。"],
+    ),
+    "The shared list holds %(counter)s signature. Deleting empties it for everybody at once; it cannot be undone.": (
+        [
+            "Die gemeinsame Liste enthält %(counter)s Signatur. Löschen leert sie für alle auf einmal; das lässt sich nicht rückgängig machen.",
+            "Die gemeinsame Liste enthält %(counter)s Signaturen. Löschen leert sie für alle auf einmal; das lässt sich nicht rückgängig machen.",
+        ],
+        [
+            "В общем списке %(counter)s сигнатура. Удаление сразу очищает его для всех; отменить нельзя.",
+            "В общем списке %(counter)s сигнатуры. Удаление сразу очищает его для всех; отменить нельзя.",
+            "В общем списке %(counter)s сигнатур. Удаление сразу очищает его для всех; отменить нельзя.",
+        ],
+        ["共享列表中有 %(counter)s 个信号。删除会立即为所有人清空列表，且无法撤销。"],
+    ),
+    "Delete %(counter)s signature from the shared list?": (
+        [
+            "%(counter)s Signatur aus der gemeinsamen Liste löschen?",
+            "Alle %(counter)s Signaturen aus der gemeinsamen Liste löschen?",
+        ],
+        [
+            "Удалить %(counter)s сигнатуру из общего списка?",
+            "Удалить все %(counter)s сигнатуры из общего списка?",
+            "Удалить все %(counter)s сигнатур из общего списка?",
+        ],
+        ["从共享列表中删除全部 %(counter)s 个信号？"],
+    ),
     "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an English client (ships, structures, other client languages).": (
         [
             "%(counter)s Zeile übersprungen: keine Cosmic Signature oder Cosmic Anomaly eines englischen Clients (Schiffe, Strukturen, andere Client-Sprachen).",

@@ -1,0 +1,56 @@
+{% extends "eos_sig_checker/base.html" %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+
+{% block details %}
+    <div class="row row-cols-1 row-cols-lg-2 g-3">
+        <div class="col">
+            <form method="post" action="" class="card h-100">
+                {% csrf_token %}
+                <div class="card-header">
+                    <div class="card-title mb-0">{% translate "Cleanup" %}</div>
+                </div>
+                <div class="card-body">
+                    {% bootstrap_field form.max_age_days %}
+                    <button type="submit" class="btn btn-primary">{% translate "Save" context "eos-sig-checker" %}</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 border-danger">
+                <div class="card-header">
+                    <div class="card-title mb-0">{% translate "Delete all signatures" %}</div>
+                </div>
+                <div class="card-body">
+                    <p>
+                        {% blocktranslate count counter=signature_count %}The shared list holds {{ counter }} signature. Deleting empties it for everybody at once; it cannot be undone.{% plural %}The shared list holds {{ counter }} signatures. Deleting empties it for everybody at once; it cannot be undone.{% endblocktranslate %}
+                    </p>
+                    {# the button only opens the question; the modal's own button sends the form #}
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#eos-sig-checker-delete-all"{% if not signature_count %} disabled{% endif %}>
+                        <i class="fas fa-trash-can"></i> {% translate "Delete all signatures" %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="eos-sig-checker-delete-all" tabindex="-1" aria-labelledby="eos-sig-checker-delete-all-title" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="{% url 'eos_sig_checker:delete_all' %}" class="modal-content">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eos-sig-checker-delete-all-title">{% translate "Delete all signatures" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'eos-sig-checker' %}"></button>
+                </div>
+                <div class="modal-body">
+                    {% blocktranslate count counter=signature_count %}Delete {{ counter }} signature from the shared list?{% plural %}Delete all {{ counter }} signatures from the shared list?{% endblocktranslate %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context "eos-sig-checker" %}</button>
+                    <button type="submit" class="btn btn-danger">{% translate "Delete" context "eos-sig-checker" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

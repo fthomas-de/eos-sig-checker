@@ -33,9 +33,9 @@ if somebody pasted a full scan of `ACJ-672` before.
 - A paste that shows the same ID with another group, site type or name is a
   new site under a reused ID: it replaces the entry. Empty columns from a
   weaker scan never overwrite what is known.
-- The list has no solar system. An entry counts for
-  `EOS_SIG_CHECKER_MAX_AGE_DAYS` days (default 7) after its last check;
-  after that it is ignored and removed by a periodic task.
+- The list has no solar system. An entry counts for the days set on the
+  settings page (default 7, 1 to 30) after its last check; after that it is
+  ignored and removed by a periodic task.
 - The paste is checked line by line: six tab-separated columns, an ID like
   `ABC-123`, the group `Cosmic Signature` or `Cosmic Anomaly`, site type and
   name in the characters the client uses, a percentage and a distance in AU,
@@ -72,21 +72,32 @@ if somebody pasted a full scan of `ACJ-672` before.
    python manage.py collectstatic --noinput
    ```
 
-4. Give the permission below to the groups or states that should use it.
+4. Give the permissions below to the groups or states that should use them.
 
 ## Settings
 
+The app has no settings in `local.py`. Everything is set on its settings
+page (*Sig Checker › Settings*, needs `eos_sig_checker.manage_settings`):
+
 | Setting | Default | Meaning |
 |---|---|---|
-| `EOS_SIG_CHECKER_MAX_AGE_DAYS` | `7` | Days an entry counts after its last check. Anything but a whole number from 1 up falls back to 7. |
+| Keep signatures (days) | `7` | Days an entry counts after its last check, 1 to 30. The page, the merge and the cleanup task follow a change at once, without a restart. |
+
+The same page has a **Delete all signatures** button, behind a confirmation:
+it empties the shared list for everybody and cannot be undone.
+
+Up to 0.0.1 the days came from `EOS_SIG_CHECKER_MAX_AGE_DAYS` in `local.py`.
+That setting is no longer read: set the value on the settings page and
+remove the line.
 
 ## Permissions
 
 | Permission | Meant for | What it opens |
 |---|---|---|
 | `eos_sig_checker.basic_access` | Everybody who scans | The page: paste, store and resolve signatures. Everybody with it shares the same list. |
+| `eos_sig_checker.manage_settings` | Whoever looks after the list | The **Signatures** tab: the whole list as a sortable table with a filter each for ID, Group and Name; entries past their age are greyed out until the cleanup removes them. The settings page: the days an entry counts, and deleting all signatures. Works on its own; it does not include `basic_access`. |
 
-Admins can look at and edit the list in the Django admin
+Admins can also look at and edit the list in the Django admin
 (*Eos_Sig_Checker › Signatures*).
 
 ## Updating

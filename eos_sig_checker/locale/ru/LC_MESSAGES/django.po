@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 16:17+0000\n"
-"PO-Revision-Date: 2026-11-04 16:17+0000\n"
+"POT-Creation-Date: 2026-11-04 18:37+0000\n"
+"PO-Revision-Date: 2026-11-04 18:37+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: ru\n"
 "Language: ru\n"
@@ -16,23 +16,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: auth_hooks.py:13 templates/eos_sig_checker/index.html:5
-#: templates/eos_sig_checker/index.html:9
+#: auth_hooks.py:13 templates/eos_sig_checker/base.html:4
+#: templates/eos_sig_checker/base.html:10
+#: templates/eos_sig_checker/base.html:25
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:11
+#: forms.py:25
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:19
+#: forms.py:33
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
 msgstr ""
 "Выдели результаты в Probe Scanner, скопируй их через Ctrl+C и вставь сюда."
 
-#: forms.py:30
+#: forms.py:44
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
@@ -40,52 +41,78 @@ msgstr[0] "Не более %(max)d строки за одну вставку."
 msgstr[1] "Не более %(max)d строк за одну вставку."
 msgstr[2] "Не более %(max)d строк за одну вставку."
 
-#: models.py:13
+#: models.py:23
 msgid "Can paste and resolve signatures"
 msgstr "Может вставлять и распознавать сигнатуры"
 
-#: models.py:40
+#: models.py:24
+msgid "Can change the settings and delete all signatures"
+msgstr "Может менять настройки и удалять все сигнатуры"
+
+#: models.py:34
+msgid "Keep signatures (days)"
+msgstr "Хранить сигнатуры (дней)"
+
+#: models.py:36
+msgid ""
+"Days a signature counts after its last check. After that it is ignored and "
+"removed by the daily cleanup."
+msgstr ""
+"Сколько дней сигнатура действует после последней проверки. Затем она "
+"игнорируется и удаляется ежедневной очисткой."
+
+#: models.py:43
+msgctxt "eos-sig-checker"
+msgid "Configuration"
+msgstr "Конфигурация"
+
+#: models.py:73
 msgid "Signature"
 msgstr "Сигнатура"
 
-#: models.py:41
+#: models.py:74 templates/eos_sig_checker/base.html:15
 msgid "Signatures"
 msgstr "Сигнатуры"
 
-#: parser.py:86
+#: parser.py:90
 msgid "Expected 6 tab-separated columns, as the probe scanner copies them."
 msgstr ""
 "Ожидается 6 столбцов, разделённых табуляцией, как их копирует Probe Scanner."
 
-#: parser.py:90
+#: parser.py:94
 msgid "The signature ID must look like ABC-123."
 msgstr "ID сигнатуры должен выглядеть как ABC-123."
 
-#: parser.py:92
+#: parser.py:96
 msgid "The site type holds characters a site type never has."
 msgstr "Тип сайта содержит символы, которых в типе сайта не бывает."
 
-#: parser.py:94
+#: parser.py:98
 msgid "The name holds characters a site name never has."
 msgstr "Название содержит символы, которых в названии сайта не бывает."
 
-#: parser.py:96
+#: parser.py:100
 msgid "A name without a site type does not come from the probe scanner."
 msgstr "Название без типа сайта не может прийти из Probe Scanner."
 
-#: parser.py:101
+#: parser.py:105
 msgid "The scan strength must be a percentage between 0 and 100."
 msgstr "Сила сканирования должна быть процентом от 0 до 100."
 
-#: parser.py:103
+#: parser.py:107
 msgid "The distance must be a number with AU, km or m."
 msgstr "Расстояние должно быть числом с AU, km или m."
 
-#: parser.py:119
+#: parser.py:123
 msgid "The line holds control characters."
 msgstr "Строка содержит управляющие символы."
 
-#: templates/eos_sig_checker/index.html:15
+#: templates/eos_sig_checker/base.html:18
+msgctxt "eos-sig-checker"
+msgid "Settings"
+msgstr "Настройки"
+
+#: templates/eos_sig_checker/index.html:8
 #, python-format
 msgid ""
 "Signatures are shared with everybody who has access and count for %(days)s "
@@ -103,68 +130,77 @@ msgstr[2] ""
 "Сигнатуры видны всем, у кого есть доступ, и действуют %(days)s дней после "
 "последней проверки."
 
-#: templates/eos_sig_checker/index.html:26
+#: templates/eos_sig_checker/index.html:19
 msgid "Pasting checks on its own"
 msgstr "Вставка проверяется автоматически"
 
-#: templates/eos_sig_checker/index.html:27
+#: templates/eos_sig_checker/index.html:20
 msgid "Check"
 msgstr "Проверить"
 
-#: templates/eos_sig_checker/index.html:45
+#: templates/eos_sig_checker/index.html:38
 msgid "Result"
 msgstr "Результат"
 
-#: templates/eos_sig_checker/index.html:48
+#: templates/eos_sig_checker/index.html:41
 msgid "Copied"
 msgstr "Скопировано"
 
-#: templates/eos_sig_checker/index.html:49
+#: templates/eos_sig_checker/index.html:42
 msgid "Copy the completed list in the probe scanner format"
 msgstr "Скопировать дополненный список в формате Probe Scanner"
 
-#: templates/eos_sig_checker/index.html:50
+#: templates/eos_sig_checker/index.html:43
 msgid "Copy"
 msgstr "Копировать"
 
-#: templates/eos_sig_checker/index.html:61
+#: templates/eos_sig_checker/index.html:54
+#: templates/eos_sig_checker/signatures.html:14
+#: templates/eos_sig_checker/signatures.html:31
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:62
+#: templates/eos_sig_checker/index.html:55
+#: templates/eos_sig_checker/signatures.html:32
 msgctxt "eos-sig-checker"
 msgid "Kind"
 msgstr "Вид"
 
-#: templates/eos_sig_checker/index.html:63
+#: templates/eos_sig_checker/index.html:56
+#: templates/eos_sig_checker/signatures.html:18
+#: templates/eos_sig_checker/signatures.html:33
 msgctxt "eos-sig-checker"
 msgid "Group"
 msgstr "Группа"
 
-#: templates/eos_sig_checker/index.html:64
+#: templates/eos_sig_checker/index.html:57
+#: templates/eos_sig_checker/signatures.html:22
+#: templates/eos_sig_checker/signatures.html:34
 msgctxt "eos-sig-checker"
 msgid "Name"
 msgstr "Название"
 
-#: templates/eos_sig_checker/index.html:65
+#: templates/eos_sig_checker/index.html:58
+#: templates/eos_sig_checker/signatures.html:35
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "Сигнал"
 
-#: templates/eos_sig_checker/index.html:66
+#: templates/eos_sig_checker/index.html:59
 msgid "Distance"
 msgstr "Расстояние"
 
-#: templates/eos_sig_checker/index.html:67
+#: templates/eos_sig_checker/index.html:60
+#: templates/eos_sig_checker/signatures.html:37
 msgid "Last checked"
 msgstr "Последняя проверка"
 
-#: templates/eos_sig_checker/index.html:93
+#: templates/eos_sig_checker/index.html:86
 msgid "new"
 msgstr "новая"
 
-#: templates/eos_sig_checker/index.html:103
+#: templates/eos_sig_checker/index.html:96
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
@@ -172,12 +208,12 @@ msgstr ""
 "Вставь Probe Scanner слева и нажми «Проверить»: каждая строка появится "
 "здесь, с группой и названием там, где кто-то уже её просканировал."
 
-#: templates/eos_sig_checker/index.html:109
+#: templates/eos_sig_checker/index.html:102
 #: templates/eos_sig_checker/partials/resolved-cell.html:4
 msgid "filled in from the shared list"
 msgstr "дополнено из общего списка"
 
-#: templates/eos_sig_checker/index.html:115
+#: templates/eos_sig_checker/index.html:108
 #, python-format
 msgid ""
 "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
@@ -195,6 +231,82 @@ msgstr[2] ""
 "%(counter)s строк пропущено: не Cosmic Signature и не Cosmic Anomaly "
 "английского клиента (корабли, структуры, другие языки клиента)."
 
-#: views.py:50
+#: templates/eos_sig_checker/settings.html:11
+msgid "Cleanup"
+msgstr "Очистка"
+
+#: templates/eos_sig_checker/settings.html:15
+msgctxt "eos-sig-checker"
+msgid "Save"
+msgstr "Сохранить"
+
+#: templates/eos_sig_checker/settings.html:23
+#: templates/eos_sig_checker/settings.html:31
+#: templates/eos_sig_checker/settings.html:43
+msgid "Delete all signatures"
+msgstr "Удалить все сигнатуры"
+
+#: templates/eos_sig_checker/settings.html:27
+#, python-format
+msgid ""
+"The shared list holds %(counter)s signature. Deleting empties it for "
+"everybody at once; it cannot be undone."
+msgid_plural ""
+"The shared list holds %(counter)s signatures. Deleting empties it for "
+"everybody at once; it cannot be undone."
+msgstr[0] ""
+"В общем списке %(counter)s сигнатура. Удаление сразу очищает его для всех; "
+"отменить нельзя."
+msgstr[1] ""
+"В общем списке %(counter)s сигнатуры. Удаление сразу очищает его для всех; "
+"отменить нельзя."
+msgstr[2] ""
+"В общем списке %(counter)s сигнатур. Удаление сразу очищает его для всех; "
+"отменить нельзя."
+
+#: templates/eos_sig_checker/settings.html:44
+#: templates/eos_sig_checker/settings.html:50
+msgctxt "eos-sig-checker"
+msgid "Cancel"
+msgstr "Отмена"
+
+#: templates/eos_sig_checker/settings.html:47
+#, python-format
+msgid "Delete %(counter)s signature from the shared list?"
+msgid_plural "Delete all %(counter)s signatures from the shared list?"
+msgstr[0] "Удалить %(counter)s сигнатуру из общего списка?"
+msgstr[1] "Удалить все %(counter)s сигнатуры из общего списка?"
+msgstr[2] "Удалить все %(counter)s сигнатур из общего списка?"
+
+#: templates/eos_sig_checker/settings.html:51
+msgctxt "eos-sig-checker"
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/eos_sig_checker/signatures.html:36
+msgid "First seen"
+msgstr "Впервые замечена"
+
+#: templates/eos_sig_checker/signatures.html:38
+msgid "Checked by"
+msgstr "Проверил"
+
+#: templates/eos_sig_checker/signatures.html:53
+msgid "expired"
+msgstr "истекла"
+
+#: views.py:71
 msgid "Too many checks: wait a second and press Check again."
 msgstr "Слишком много проверок: подожди секунду и снова нажми «Проверить»."
+
+#: views.py:111
+msgid "Settings saved."
+msgstr "Настройки сохранены."
+
+#: views.py:125
+#, python-format
+msgid "Deleted %(count)d signature."
+msgid_plural "Deleted %(count)d signatures."
+msgstr[0] "Удалена %(count)d сигнатура."
+msgstr[1] "Удалено %(count)d сигнатуры."
+msgstr[2] "Удалено %(count)d сигнатур."

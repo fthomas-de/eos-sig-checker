@@ -33,6 +33,8 @@ dependencies = [
     # depends on eveonline 0001 only. Checked by reading, not by running
     # against 5.0.
     "allianceauth>=5.0,<6",
+    # the settings page is a singleton; AA ships django-solo, but we import it
+    "django-solo",
 ]
 
 [project.optional-dependencies]

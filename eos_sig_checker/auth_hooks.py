@@ -17,7 +17,9 @@ class SigCheckerMenuItem(MenuItemHook):
         )
 
     def render(self, request):
-        if not request.user.has_perm("eos_sig_checker.basic_access"):
+        user = request.user
+        # the index sends whoever may only manage the list on to the settings
+        if not (user.has_perm("eos_sig_checker.basic_access") or user.has_perm("eos_sig_checker.manage_settings")):
             return ""
         return MenuItemHook.render(self, request)
 

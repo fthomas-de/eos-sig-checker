@@ -84,10 +84,11 @@ is no binary log and there are no dumps.
   text.
 - `sync.py` merges into the list: one row per signature ID; a different
   group/type/name replaces the row (reused ID), blank columns resolve from
-  it. A row past `EOS_SIG_CHECKER_MAX_AGE_DAYS` counts as gone even before
+  it. A row past the age from the settings page counts as gone even before
   the cleanup task deletes it.
-- The age setting is read at call time (`app_settings.max_age_days()`), never
-  into a model default.
+- The age lives in the singleton `SigCheckerConfiguration` (settings page,
+  `manage_settings`) and is read at call time (`app_settings.max_age_days()`),
+  so the merge, the task and the page follow a change without a restart.
 - Every foreign app is optional: guard it with `apps.is_installed(...)` and
   import its models inside that guard. Never add one to the dependencies.
 - Model defaults and choices never come straight from settings; use a

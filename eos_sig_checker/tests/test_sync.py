@@ -1,16 +1,14 @@
 from datetime import timedelta
 from decimal import Decimal
 
-from django.test import override_settings
 from django.utils import timezone
 
-from eos_sig_checker import app_settings
-from eos_sig_checker.models import Signature
+from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS, Signature
 from eos_sig_checker.parser import Invalid, parse
 from eos_sig_checker.sync import Row, delete_expired, merge
 from eos_sig_checker.tasks import delete_expired_signatures
 
-from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
+from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user, set_max_age_days
 
 
 class SyncTestCase(SigTestCase):
@@ -92,7 +90,7 @@ class TestMerge(SyncTestCase):
         self.assertEqual(Signature.objects.count(), 1)
 
     def test_should_treat_an_expired_row_as_unknown(self):
-        old = timezone.now() - timedelta(days=app_settings.DEFAULT_MAX_AGE_DAYS, minutes=1)
+        old = timezone.now() - timedelta(days=DEFAULT_MAX_AGE_DAYS, minutes=1)
         self.paste(DATA_SITE, now=old)
 
         (row,) = self.paste(UNSCANNED)
@@ -129,11 +127,22 @@ class TestExpiry(SyncTestCase):
 
         self.assertFalse(Signature.objects.exists())
 
-    def test_should_read_the_age_from_the_settings(self):
-        with override_settings(EOS_SIG_CHECKER_MAX_AGE_DAYS=2):
-            self.assertEqual(app_settings.max_age_days(), 2)
+    def test_task_should_follow_the_age_from_the_settings_page(self):
+        set_max_age_days(2)
+        now = timezone.now()
+        self.paste(SCANNED, now=now - timedelta(days=2, minutes=1))
+        self.paste(UNSCANNED, now=now - timedelta(days=1))
 
-    def test_should_fall_back_on_a_broken_setting(self):
-        for value in (0, -1, "7", None, True, 1.5):
-            with self.subTest(value), override_settings(EOS_SIG_CHECKER_MAX_AGE_DAYS=value):
-                self.assertEqual(app_settings.max_age_days(), app_settings.DEFAULT_MAX_AGE_DAYS)
+        delete_expired_signatures()
+
+        self.assertEqual(list(Signature.objects.values_list("signature_id", flat=True)), ["ACJ-672"])
+
+    def test_merge_should_follow_the_age_from_the_settings_page(self):
+        # a longer age keeps a row the default would have let go
+        set_max_age_days(DEFAULT_MAX_AGE_DAYS + 3)
+        self.paste(DATA_SITE, now=timezone.now() - timedelta(days=DEFAULT_MAX_AGE_DAYS + 1))
+
+        (row,) = self.paste(UNSCANNED)
+
+        self.assertEqual(row.name, "Unsecured Frontier Server")
+        self.assertIsNotNone(row.previous_check)

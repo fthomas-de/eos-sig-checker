@@ -2,7 +2,21 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
 
+from .models import MAX_AGE_DAYS_LIMIT, SigCheckerConfiguration
 from .parser import MAX_CHARS, MAX_LINES
+
+
+class ConfigurationForm(forms.ModelForm):
+    class Meta:
+        model = SigCheckerConfiguration
+        fields = ["max_age_days"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # the model's validators decide; the attributes only let the browser
+        # say so before the round trip. Set after the field is built: it
+        # writes its own min=0 (positive integer) over a Meta widget's.
+        self.fields["max_age_days"].widget.attrs.update(min=1, max=MAX_AGE_DAYS_LIMIT)
 
 
 class PasteForm(forms.Form):

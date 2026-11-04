@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- A settings page with its own permission `eos_sig_checker.manage_settings`
+  (a new tab beside the paste page). Until now the days an entry counts
+  could only be changed by an admin in `local.py`, followed by a restart;
+  now whoever looks after the list sets them on the page (1 to 30), and the
+  page, the merge and the cleanup task follow at once. The permission works
+  on its own: a holder without `basic_access` lands on the settings from
+  the menu.
+- A **Delete all signatures** button on the settings page, behind a
+  confirmation, to empty the shared list for everybody - before, that was
+  only possible row by row in the Django admin.
+- A **Signatures** tab (`manage_settings`) listing every entry of the shared
+  list as a sortable table - ID, Kind, Group, Name, Signal, first seen, last
+  checked and by whom - with a filter field each for ID, Group and Name.
+  Without it the list could only be read in the Django admin. Rows past
+  their age are shown greyed out with an "expired" mark, since they stay in
+  the database until the cleanup task runs and Delete all counts them too.
+
+### Changed
+
+- `EOS_SIG_CHECKER_MAX_AGE_DAYS` in `local.py` is no longer read; the days
+  live in the database (migration 0002, start value 7). Set the value on the
+  settings page and remove the line from `local.py`.
+- `django-solo` is now a declared dependency: the settings are a singleton.
+  Alliance Auth already ships it.
+
 ## [0.0.1] - 2026-11-04
 
 ### Added

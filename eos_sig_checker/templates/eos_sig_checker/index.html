@@ -1,15 +1,8 @@
-{% extends "allianceauth/base-bs5.html" %}
+{% extends "eos_sig_checker/base.html" %}
 {% load i18n %}
 {% load sri %}
 
-{% block page_title %}{% translate "Sig Checker" %}{% endblock %}
-
-{% block content %}
-    <div class="eos_sig_checker">
-        {% translate "Sig Checker" as app_name %}
-        {% with page_title=app_name|add:" ("|add:version|add:")" %}
-            {% include "framework/header/page-header.html" with title=page_title %}
-        {% endwith %}
+{% block details %}
         {# a sentence, not a subtitle: the header's subtitle is set in heading size #}
         <p class="text-center text-body-secondary small">
             {% blocktranslate count days=max_age_days %}Signatures are shared with everybody who has access and count for {{ days }} day after their last check.{% plural %}Signatures are shared with everybody who has access and count for {{ days }} days after their last check.{% endblocktranslate %}
@@ -119,7 +112,6 @@
                 </div>
             </div>
         </div>
-    </div>
 {% endblock %}
 
 {% block extra_css %}

@@ -52,15 +52,19 @@ class Line:
 
     @property
     def signal_band(self) -> str:
-        """The game's colour steps: red below 25 %, orange below 75 %,
-        yellow below 100 %, green at 100 % (warpable)."""
-        if self.signal >= 100:
-            return "full"
-        if self.signal >= 75:
-            return "high"
-        if self.signal >= 25:
-            return "partial"
-        return "low"
+        return signal_band(self.signal)
+
+
+def signal_band(signal) -> str:
+    """The game's colour steps: red below 25 %, orange below 75 %,
+    yellow below 100 %, green at 100 % (warpable)."""
+    if signal >= 100:
+        return "full"
+    if signal >= 75:
+        return "high"
+    if signal >= 25:
+        return "partial"
+    return "low"
 
 
 @dataclass(frozen=True)

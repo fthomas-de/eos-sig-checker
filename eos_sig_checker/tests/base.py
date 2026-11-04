@@ -4,6 +4,8 @@ from django.test import TestCase, override_settings
 from allianceauth.authentication.models import CharacterOwnership
 from allianceauth.tests.auth_utils import AuthUtils
 
+from eos_sig_checker.models import SigCheckerConfiguration
+
 # The probe scanner's copy, as the English client puts it on the clipboard.
 SCANNED = "UDN-422\tCosmic Anomaly\tCombat Site\tSansha Den\t100,0%\t10,63 AU"
 UNSCANNED = "ACJ-672\tCosmic Signature\t\t\t0,0%\t10,61 AU"
@@ -20,6 +22,13 @@ class SigTestCase(TestCase):
     def setUp(self):
         super().setUp()
         cache.clear()
+
+
+def set_max_age_days(days):
+    """What the settings page stores; saved through solo, so its cache follows."""
+    config = SigCheckerConfiguration.get_solo()
+    config.max_age_days = days
+    config.save()
 
 
 def make_user(name, *perms):

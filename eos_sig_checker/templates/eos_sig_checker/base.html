@@ -1,0 +1,32 @@
+{% extends "allianceauth/base-bs5.html" %}
+{% load i18n %}
+
+{% block page_title %}{% translate "Sig Checker" %}{% endblock %}
+
+{% block header_nav_collapse_left %}
+    {# written the way Alliance Auth's own apps do (groupmanagement): the theme styles the active link; `nav` names the current tab #}
+    {% if perms.eos_sig_checker.basic_access %}
+        <li class="nav-item">
+            <a class="nav-link {% if nav == 'check' %}active{% endif %}" href="{% url 'eos_sig_checker:index' %}"{% if nav == 'check' %} aria-current="page"{% endif %}>{% translate "Sig Checker" %}</a>
+        </li>
+    {% endif %}
+    {% if perms.eos_sig_checker.manage_settings %}
+        <li class="nav-item">
+            <a class="nav-link {% if nav == 'signatures' %}active{% endif %}" href="{% url 'eos_sig_checker:signatures' %}"{% if nav == 'signatures' %} aria-current="page"{% endif %}>{% translate "Signatures" %}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if nav == 'settings' %}active{% endif %}" href="{% url 'eos_sig_checker:settings' %}"{% if nav == 'settings' %} aria-current="page"{% endif %}>{% translate "Settings" context "eos-sig-checker" %}</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="eos_sig_checker">
+        {% translate "Sig Checker" as app_name %}
+        {% with page_title=app_name|add:" ("|add:version|add:")" %}
+            {% include "framework/header/page-header.html" with title=page_title %}
+        {% endwith %}
+
+        {% block details %}{% endblock %}
+    </div>
+{% endblock %}

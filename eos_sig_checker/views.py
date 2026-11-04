@@ -1,15 +1,31 @@
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.core.cache import cache
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
+from django.views.decorators.http import require_POST
 
 from . import __version__, parser, sync
 from .app_settings import max_age_days
-from .forms import PasteForm
+from .forms import ConfigurationForm, PasteForm
+from .models import SigCheckerConfiguration, Signature
 from .parser import Invalid, Skipped
+
+BASIC_ACCESS = "eos_sig_checker.basic_access"
+MANAGE_SETTINGS = "eos_sig_checker.manage_settings"
 
 # at most one check per user and second - each one writes up to 500 rows
 MIN_INTERVAL_SECONDS = 1
+
+# the tab of the app navbar a page belongs to
+NAV_CHECK = "check"
+NAV_SIGNATURES = "signatures"
+NAV_SETTINGS = "settings"
+
+
+def _render(request, template, context, nav, status=200):
+    return render(request, template, {"version": __version__, "nav": nav, **context}, status=status)
 
 
 def _copy_text(output) -> str:
@@ -38,8 +54,13 @@ def _too_soon(user) -> bool:
 
 
 @login_required
-@permission_required("eos_sig_checker.basic_access")
+@user_passes_test(lambda user: user.has_perm(BASIC_ACCESS) or user.has_perm(MANAGE_SETTINGS))
 def index(request):
+    # the menu entry leads here; whoever may only manage the list lands on
+    # the settings instead of a page that refuses them
+    if not request.user.has_perm(BASIC_ACCESS):
+        return redirect("eos_sig_checker:settings")
+
     output = None
     skipped = 0
     status = 200
@@ -65,6 +86,42 @@ def index(request):
         "skipped": skipped,
         "copy_text": _copy_text(output) if output else "",
         "max_age_days": max_age_days(),
-        "version": __version__,
     }
-    return render(request, "eos_sig_checker/index.html", context, status=status)
+    return _render(request, "eos_sig_checker/index.html", context, NAV_CHECK, status=status)
+
+
+@login_required
+@permission_required(MANAGE_SETTINGS)
+def signatures(request):
+    """Everything in the table, expired rows included: the count matches
+    what Delete all would remove."""
+    context = {
+        "signatures": Signature.objects.select_related("last_checked_by").order_by("-last_checked"),
+        "oldest": sync.cutoff(),
+    }
+    return _render(request, "eos_sig_checker/signatures.html", context, NAV_SIGNATURES)
+
+
+@login_required
+@permission_required(MANAGE_SETTINGS)
+def settings(request):
+    form = ConfigurationForm(request.POST or None, instance=SigCheckerConfiguration.get_solo())
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, _("Settings saved."))
+        return redirect("eos_sig_checker:settings")
+
+    context = {"form": form, "signature_count": Signature.objects.count()}
+    return _render(request, "eos_sig_checker/settings.html", context, NAV_SETTINGS)
+
+
+@login_required
+@permission_required(MANAGE_SETTINGS)
+@require_POST
+def delete_all(request):
+    deleted, _rows = Signature.objects.all().delete()
+    messages.success(
+        request,
+        ngettext("Deleted %(count)d signature.", "Deleted %(count)d signatures.", deleted) % {"count": deleted},
+    )
+    return redirect("eos_sig_checker:settings")
