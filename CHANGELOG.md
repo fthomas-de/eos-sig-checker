@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-11-04
+
 ### Added
 
 - Location tracking through ESI, off by default: a switch on the main page

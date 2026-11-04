@@ -6,50 +6,46 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Version: `0.0.2`, 2026-11-04 (see `CHANGELOG.md` under 0.0.2). Pushed to
-  `origin/main` with the annotated tags `v0.0.1` and `v0.0.2` ("Release
-  <version>" on the release commit, as in eos-auth-monitor).
+- Version: `0.0.3`, 2026-11-04 (see `CHANGELOG.md` under 0.0.3). Pushed to
+  `origin/main` with the annotated tags `v0.0.1` to `v0.0.3` ("Release
+  <version>" on the release commit).
 - What the app does: the paste page (`basic_access`) - two equal panes,
   paste the probe scanner (English client) on the left, the same lines come
   back on the right as a table with site type and name filled in from the
   shared list (green), invalid lines red with the reason, a Copy button.
   Every valid line is stored or merged into `Signature`; a Celery task
-  deletes rows past their age.
-- New in 0.0.2, both behind `manage_settings` (works without
-  `basic_access`; the index sends such a user on to the settings):
-  - **Settings** tab: the days an entry counts (1-30, start 7, singleton
-    `SigCheckerConfiguration`, migration 0002), read at call time by the
-    merge, the cleanup task and the page subtitle; **Delete all
-    signatures** behind a Bootstrap modal. `EOS_SIG_CHECKER_MAX_AGE_DAYS`
-    is no longer read.
-  - **Signatures** tab: every row as a DataTable (AA's DataTables 2 bundle,
-    `js/signatures.js`), sortable, a filter field each for ID, Group
-    (= `site_type`) and Name via DataTables' column search; expired rows
-    greyed out (`opacity-50`) with an "expired" badge.
-- Tests: 60 without the `translations` tag, 2 with it, each checked against
-  broken code. No automated test for the browser side of `autocheck.js`
-  and `signatures.js` (filters, sorting) - both checked in the browser.
-- **Unreleased, not committed** (CHANGELOG `[Unreleased]`): location
-  tracking through ESI (`tracking.py`, `provider.py`, `js/tracking.js`,
-  migration 0003 = one row per signature ID **and** solar system, System
-  column everywhere), the position shown with its age and a message box for
-  tracking problems, plus the `.gitignore` fix. 85 tests without
-  `translations`; every new test checked against broken code (16 faults put
-  back, all caught). Browser: position refreshes with the poll, dead token
-  and unreachable server show their message, the box clears on recovery. Checked in the browser against real ESI: switch on/off,
-  two tabs tracking two characters, paste in a system, the system's list
-  without a paste, "not in this paste", the 10 s poll, a dead token.
-  Translations not run yet - new texts are English until `/commit`.
+  deletes rows past their age. `manage_settings` opens the **Signatures**
+  tab (DataTable, a filter each for System, ID, Group, Name; expired rows
+  greyed out) and the **Settings** tab (days an entry counts, 1-30; Delete
+  all signatures).
+- New in 0.0.3: location tracking through ESI (`tracking.py`,
+  `provider.py`, `js/tracking.js`). A switch above the panes, off by
+  default, and a dropdown of the user's own characters with a token for
+  `esi-location.read_location.v1`; per browser tab. Every check stores the
+  system (migration 0003: one row per signature ID **and** system, column
+  System everywhere); without a paste the right pane shows the system's
+  known rows, after a paste the pasted lines plus the rest ("not in this
+  paste"). The bar shows the position with its age, refreshed every 10 s;
+  problems appear in a message box below it. `django-esi>=10` is a
+  dependency now.
+- Tests: 85 without the `translations` tag, plus the catalogue tests run by
+  `tools/translate.py`; every test checked against broken code. No
+  automated test for the browser side of `autocheck.js`, `signatures.js`
+  and `tracking.js` - all three checked in the browser, tracking against
+  real ESI (switch, two tabs with two characters, paste in a system, the
+  system's list, the poll, a dead token, an unreachable server).
 
 ## Open
 
-- `/commit` the tracking work (runs `tools/translate.py`: new messages such
-  as "Track location", "System", "not in this paste" go into the glossary;
-  "System" may need the `eos-sig-checker` context if AA translates it).
 - The live instance: remove `EOS_SIG_CHECKER_MAX_AGE_DAYS` from its
-  `local.py` if set (the dev `local.py` never had it), run migrate 0002 and
-  0003 and `collectstatic`, then give `manage_settings` to whoever looks
-  after the list.
+  `local.py` if set (the dev `local.py` never had it), install `@v0.0.3`,
+  run migrate (0002 and 0003) and `collectstatic`, restart AA and Celery,
+  then give `manage_settings` to whoever looks after the list. Members who
+  want tracking need a token with `esi-location.read_location.v1` from
+  another app (corptools asks for it).
+- README's install line still names `@v0.0.1`: point it at the current tag
+  with the next change (the release commit takes only version, CHANGELOG
+  and HANDOVER).
 - Not checked yet: a real Ctrl+V from the EVE client, the light theme, an
   expired row on the Signatures tab outside the unit tests (no row in
   `aa_dev` was old enough), the Refresh button by a real click (the pane
@@ -101,7 +97,11 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   user's request): no fallback to `local.py`.
 - Navigation as navbar tabs like eos-auth-monitor: Sig Checker | Signatures
   | Settings, each only with its permission.
-- Signature list: one filter field per column (ID, Group, Name), not one
+- Tracking problems are shown, never swallowed: a message box below the
+  bar (no/dead token, ESI, server unreachable) that clears on the next good
+  read, while the last position stays. A character that cannot be tracked
+  keeps its message instead of switching tracking off silently.
+- Signature list: one filter field per column (System, ID, Group, Name), not one
   search box; expired rows shown greyed out rather than hidden, so the count
   matches Delete all. Distance left out: it is the last paster's distance and
   its client text ("10,63 AU", "1.234 km") does not sort.
@@ -143,10 +143,8 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - In Claude's browser pane a simulated Ctrl+V inserts nothing: dispatch a
   `paste` event and set the value afterwards. When the pane does not draw,
   clicks by coordinate fail - `form_input` and refs or JS still work.
-- `/push` sets no tag, but the README installs `@v<version>`: tag every
-  release commit (`git tag -a v<version> -m "Release <version>"`) and push
-  the tag along, or the install line fails (0.0.1 went out untagged; both
-  tags were set at 0.0.2).
+- "Position" clashes with Alliance Auth's Russian catalogue: it carries the
+  `eos-sig-checker` context, like Name and Type.
 - `.git/CLAUDE_COMMIT_MSG` survives from the last commit: Read it before
   writing the new message, or the Write is refused and the commit takes the
   old text (happened once, amended before the push).
