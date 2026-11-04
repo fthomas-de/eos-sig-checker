@@ -1,6 +1,6 @@
 """A shared list of cosmic signatures: paste the probe scanner, get the known sites back."""
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 VERSION = __version__
 __title__ = "eos_sig_checker"
 __url__ = "https://github.com/fthomas-de/eos-sig-checker"

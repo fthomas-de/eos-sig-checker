@@ -6,9 +6,13 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Version: `0.0.3`, 2026-11-04 (see `CHANGELOG.md` under 0.0.3). Pushed to
-  `origin/main` with the annotated tags `v0.0.1` to `v0.0.3` ("Release
+- Version: `0.0.4`, 2026-11-04 (see `CHANGELOG.md` under 0.0.4). Pushed to
+  `origin/main` with the annotated tags `v0.0.1` to `v0.0.4` ("Release
   <version>" on the release commit).
+- New in 0.0.4: no behaviour change, less code - trackable characters in
+  one query, one shared permission check (`views.has_access`) for the menu
+  and the index, `parser._check` returns `Invalid` itself (`_invalid`
+  replaces `_shorten`).
 - What the app does: the paste page (`basic_access`) - two equal panes,
   paste the probe scanner (English client) on the left, the same lines come
   back on the right as a table with site type and name filled in from the
@@ -18,7 +22,7 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   tab (DataTable, a filter each for System, ID, Group, Name; expired rows
   greyed out) and the **Settings** tab (days an entry counts, 1-30; Delete
   all signatures).
-- New in 0.0.3: location tracking through ESI (`tracking.py`,
+- Since 0.0.3: location tracking through ESI (`tracking.py`,
   `provider.py`, `js/tracking.js`). A switch above the panes, off by
   default, and a dropdown of the user's own characters with a token for
   `esi-location.read_location.v1`; per browser tab. Every check stores the
@@ -28,7 +32,7 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   paste"). The bar shows the position with its age, refreshed every 10 s;
   problems appear in a message box below it. `django-esi>=10` is a
   dependency now.
-- Tests: 85 without the `translations` tag, plus the catalogue tests run by
+- Tests: 85 without the `translations` tag (all pass at 0.0.4), plus the catalogue tests run by
   `tools/translate.py`; every test checked against broken code. No
   automated test for the browser side of `autocheck.js`, `signatures.js`
   and `tracking.js` - all three checked in the browser, tracking against
@@ -38,14 +42,18 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 ## Open
 
 - The live instance: remove `EOS_SIG_CHECKER_MAX_AGE_DAYS` from its
-  `local.py` if set (the dev `local.py` never had it), install `@v0.0.3`,
+  `local.py` if set (the dev `local.py` never had it), install `@v0.0.4`,
   run migrate (0002 and 0003) and `collectstatic`, restart AA and Celery,
   then give `manage_settings` to whoever looks after the list. Members who
   want tracking need a token with `esi-location.read_location.v1` from
   another app (corptools asks for it).
 - README's install line still names `@v0.0.1`: point it at the current tag
   with the next change (the release commit takes only version, CHANGELOG
-  and HANDOVER).
+  and HANDOVER). Left out of 0.0.4 at the user's choice.
+- Considered in the 0.0.4 cleanup and left as is: `output or []` twice in
+  `views.index` (tests assert `output is None` without a paste), the
+  standalone `testauth/` + `runtests.py` + `tox.ini` (tox/coverage path),
+  the two `signal_band` properties (a template filter would be more code).
 - Not checked yet: a real Ctrl+V from the EVE client, the light theme, an
   expired row on the Signatures tab outside the unit tests (no row in
   `aa_dev` was old enough), the Refresh button by a real click (the pane

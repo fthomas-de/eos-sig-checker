@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-11-04
+
 ### Changed
 
 - Less code for the same behaviour: the list of trackable characters is one
