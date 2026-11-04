@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-11-04
+
 ### Added
 
 - A settings page with its own permission `eos_sig_checker.manage_settings`
