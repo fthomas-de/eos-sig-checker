@@ -1,0 +1,43 @@
+/*
+ * Input and output pane share one height, so the two cards stay the same
+ * size side by side. The output scrolls inside its pane, the header row
+ * stays visible.
+ */
+.eos_sig_checker .eos-sig-checker-pane {
+    height: 60vh;
+    min-height: 20rem;
+}
+
+.eos_sig_checker textarea.eos-sig-checker-pane {
+    resize: none;
+    white-space: pre;
+    tab-size: 4;
+}
+
+/* the paste keeps its lines (pre); the hint in the empty box wraps */
+.eos_sig_checker textarea.eos-sig-checker-pane:placeholder-shown {
+    white-space: pre-wrap;
+}
+
+.eos_sig_checker .eos-sig-checker-pane thead th {
+    background-color: var(--bs-body-bg);
+}
+
+/* the probe scanner's colour steps: 0-24.9 red, 25-74.9 orange,
+   75-99.9 yellow, 100 green (warpable); Bootstrap's palette, so both
+   themes keep their contrast */
+.eos_sig_checker .eos-sig-checker-signal-low {
+    color: var(--bs-danger);
+}
+
+.eos_sig_checker .eos-sig-checker-signal-partial {
+    color: var(--bs-orange);
+}
+
+.eos_sig_checker .eos-sig-checker-signal-high {
+    color: var(--bs-warning);
+}
+
+.eos_sig_checker .eos-sig-checker-signal-full {
+    color: var(--bs-success);
+}

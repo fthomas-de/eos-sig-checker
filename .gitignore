@@ -52,8 +52,8 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
-*.mo
+# Translations: the compiled .mo files ship with the package (no compile
+# step at deploy), so GitHub's template entry *.mo is left out on purpose
 *.pot
 
 # Django stuff:
@@ -218,3 +218,15 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- eos apps ---
+# testauth keeps a sqlite database of its own
+*.sqlite3
+*.sqlite3-journal
+
+# Translations: the compiled .mo files are shipped with the package; only
+# makemessages' template is left out.
+*.pot
+
+# Claude Code: per-machine settings stay local, CLAUDE.md is tracked
+.claude/settings.local.json

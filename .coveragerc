@@ -1,0 +1,9 @@
+[run]
+source = eos_sig_checker
+omit =
+    eos_sig_checker/migrations/*
+    eos_sig_checker/tests/*
+
+[report]
+show_missing = True
+skip_covered = True

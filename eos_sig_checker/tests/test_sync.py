@@ -1,0 +1,139 @@
+from datetime import timedelta
+from decimal import Decimal
+
+from django.test import override_settings
+from django.utils import timezone
+
+from eos_sig_checker import app_settings
+from eos_sig_checker.models import Signature
+from eos_sig_checker.parser import Invalid, parse
+from eos_sig_checker.sync import Row, delete_expired, merge
+from eos_sig_checker.tasks import delete_expired_signatures
+
+from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
+
+
+class SyncTestCase(SigTestCase):
+    def setUp(self):
+        super().setUp()
+        self.alice = make_user("alice").profile.main_character
+        self.bob = make_user("bob").profile.main_character
+
+    def paste(self, text, character=None, now=None):
+        return merge(parse(text), character or self.alice, now=now)
+
+
+class TestMerge(SyncTestCase):
+    def test_should_store_a_new_signature(self):
+        (row,) = self.paste(SCANNED)
+
+        signature = Signature.objects.get(signature_id="UDN-422")
+        self.assertEqual(
+            (signature.group, signature.site_type, signature.name, signature.signal, signature.distance),
+            ("Cosmic Anomaly", "Combat Site", "Sansha Den", Decimal("100.0"), "10,63 AU"),
+        )
+        self.assertEqual(signature.last_checked_by, self.alice)
+        self.assertEqual(signature.first_seen, signature.last_checked)
+        self.assertEqual((row.resolved, row.previous_check), (set(), None))
+
+    def test_should_resolve_an_unscanned_line_from_the_list(self):
+        earlier = timezone.now() - timedelta(hours=2)
+        self.paste(DATA_SITE, now=earlier)
+
+        (row,) = self.paste(UNSCANNED, character=self.bob)
+
+        self.assertEqual((row.site_type, row.name), ("Data Site", "Unsecured Frontier Server"))
+        self.assertEqual(row.resolved, {"site_type", "name"})
+        self.assertEqual(row.previous_check, earlier)
+        self.assertEqual(row.previous_by, self.alice.character_name)
+
+        signature = Signature.objects.get(signature_id="ACJ-672")
+        # the weaker scan keeps what was known and only confirms the site
+        self.assertEqual((signature.name, signature.signal), ("Unsecured Frontier Server", Decimal("100.0")))
+        self.assertEqual(signature.first_seen, earlier)
+        self.assertGreater(signature.last_checked, earlier)
+        self.assertEqual(signature.last_checked_by, self.bob)
+        self.assertEqual(signature.distance, "10,61 AU")
+
+    def test_should_resolve_only_the_missing_name(self):
+        self.paste(DATA_SITE)
+
+        (row,) = self.paste("ACJ-672\tCosmic Signature\tData Site\t\t25,0%\t9 AU")
+
+        self.assertEqual(row.resolved, {"name"})
+        self.assertEqual(row.name, "Unsecured Frontier Server")
+
+    def test_should_fill_the_list_from_a_better_scan(self):
+        self.paste(UNSCANNED)
+
+        (row,) = self.paste(DATA_SITE)
+
+        self.assertEqual(row.resolved, set())
+        signature = Signature.objects.get(signature_id="ACJ-672")
+        self.assertEqual((signature.site_type, signature.name), ("Data Site", "Unsecured Frontier Server"))
+
+    def test_should_replace_a_reused_id_with_the_newer_paste(self):
+        earlier = timezone.now() - timedelta(days=1)
+        self.paste(DATA_SITE, now=earlier)
+
+        for other in (
+            "ACJ-672\tCosmic Signature\tRelic Site\tForgotten Frontier Quarantine Outpost\t100,0%\t1 AU",
+            "ACJ-672\tCosmic Signature\tData Site\tCentral Guristas Sparking Transmitter\t100,0%\t1 AU",
+            "ACJ-672\tCosmic Anomaly\t\t\t0,0%\t1 AU",
+        ):
+            with self.subTest(other):
+                (row,) = self.paste(other)
+                signature = Signature.objects.get(signature_id="ACJ-672")
+                line = parse(other)[0]
+                self.assertEqual((signature.group, signature.site_type, signature.name),
+                                 (line.group, line.site_type, line.name))
+                self.assertEqual(row.resolved, set())
+                self.assertGreater(signature.first_seen, earlier)
+        self.assertEqual(Signature.objects.count(), 1)
+
+    def test_should_treat_an_expired_row_as_unknown(self):
+        old = timezone.now() - timedelta(days=app_settings.DEFAULT_MAX_AGE_DAYS, minutes=1)
+        self.paste(DATA_SITE, now=old)
+
+        (row,) = self.paste(UNSCANNED)
+
+        self.assertEqual((row.site_type, row.name, row.resolved, row.previous_check), ("", "", set(), None))
+        self.assertEqual(Signature.objects.get(signature_id="ACJ-672").name, "")
+
+    def test_should_keep_invalid_lines_in_place_and_store_nothing_from_them(self):
+        rows = self.paste(f"{SCANNED}\nnot a signature\n{UNSCANNED}")
+
+        self.assertEqual([type(row) for row in rows], [Row, Invalid, Row])
+        self.assertEqual(Signature.objects.count(), 2)
+
+    def test_should_drop_skipped_lines(self):
+        rows = self.paste(f"{SCANNED}\nXYZ-123\tShip\tFrigate\tHeron\t100,0%\t2 AU")
+
+        self.assertEqual([type(row) for row in rows], [Row])
+        self.assertFalse(Signature.objects.filter(signature_id="XYZ-123").exists())
+
+
+class TestExpiry(SyncTestCase):
+    def test_should_delete_only_rows_past_their_age(self):
+        now = timezone.now()
+        self.paste(SCANNED, now=now - timedelta(days=7, minutes=1))
+        self.paste(UNSCANNED, now=now - timedelta(days=6))
+
+        self.assertEqual(delete_expired(now), 1)
+        self.assertEqual(list(Signature.objects.values_list("signature_id", flat=True)), ["ACJ-672"])
+
+    def test_task_should_delete_expired_rows(self):
+        self.paste(SCANNED, now=timezone.now() - timedelta(days=30))
+
+        delete_expired_signatures()
+
+        self.assertFalse(Signature.objects.exists())
+
+    def test_should_read_the_age_from_the_settings(self):
+        with override_settings(EOS_SIG_CHECKER_MAX_AGE_DAYS=2):
+            self.assertEqual(app_settings.max_age_days(), 2)
+
+    def test_should_fall_back_on_a_broken_setting(self):
+        for value in (0, -1, "7", None, True, 1.5):
+            with self.subTest(value), override_settings(EOS_SIG_CHECKER_MAX_AGE_DAYS=value):
+                self.assertEqual(app_settings.max_age_days(), app_settings.DEFAULT_MAX_AGE_DAYS)

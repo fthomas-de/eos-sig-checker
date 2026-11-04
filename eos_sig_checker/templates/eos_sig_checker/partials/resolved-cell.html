@@ -1,0 +1,7 @@
+{% load i18n %}
+{# A group or name; green when it came from the shared list instead of the paste. `resolved` names the column. #}
+{% if resolved in row.resolved %}
+    <td class="table-success" title="{% translate 'filled in from the shared list' %}">{{ value }}</td>
+{% else %}
+    <td>{{ value }}</td>
+{% endif %}
