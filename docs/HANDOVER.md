@@ -29,29 +29,56 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - Tests: 60 without the `translations` tag, 2 with it, each checked against
   broken code. No automated test for the browser side of `autocheck.js`
   and `signatures.js` (filters, sorting) - both checked in the browser.
+- **Unreleased, not committed** (CHANGELOG `[Unreleased]`): location
+  tracking through ESI (`tracking.py`, `provider.py`, `js/tracking.js`,
+  migration 0003 = one row per signature ID **and** solar system, System
+  column everywhere), the position shown with its age and a message box for
+  tracking problems, plus the `.gitignore` fix. 85 tests without
+  `translations`; every new test checked against broken code (16 faults put
+  back, all caught). Browser: position refreshes with the poll, dead token
+  and unreachable server show their message, the box clears on recovery. Checked in the browser against real ESI: switch on/off,
+  two tabs tracking two characters, paste in a system, the system's list
+  without a paste, "not in this paste", the 10 s poll, a dead token.
+  Translations not run yet - new texts are English until `/commit`.
 
 ## Open
 
-- The Celery worker of the dev instance runs in the user's VS Code terminal
-  and still has the 0.0.1 code: restart it there so the cleanup task reads
-  the days from the database. Until then it uses 7 - the stored value too.
+- `/commit` the tracking work (runs `tools/translate.py`: new messages such
+  as "Track location", "System", "not in this paste" go into the glossary;
+  "System" may need the `eos-sig-checker` context if AA translates it).
 - The live instance: remove `EOS_SIG_CHECKER_MAX_AGE_DAYS` from its
   `local.py` if set (the dev `local.py` never had it), run migrate 0002 and
-  `collectstatic`, then give `manage_settings` to whoever looks after the
-  list.
+  0003 and `collectstatic`, then give `manage_settings` to whoever looks
+  after the list.
 - Not checked yet: a real Ctrl+V from the EVE client, the light theme, an
   expired row on the Signatures tab outside the unit tests (no row in
-  `aa_dev` was old enough).
-- `.gitignore` lists `*.pot` twice (GitHub's block and the eos block):
-  harmless, drop one at the next change.
+  `aa_dev` was old enough), the Refresh button by a real click (the pane
+  did not draw after a POST), a system change while tracking (the
+  character did not move during the test).
 - Next sensible step: deploy to the live instance (README's install
   section).
 
 ## Decisions
 
-- No solar system: the list is global, key is the signature ID. Rows count
+- Solar system only with tracking (user's choice after 0.0.2): key is
+  (signature ID, system); `NO_SYSTEM` = 0 for untracked pastes (MySQL lets
+  NULLs past a unique constraint). A tracked paste adopts the ID's row
+  without system. An untracked paste resolves by ID alone, as before, from
+  the newest live row of the same site in any system and leaves its system
+  alone; another site under that ID gets a row without system. Rows count
   for the days on the settings page (1-30, beyond a month reused IDs get
-  likely), which keeps reused IDs rare.
+  likely).
+- Tracking: off by default, per browser tab (`?character=` in the URL, the
+  paste form posts to the same URL; sessionStorage restores it when the
+  menu link drops the parameter, a new tab starts off). Only existing
+  tokens with `esi-location.read_location.v1` - the app has no SSO button
+  of its own. The server looks the system up itself and checks ownership
+  before its 5 s location cache.
+- Tracking display: no paste = the system's live rows; after a paste = the
+  pasted lines plus the system's other live rows ("not in this paste"),
+  Copy includes both. Poll every 10 s (`views.LOCATION_INTERVAL_SECONDS`),
+  Refresh at most every 5 s (`tracking.LOCATION_CACHE_SECONDS`); a new
+  system reloads the page as a GET.
 - A newer paste with another group/type/name for the same ID wins and
   restarts `first_seen`. Blank columns of a weaker scan never overwrite.
 - Scan strength stored is the best seen; distance is the last pasted.
@@ -86,10 +113,15 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 - Installed editable (`--no-deps`), `'eos_sig_checker',` in
   `INSTALLED_APPS`, cleanup task in `CELERYBEAT_SCHEDULE` (11:15 daily),
-  migrations 0001 and 0002 applied, static collected (incl.
-  `signatures.js`). Max age stored: 7.
-- `Signature` holds 37 rows from the user's sample pastes: this app's own,
-  they expire on their own. Delete all was never pressed against them.
+  migrations 0001-0003 applied, static collected (incl. `tracking.js`).
+  Max age stored: 7. The Celery worker was restarted after the 0.0.2
+  release (runs since 19:59), so the cleanup task reads the days from the
+  database.
+- `Signature` holds 37 rows from the user's sample pastes plus two browser
+  test rows `ZZT-901`/`ZZT-902` in R-ARKN: this app's own, they expire on
+  their own. Delete all was never pressed against them.
+- Tokens with the location scope: account `E_o` - BigBlackout C and E 'o
+  work, Eh 'o's refresh token is dead (SSO `invalid_grant`).
 - `discord_announcer.0008_transaction_kind` is pending in `aa_dev` - not
   ours, left alone.
 - The dev server answers on `http://127.0.0.1:8000`; `localhost:8000` is
@@ -120,6 +152,19 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   old text (happened once, amended before the push).
 - View tests that post twice need `cache.clear()` in between, or the rate
   limit answers the second post with 429.
+- Saving a `Token` in a test runs AA's ownership signal: the character moves
+  to the token's user. To test a token whose character belongs to somebody
+  else, move the `CharacterOwnership` back after creating the token.
+- `Token.objects.require_scopes` does not exist on the manager, only on the
+  queryset: `Token.objects.filter(...).require_scopes(...)`.
+- Tests mock `tracking.esi` (or `tracking.locate`): the real
+  `ESIClientProvider` loads the OpenAPI spec from ESI on first use.
+- Another session may use the shared test database `test_aa_dev` at the
+  same time: random "Table 'test_aa_dev.eve_sde_...' doesn't exist" errors,
+  even with `--fresh`. Run with `EOS_TEST_DB=test_eos_sig_checker`
+  (read by the dev `local.py`) to get a database of our own.
+- The dev server's autoreload takes a few seconds after a file change; a
+  request in that window fails with "Failed to fetch" - not an app error.
 - The form field keeps `strip=False`: the trailing tabs of an unscanned line
   are columns.
 - Through the WSL bridge (`bash -lc '...'`) pipes, `|` in regexes and `%`

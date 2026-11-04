@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.core.cache import cache
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from django.views.decorators.http import require_POST
 
-from . import __version__, parser, sync
+from . import __version__, parser, sync, tracking
 from .app_settings import max_age_days
 from .forms import ConfigurationForm, PasteForm
 from .models import SigCheckerConfiguration, Signature
@@ -17,6 +18,10 @@ MANAGE_SETTINGS = "eos_sig_checker.manage_settings"
 
 # at most one check per user and second - each one writes up to 500 rows
 MIN_INTERVAL_SECONDS = 1
+
+# how often a tracking tab asks where its character is; the Refresh button
+# may ask sooner, but not within tracking.LOCATION_CACHE_SECONDS
+LOCATION_INTERVAL_SECONDS = 10
 
 # the tab of the app navbar a page belongs to
 NAV_CHECK = "check"
@@ -53,6 +58,19 @@ def _too_soon(user) -> bool:
     return not cache.add(f"eos_sig_checker:check:{user.pk}", True, timeout=MIN_INTERVAL_SECONDS)
 
 
+def _tracked_character(request) -> int | None:
+    """The character this tab tracks: ?character=<id> in the page's URL.
+
+    In the URL, not in the session: the session is shared by every tab,
+    and each tab may track a character of its own. The paste form posts to
+    the same URL, so a check carries it too.
+    """
+    try:
+        return int(request.GET["character"])
+    except (KeyError, ValueError):
+        return None
+
+
 @login_required
 @user_passes_test(lambda user: user.has_perm(BASIC_ACCESS) or user.has_perm(MANAGE_SETTINGS))
 def index(request):
@@ -60,6 +78,16 @@ def index(request):
     # the settings instead of a page that refuses them
     if not request.user.has_perm(BASIC_ACCESS):
         return redirect("eos_sig_checker:settings")
+
+    character_id = _tracked_character(request)
+    location = None
+    tracking_error = ""
+    if character_id is not None:
+        try:
+            location = tracking.locate(request.user, character_id)
+        except tracking.LocationError as error:
+            # the check still runs, only without a system
+            tracking_error = str(error)
 
     output = None
     skipped = 0
@@ -75,19 +103,46 @@ def index(request):
                 # counted, not shown: a paste from another client language
                 # would otherwise vanish without a word
                 skipped = sum(isinstance(row, Skipped) for row in rows)
-                output = sync.merge(rows, request.user.profile.main_character)
+                output = sync.merge(rows, request.user.profile.main_character, system=location)
     else:
         form = PasteForm()
+
+    pasted = output is not None
+    if location:
+        pasted_ids = [row.line.signature_id for row in output or [] if not isinstance(row, Invalid)]
+        output = (output or []) + sync.system_rows(location, skip_ids=pasted_ids)
 
     context = {
         "min_interval_ms": MIN_INTERVAL_SECONDS * 1000,
         "form": form,
         "output": output,
+        "pasted": pasted,
         "skipped": skipped,
         "copy_text": _copy_text(output) if output else "",
         "max_age_days": max_age_days(),
+        "characters": tracking.trackable_characters(request.user),
+        "tracked_character_id": character_id if location or tracking_error else None,
+        "location": location,
+        "tracking_error": tracking_error,
+        "location_interval_ms": LOCATION_INTERVAL_SECONDS * 1000,
+        "refresh_interval_ms": tracking.LOCATION_CACHE_SECONDS * 1000,
+        "scope": tracking.SCOPE,
     }
     return _render(request, "eos_sig_checker/index.html", context, NAV_CHECK, status=status)
+
+
+@login_required
+@permission_required(BASIC_ACCESS)
+def tracked_location(request):
+    """The tracked character's system, asked by tracking.js every few seconds."""
+    character_id = _tracked_character(request)
+    if character_id is None:
+        return JsonResponse({"error": _("No character given.")}, status=400)
+    try:
+        found = tracking.locate(request.user, character_id)
+    except tracking.LocationError as error:
+        return JsonResponse({"error": str(error)}, status=503)
+    return JsonResponse({"system_id": found.system_id, "system_name": found.system_name})
 
 
 @login_required

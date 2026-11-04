@@ -6,6 +6,7 @@ from django.utils import timezone
 from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS
 from eos_sig_checker.parser import parse
 from eos_sig_checker.sync import merge
+from eos_sig_checker.tracking import Location
 
 from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
 
@@ -60,13 +61,22 @@ class TestSignatures(SigTestCase):
 
         self.assertContains(response, 'eos-sig-checker-signal-full" data-order="100.0"')
 
-    def test_should_offer_a_filter_for_id_group_and_name(self):
+    def test_should_offer_a_filter_for_system_id_group_and_name(self):
         response = self.client.get(SIGNATURES)
 
-        for column in (0, 2, 3):
+        # System, ID, Group (site type), Name - the Kind column has none
+        for column in (0, 1, 3, 4):
             self.assertContains(response, f'data-eos-sig-checker-column="{column}"')
         # sri_static hashes the file name
         self.assertContains(response, "eos_sig_checker/js/signatures.")
+
+    def test_should_show_the_system_column(self):
+        main = self.manager.profile.main_character
+        merge(parse(SCANNED), main, system=Location(30000142, "Jita"))
+
+        response = self.client.get(SIGNATURES)
+
+        self.assertContains(response, "<td>Jita</td>", count=1)
 
     def test_should_show_the_tab_only_to_managers(self):
         self.client.force_login(make_user("bob", BASIC_ACCESS))

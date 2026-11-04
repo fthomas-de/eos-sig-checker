@@ -82,10 +82,14 @@ is no binary log and there are no dumps.
 - The page uses the probe scanner's column words: Kind = the model's
   `group`, Group = the model's `site_type`. Keep the two apart when adding
   text.
-- `sync.py` merges into the list: one row per signature ID; a different
-  group/type/name replaces the row (reused ID), blank columns resolve from
-  it. A row past the age from the settings page counts as gone even before
-  the cleanup task deletes it.
+- `sync.py` merges into the list: one row per signature ID and solar system
+  (`NO_SYSTEM` without tracking); a different group/type/name replaces the
+  row (reused ID), blank columns resolve from it. A row past the age from
+  the settings page counts as gone even before the cleanup task deletes it.
+- `tracking.py` reads a tracked character's system from ESI (`provider.py`).
+  It is the second security boundary: the browser names a character, never
+  a system, and ownership is checked before the location cache is read.
+  Tests mock `tracking.esi` or `tracking.locate`, never the network.
 - The age lives in the singleton `SigCheckerConfiguration` (settings page,
   `manage_settings`) and is read at call time (`app_settings.max_age_days()`),
   so the merge, the task and the page follow a change without a restart.

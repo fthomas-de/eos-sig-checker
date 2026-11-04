@@ -35,6 +35,10 @@ dependencies = [
     "allianceauth>=5.0,<6",
     # the settings page is a singleton; AA ships django-solo, but we import it
     "django-solo",
+    # location tracking: the OpenAPI client (ESIClientProvider) and the
+    # Token model; AA ships django-esi, but we import it. 10 is the version
+    # tested with and the one AA 5.5 requires.
+    "django-esi>=10",
 ]
 
 [project.optional-dependencies]

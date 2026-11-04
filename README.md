@@ -25,17 +25,47 @@ ACJ-672	Cosmic Signature	Data Site	Unsecured Frontier Server	0,0%	10,61 AU
 
 if somebody pasted a full scan of `ACJ-672` before.
 
+## Location tracking
+
+Above the two boxes, **Track location** (off by default) follows one of your
+own characters through ESI. The dropdown lists the characters of your
+account that have a token with the scope `esi-location.read_location.v1`;
+the app asks for no token of its own, so add one through any app that
+requests the scope (corptools, for instance).
+
+While tracking is on:
+
+- every check stores its signatures with the character's current solar
+  system, shown as the **System** column everywhere;
+- the right box shows what is known in that system without a paste, and
+  after a paste the pasted lines plus the system's other known signatures,
+  marked *not in this paste* (a site left out of the scanner selection is
+  still there);
+- the page asks every 10 seconds where the character is and switches to the
+  new system's list on its own; **Refresh** asks at once, at most every 5
+  seconds (ESI's own cache time);
+- the bar shows the position read last and how old it is. If the location
+  cannot be read (no or an expired token, ESI or the server unreachable), a
+  message below the bar says why; it disappears once the next read works.
+
+The choice belongs to the browser tab: one tab can track one character and
+a second tab another. A new tab starts with tracking off.
+
 ## How the list is kept
 
-- One entry per signature ID, with group, site type, name, the best scan
-  strength seen, the last distance, when it was first seen, and when and by
-  whom (their main) it was last checked.
+- One entry per signature ID and solar system, with group, site type, name,
+  the best scan strength seen, the last distance, when it was first seen,
+  and when and by whom (their main) it was last checked.
 - A paste that shows the same ID with another group, site type or name is a
   new site under a reused ID: it replaces the entry. Empty columns from a
   weaker scan never overwrite what is known.
-- The list has no solar system. An entry counts for the days set on the
-  settings page (default 7, 1 to 30) after its last check; after that it is
-  ignored and removed by a periodic task.
+- The system is only known with tracking. A tracked paste gives an entry
+  pasted without a system its system. A paste without tracking resolves by
+  the ID alone, as before, from the newest entry of the same site in any
+  system; an entry of another site under that ID stays apart.
+- An entry counts for the days set on the settings page (default 7, 1 to
+  30) after its last check; after that it is ignored and removed by a
+  periodic task.
 - The paste is checked line by line: six tab-separated columns, an ID like
   `ABC-123`, the group `Cosmic Signature` or `Cosmic Anomaly`, site type and
   name in the characters the client uses, a percentage and a distance in AU,
@@ -94,8 +124,8 @@ remove the line.
 
 | Permission | Meant for | What it opens |
 |---|---|---|
-| `eos_sig_checker.basic_access` | Everybody who scans | The page: paste, store and resolve signatures. Everybody with it shares the same list. |
-| `eos_sig_checker.manage_settings` | Whoever looks after the list | The **Signatures** tab: the whole list as a sortable table with a filter each for ID, Group and Name; entries past their age are greyed out until the cleanup removes them. The settings page: the days an entry counts, and deleting all signatures. Works on its own; it does not include `basic_access`. |
+| `eos_sig_checker.basic_access` | Everybody who scans | The page: paste, store and resolve signatures, and track the location of their own characters. Everybody with it shares the same list. |
+| `eos_sig_checker.manage_settings` | Whoever looks after the list | The **Signatures** tab: the whole list as a sortable table with a filter each for System, ID, Group and Name; entries past their age are greyed out until the cleanup removes them. The settings page: the days an entry counts, and deleting all signatures. Works on its own; it does not include `basic_access`. |
 
 Admins can also look at and edit the list in the Django admin
 (*Eos_Sig_Checker › Signatures*).

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 18:37+0000\n"
-"PO-Revision-Date: 2026-11-04 18:37+0000\n"
+"POT-Creation-Date: 2026-11-04 19:48+0000\n"
+"PO-Revision-Date: 2026-11-04 19:48+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: zh_Hans\n"
 "Language: zh_Hans\n"
@@ -38,34 +38,40 @@ msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
 msgstr[0] "每次粘贴最多 %(max)d 行。"
 
-#: models.py:23
+#: models.py:26
 msgid "Can paste and resolve signatures"
 msgstr "可以粘贴并解析信号"
 
-#: models.py:24
+#: models.py:27
 msgid "Can change the settings and delete all signatures"
 msgstr "可以更改设置并删除所有信号"
 
-#: models.py:34
+#: models.py:37
 msgid "Keep signatures (days)"
 msgstr "信号保留（天）"
 
-#: models.py:36
+#: models.py:39
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
 msgstr "信号在最后一次检查后有效的天数。之后它将被忽略，并由每日清理删除。"
 
-#: models.py:43
+#: models.py:46
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "配置"
 
-#: models.py:73
+#: models.py:68 templates/eos_sig_checker/index.html:102
+#: templates/eos_sig_checker/signatures.html:14
+#: templates/eos_sig_checker/signatures.html:34
+msgid "System"
+msgstr "星系"
+
+#: models.py:83
 msgid "Signature"
 msgstr "信号"
 
-#: models.py:74 templates/eos_sig_checker/base.html:15
+#: models.py:84 templates/eos_sig_checker/base.html:15
 msgid "Signatures"
 msgstr "信号"
 
@@ -116,88 +122,136 @@ msgid_plural ""
 "days after their last check."
 msgstr[0] "信号与所有有权限的人共享，在最后一次检查后 %(days)s 天内有效。"
 
-#: templates/eos_sig_checker/index.html:19
+#: templates/eos_sig_checker/index.html:16
+#, python-brace-format
+msgid "read {seconds} s ago"
+msgstr "{seconds} 秒前读取"
+
+#: templates/eos_sig_checker/index.html:17
+msgid "The server could not be reached. The position shown may be outdated."
+msgstr "无法连接服务器。显示的位置可能已过时。"
+
+#: templates/eos_sig_checker/index.html:25
+msgid "Track location"
+msgstr "追踪位置"
+
+#: templates/eos_sig_checker/index.html:28
+msgid "Tracked character"
+msgstr "追踪的角色"
+
+#: templates/eos_sig_checker/index.html:33
+msgid "Read the location now"
+msgstr "立即读取位置"
+
+#: templates/eos_sig_checker/index.html:34
+msgid "Refresh"
+msgstr "刷新"
+
+#: templates/eos_sig_checker/index.html:39
+msgctxt "eos-sig-checker"
+msgid "Position"
+msgstr "位置"
+
+#: templates/eos_sig_checker/index.html:40
+msgid "unknown"
+msgstr "未知"
+
+#: templates/eos_sig_checker/index.html:46
+#, python-format
+msgid "None of your characters has a token with the scope %(scope)s."
+msgstr "你的角色都没有带有权限范围 %(scope)s 的令牌。"
+
+#: templates/eos_sig_checker/index.html:65
 msgid "Pasting checks on its own"
 msgstr "粘贴后会自动检查"
 
-#: templates/eos_sig_checker/index.html:20
+#: templates/eos_sig_checker/index.html:66
 msgid "Check"
 msgstr "检查"
 
-#: templates/eos_sig_checker/index.html:38
+#: templates/eos_sig_checker/index.html:85
 msgid "Result"
 msgstr "结果"
 
-#: templates/eos_sig_checker/index.html:41
+#: templates/eos_sig_checker/index.html:90
 msgid "Copied"
 msgstr "已复制"
 
-#: templates/eos_sig_checker/index.html:42
+#: templates/eos_sig_checker/index.html:91
 msgid "Copy the completed list in the probe scanner format"
 msgstr "以 Probe Scanner 格式复制补全后的列表"
 
-#: templates/eos_sig_checker/index.html:43
+#: templates/eos_sig_checker/index.html:92
 msgid "Copy"
 msgstr "复制"
 
-#: templates/eos_sig_checker/index.html:54
-#: templates/eos_sig_checker/signatures.html:14
-#: templates/eos_sig_checker/signatures.html:31
+#: templates/eos_sig_checker/index.html:104
+#: templates/eos_sig_checker/signatures.html:18
+#: templates/eos_sig_checker/signatures.html:36
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:55
-#: templates/eos_sig_checker/signatures.html:32
+#: templates/eos_sig_checker/index.html:105
+#: templates/eos_sig_checker/signatures.html:37
 msgctxt "eos-sig-checker"
 msgid "Kind"
 msgstr "种类"
 
-#: templates/eos_sig_checker/index.html:56
-#: templates/eos_sig_checker/signatures.html:18
-#: templates/eos_sig_checker/signatures.html:33
+#: templates/eos_sig_checker/index.html:106
+#: templates/eos_sig_checker/signatures.html:22
+#: templates/eos_sig_checker/signatures.html:38
 msgctxt "eos-sig-checker"
 msgid "Group"
 msgstr "分组"
 
-#: templates/eos_sig_checker/index.html:57
-#: templates/eos_sig_checker/signatures.html:22
-#: templates/eos_sig_checker/signatures.html:34
+#: templates/eos_sig_checker/index.html:107
+#: templates/eos_sig_checker/signatures.html:26
+#: templates/eos_sig_checker/signatures.html:39
 msgctxt "eos-sig-checker"
 msgid "Name"
 msgstr "名称"
 
-#: templates/eos_sig_checker/index.html:58
-#: templates/eos_sig_checker/signatures.html:35
+#: templates/eos_sig_checker/index.html:108
+#: templates/eos_sig_checker/signatures.html:40
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "信号强度"
 
-#: templates/eos_sig_checker/index.html:59
+#: templates/eos_sig_checker/index.html:109
 msgid "Distance"
 msgstr "距离"
 
-#: templates/eos_sig_checker/index.html:60
-#: templates/eos_sig_checker/signatures.html:37
+#: templates/eos_sig_checker/index.html:110
+#: templates/eos_sig_checker/signatures.html:42
 msgid "Last checked"
 msgstr "上次检查"
 
-#: templates/eos_sig_checker/index.html:86
+#: templates/eos_sig_checker/index.html:137
 msgid "new"
 msgstr "新"
 
-#: templates/eos_sig_checker/index.html:96
+#: templates/eos_sig_checker/index.html:141
+msgid "not in this paste"
+msgstr "不在本次粘贴中"
+
+#: templates/eos_sig_checker/index.html:151
+#, python-format
+msgid "Nothing known in %(system)s yet. Paste the probe scanner on the left."
+msgstr "%(system)s 中尚无已知信号。请在左侧粘贴 Probe Scanner 内容。"
+
+#: templates/eos_sig_checker/index.html:155
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
 msgstr "将 Probe Scanner 内容粘贴到左侧并点击检查：每一行都会显示在这里，已有人扫描过的会补全分组和名称。"
 
-#: templates/eos_sig_checker/index.html:102
+#: templates/eos_sig_checker/index.html:161
 #: templates/eos_sig_checker/partials/resolved-cell.html:4
 msgid "filled in from the shared list"
 msgstr "从共享列表补全"
 
-#: templates/eos_sig_checker/index.html:108
+#: templates/eos_sig_checker/index.html:167
 #, python-format
 msgid ""
 "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
@@ -250,27 +304,47 @@ msgctxt "eos-sig-checker"
 msgid "Delete"
 msgstr "删除"
 
-#: templates/eos_sig_checker/signatures.html:36
+#: templates/eos_sig_checker/signatures.html:41
 msgid "First seen"
 msgstr "首次发现"
 
-#: templates/eos_sig_checker/signatures.html:38
+#: templates/eos_sig_checker/signatures.html:43
 msgid "Checked by"
 msgstr "检查者"
 
-#: templates/eos_sig_checker/signatures.html:53
+#: templates/eos_sig_checker/signatures.html:59
 msgid "expired"
 msgstr "已过期"
 
-#: views.py:71
+#: tracking.py:70
+msgid ""
+"This character cannot be tracked: it is not yours or has no token with the "
+"location scope."
+msgstr "无法追踪此角色：它不属于你，或没有带位置权限范围的令牌。"
+
+#: tracking.py:87
+msgid ""
+"The token of this character is no longer valid. Add the character again with"
+" the location scope."
+msgstr "此角色的令牌已失效。请使用位置权限范围重新添加该角色。"
+
+#: tracking.py:93
+msgid "The location could not be read from ESI. Try again in a moment."
+msgstr "无法从 ESI 读取位置。请稍后再试。"
+
+#: views.py:99
 msgid "Too many checks: wait a second and press Check again."
 msgstr "检查过于频繁：请等待一秒后再次点击检查。"
 
-#: views.py:111
+#: views.py:140
+msgid "No character given."
+msgstr "未指定角色。"
+
+#: views.py:166
 msgid "Settings saved."
 msgstr "设置已保存。"
 
-#: views.py:125
+#: views.py:180
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."

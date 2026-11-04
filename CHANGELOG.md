@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Location tracking through ESI, off by default: a switch on the main page
+  and a dropdown of the user's own characters that have a token with
+  `esi-location.read_location.v1`. Until now the list had no solar system
+  and a member had to paste before seeing anything; with tracking every
+  check stores the character's system, and the page shows what is known in
+  the current system without a paste - after a paste the pasted lines plus
+  the system's other known signatures, so a site left out of the scanner
+  selection is not forgotten. The page follows the character every 10
+  seconds, Refresh asks at once (at most every 5 seconds, ESI's cache time).
+  The choice belongs to the browser tab (`?character=` in its URL), so two
+  tabs can track two characters. The server looks the system up itself and
+  only for the user's own characters: a request cannot place signatures
+  elsewhere or read another user's location. A token SSO no longer accepts
+  is named as such ("add the character again") instead of a generic ESI
+  error, since trying again would never help.
+- The tracked position is shown prominently in the tracking bar and the
+  result header, kept current by every poll with its age ("read 3 s
+  ago"), so a member sees whether the page still follows the character.
+  Problems (no token, a dead token, ESI down, the server unreachable)
+  appear as a message box below the bar that clears itself once the
+  location can be read again; the last position stays visible meanwhile.
+  A character that cannot be tracked keeps its message on the page
+  instead of switching tracking off without a word.
+- A **System** column on the paste page, the Signatures tab (with a filter)
+  and in the Django admin.
+
+### Changed
+
+- A signature is now one entry per ID and solar system instead of per ID
+  (migration 0003): the same ID in two systems is two sites. Entries pasted
+  without tracking keep no system and still resolve by the ID alone, as
+  before; a tracked paste gives them their system.
+- `django-esi>=10` is a dependency now: the tracking imports its OpenAPI
+  client and Token model.
+
+### Fixed
+
+- `.gitignore` listed `*.pot` twice.
+
 ## [0.0.2] - 2026-11-04
 
 ### Added

@@ -8,6 +8,52 @@
             {% blocktranslate count days=max_age_days %}Signatures are shared with everybody who has access and count for {{ days }} day after their last check.{% plural %}Signatures are shared with everybody who has access and count for {{ days }} days after their last check.{% endblocktranslate %}
         </p>
 
+        {# location tracking, off by default; tracking.js keeps the choice per browser tab and puts it into the URL as ?character= #}
+        <div class="card mb-3">
+            <div class="card-body py-2">
+            <div class="d-flex flex-wrap align-items-center gap-3"
+                 data-eos-sig-checker-tracking
+                 data-eos-sig-checker-age-text="{% translate 'read {seconds} s ago' %}"
+                 data-eos-sig-checker-unreachable-text="{% translate 'The server could not be reached. The position shown may be outdated.' %}"
+                 data-eos-sig-checker-location-url="{% url 'eos_sig_checker:location' %}"
+                 data-eos-sig-checker-character="{{ tracked_character_id|default_if_none:'' }}"
+                 data-eos-sig-checker-system="{{ location.system_id|default_if_none:'' }}"
+                 data-eos-sig-checker-interval="{{ location_interval_ms }}"
+                 data-eos-sig-checker-refresh="{{ refresh_interval_ms }}">
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch" id="eos-sig-checker-tracking-switch"{% if tracked_character_id %} checked{% endif %}{% if not characters %} disabled{% endif %}>
+                    <label class="form-check-label" for="eos-sig-checker-tracking-switch">{% translate "Track location" %}</label>
+                </div>
+                {% if characters %}
+                    <select class="form-select form-select-sm w-auto" id="eos-sig-checker-tracking-character" aria-label="{% translate 'Tracked character' %}">
+                        {% for character in characters %}
+                            <option value="{{ character.character_id }}"{% if character.character_id == tracked_character_id %} selected{% endif %}>{{ character.character_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="eos-sig-checker-tracking-refresh"{% if not tracked_character_id %} disabled{% endif %} title="{% translate 'Read the location now' %}">
+                        <i class="fas fa-rotate"></i> {% translate "Refresh" %}
+                    </button>
+                    {# the position as last read; tracking.js keeps it current and counts its age #}
+                    {% if tracked_character_id %}
+                        <span id="eos-sig-checker-tracking-status">
+                            <i class="fas fa-location-dot text-primary"></i> {% translate "Position" context "eos-sig-checker" %}:
+                            <strong class="fs-5" id="eos-sig-checker-tracking-system">{% if location %}{{ location.system_name }}{% else %}{% translate "unknown" %}{% endif %}</strong>
+                            <span class="small text-body-secondary" id="eos-sig-checker-tracking-age"></span>
+                        </span>
+                    {% endif %}
+                {% else %}
+                    <span class="small text-body-secondary">
+                        {% blocktranslate %}None of your characters has a token with the scope {{ scope }}.{% endblocktranslate %}
+                    </span>
+                {% endif %}
+            </div>
+            {# problems of the tracking: hidden while the last read worked #}
+            <div class="alert alert-danger small py-2 mt-2 mb-0{% if not tracking_error %} d-none{% endif %}" id="eos-sig-checker-tracking-error" role="alert">
+                <i class="fas fa-triangle-exclamation"></i> <span>{{ tracking_error }}</span>
+            </div>
+            </div>
+        </div>
+
         {# input and output side by side, the same size; one above the other on a narrow screen #}
         <div class="row row-cols-1 row-cols-lg-2 g-3">
             <div class="col">
@@ -35,7 +81,10 @@
             <div class="col">
                 <div class="card h-100">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <div class="card-title mb-0">{% translate "Result" %}</div>
+                        <div class="card-title mb-0">
+                            {% translate "Result" %}
+                            {% if location %}<span class="text-body-secondary">&middot; <i class="fas fa-location-dot"></i> {{ location.system_name }}</span>{% endif %}
+                        </div>
                         {% if copy_text %}
                             <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap"
                                     data-eos-sig-checker-copy="{{ copy_text }}" data-eos-sig-checker-copied="{% translate 'Copied' %}"
@@ -50,6 +99,7 @@
                                 <table class="table table-sm table-hover small mb-0">
                                     <thead class="sticky-top">
                                         <tr>
+                                            <th>{% translate "System" %}</th>
                                             {# the probe scanner's own words: its "Group" is Combat Site, Wormhole ... #}
                                             <th>{% translate "ID" context "eos-sig-checker" %}</th>
                                             <th>{% translate "Kind" context "eos-sig-checker" %}</th>
@@ -64,13 +114,14 @@
                                         {% for row in output %}
                                             {% if row.error %}
                                                 <tr class="table-danger">
-                                                    <td colspan="7">
+                                                    <td colspan="8">
                                                         <div class="font-monospace text-break">{{ row.text }}</div>
                                                         <div><i class="fas fa-triangle-exclamation"></i> {{ row.error }}</div>
                                                     </td>
                                                 </tr>
                                             {% else %}
                                                 <tr>
+                                                    <td>{{ row.system_name }}</td>
                                                     <td class="font-monospace text-nowrap">{{ row.line.signature_id }}</td>
                                                     {# the text columns may wrap: half a screen cannot hold seven columns in one line #}
                                                     <td>{{ row.line.group }}</td>
@@ -85,12 +136,20 @@
                                                         {% else %}
                                                             <span class="badge text-bg-secondary">{% translate "new" %}</span>
                                                         {% endif %}
+                                                        {# known in the tracked system, but left out of this paste #}
+                                                        {% if pasted and not row.pasted %}
+                                                            <div><span class="badge text-bg-warning">{% translate "not in this paste" %}</span></div>
+                                                        {% endif %}
                                                     </td>
                                                 </tr>
                                             {% endif %}
                                         {% endfor %}
                                     </tbody>
                                 </table>
+                            {% elif location %}
+                                <p class="text-body-secondary">
+                                    {% blocktranslate with system=location.system_name %}Nothing known in {{ system }} yet. Paste the probe scanner on the left.{% endblocktranslate %}
+                                </p>
                             {% else %}
                                 <p class="text-body-secondary">
                                     {% translate "Paste the probe scanner on the left and press Check: every line comes back here, with group and name filled in where somebody has scanned it already." %}
@@ -121,4 +180,5 @@
 {% block extra_javascript %}
     {% sri_static "eos_sig_checker/js/copy.js" %}
     {% sri_static "eos_sig_checker/js/autocheck.js" %}
+    {% sri_static "eos_sig_checker/js/tracking.js" %}
 {% endblock %}

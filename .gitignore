@@ -224,9 +224,8 @@ __marimo__/
 *.sqlite3
 *.sqlite3-journal
 
-# Translations: the compiled .mo files are shipped with the package; only
-# makemessages' template is left out.
-*.pot
+# Translations: the compiled .mo files are shipped with the package;
+# makemessages' *.pot template is already ignored in the block above.
 
 # Claude Code: per-machine settings stay local, CLAUDE.md is tracked
 .claude/settings.local.json

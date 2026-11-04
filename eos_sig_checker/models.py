@@ -12,6 +12,9 @@ DEFAULT_MAX_AGE_DAYS = 7
 # resolve a new site with the name of an old one
 MAX_AGE_DAYS_LIMIT = 30
 
+# the solar system of a signature pasted without a tracked character
+NO_SYSTEM = 0
+
 
 class General(models.Model):
     """Meta model for app permissions"""
@@ -49,13 +52,20 @@ class SigCheckerConfiguration(SingletonModel):
 class Signature(models.Model):
     """The last known state of one signature, shared by everybody.
 
-    One row per signature ID: a paste that shows the same ID with another
-    group, site type or name is a new site under a reused ID and replaces the
-    row. The list carries no solar system - IDs rarely repeat within the few
-    days a row lives (SigCheckerConfiguration.max_age_days).
+    One row per signature ID and solar system: a paste that shows the same ID
+    with another group, site type or name is a new site under a reused ID and
+    replaces the row. The system is only known when the paster tracks a
+    character (tracking.py); without it the row has NO_SYSTEM and the ID
+    alone counts, since IDs rarely repeat within the few days a row lives
+    (SigCheckerConfiguration.max_age_days).
     """
 
-    signature_id = models.CharField(max_length=7, unique=True)
+    signature_id = models.CharField(max_length=7)
+    # NO_SYSTEM rather than NULL: MySQL lets any number of NULLs past a unique
+    # constraint, and partial constraints do not exist there
+    solar_system_id = models.PositiveIntegerField(default=NO_SYSTEM, db_index=True)
+    # stored with the row, so no list needs ESI to show it
+    solar_system_name = models.CharField(max_length=100, blank=True, verbose_name=_("System"))
     group = models.CharField(max_length=20)
     site_type = models.CharField(max_length=40, blank=True)
     name = models.CharField(max_length=100, blank=True)
@@ -72,6 +82,9 @@ class Signature(models.Model):
         default_permissions = ()
         verbose_name = _("Signature")
         verbose_name_plural = _("Signatures")
+        constraints = [
+            models.UniqueConstraint(fields=["signature_id", "solar_system_id"], name="eos_sig_checker_signature_per_system"),
+        ]
 
     def __str__(self):
         return self.signature_id

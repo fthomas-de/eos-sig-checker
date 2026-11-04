@@ -152,6 +152,47 @@ TRANSLATIONS = {
     "First seen": ("Zuerst gesehen", "Впервые замечена", "首次发现"),
     "Checked by": ("Geprüft von", "Проверил", "检查者"),
     "expired": ("abgelaufen", "истекла", "已过期"),
+    # location tracking
+    "System": ("System", "Система", "星系"),
+    "Track location": ("Position verfolgen", "Отслеживать местоположение", "追踪位置"),
+    "Tracked character": ("Verfolgter Charakter", "Отслеживаемый персонаж", "追踪的角色"),
+    "Read the location now": ("Position jetzt lesen", "Прочитать местоположение сейчас", "立即读取位置"),
+    "Refresh": ("Aktualisieren", "Обновить", "刷新"),
+    "Position": ("Position", "Местоположение", "位置"),
+    "unknown": ("unbekannt", "неизвестно", "未知"),
+    "read {seconds} s ago": ("vor {seconds} s gelesen", "прочитано {seconds} с назад", "{seconds} 秒前读取"),
+    "The server could not be reached. The position shown may be outdated.": (
+        "Der Server ist nicht erreichbar. Die angezeigte Position ist womöglich veraltet.",
+        "Сервер недоступен. Показанное местоположение может быть устаревшим.",
+        "无法连接服务器。显示的位置可能已过时。",
+    ),
+    "None of your characters has a token with the scope %(scope)s.": (
+        "Keiner deiner Charaktere hat einen Token mit dem Scope %(scope)s.",
+        "Ни у одного из ваших персонажей нет токена с областью %(scope)s.",
+        "你的角色都没有带有权限范围 %(scope)s 的令牌。",
+    ),
+    "not in this paste": ("nicht in diesem Paste", "нет в этой вставке", "不在本次粘贴中"),
+    "Nothing known in %(system)s yet. Paste the probe scanner on the left.": (
+        "In %(system)s ist noch nichts bekannt. Füge links den Probe Scanner ein.",
+        "В %(system)s пока ничего не известно. Вставьте Probe Scanner слева.",
+        "%(system)s 中尚无已知信号。请在左侧粘贴 Probe Scanner 内容。",
+    ),
+    "This character cannot be tracked: it is not yours or has no token with the location scope.": (
+        "Dieser Charakter kann nicht verfolgt werden: Er gehört nicht dir oder hat keinen Token mit dem Positions-Scope.",
+        "Этого персонажа нельзя отслеживать: он не ваш или у него нет токена с областью местоположения.",
+        "无法追踪此角色：它不属于你，或没有带位置权限范围的令牌。",
+    ),
+    "The token of this character is no longer valid. Add the character again with the location scope.": (
+        "Der Token dieses Charakters ist nicht mehr gültig. Füge den Charakter erneut mit dem Positions-Scope hinzu.",
+        "Токен этого персонажа больше недействителен. Добавьте персонажа заново с областью местоположения.",
+        "此角色的令牌已失效。请使用位置权限范围重新添加该角色。",
+    ),
+    "The location could not be read from ESI. Try again in a moment.": (
+        "Die Position konnte nicht von ESI gelesen werden. Versuche es gleich noch einmal.",
+        "Не удалось прочитать местоположение из ESI. Повторите попытку чуть позже.",
+        "无法从 ESI 读取位置。请稍后再试。",
+    ),
+    "No character given.": ("Kein Charakter angegeben.", "Персонаж не указан.", "未指定角色。"),
 }
 
 PLURALS = {

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 18:37+0000\n"
-"PO-Revision-Date: 2026-11-04 18:37+0000\n"
+"POT-Creation-Date: 2026-11-04 19:48+0000\n"
+"PO-Revision-Date: 2026-11-04 19:48+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: ru\n"
 "Language: ru\n"
@@ -41,19 +41,19 @@ msgstr[0] "Не более %(max)d строки за одну вставку."
 msgstr[1] "Не более %(max)d строк за одну вставку."
 msgstr[2] "Не более %(max)d строк за одну вставку."
 
-#: models.py:23
+#: models.py:26
 msgid "Can paste and resolve signatures"
 msgstr "Может вставлять и распознавать сигнатуры"
 
-#: models.py:24
+#: models.py:27
 msgid "Can change the settings and delete all signatures"
 msgstr "Может менять настройки и удалять все сигнатуры"
 
-#: models.py:34
+#: models.py:37
 msgid "Keep signatures (days)"
 msgstr "Хранить сигнатуры (дней)"
 
-#: models.py:36
+#: models.py:39
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
@@ -61,16 +61,22 @@ msgstr ""
 "Сколько дней сигнатура действует после последней проверки. Затем она "
 "игнорируется и удаляется ежедневной очисткой."
 
-#: models.py:43
+#: models.py:46
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "Конфигурация"
 
-#: models.py:73
+#: models.py:68 templates/eos_sig_checker/index.html:102
+#: templates/eos_sig_checker/signatures.html:14
+#: templates/eos_sig_checker/signatures.html:34
+msgid "System"
+msgstr "Система"
+
+#: models.py:83
 msgid "Signature"
 msgstr "Сигнатура"
 
-#: models.py:74 templates/eos_sig_checker/base.html:15
+#: models.py:84 templates/eos_sig_checker/base.html:15
 msgid "Signatures"
 msgstr "Сигнатуры"
 
@@ -130,77 +136,125 @@ msgstr[2] ""
 "Сигнатуры видны всем, у кого есть доступ, и действуют %(days)s дней после "
 "последней проверки."
 
-#: templates/eos_sig_checker/index.html:19
+#: templates/eos_sig_checker/index.html:16
+#, python-brace-format
+msgid "read {seconds} s ago"
+msgstr "прочитано {seconds} с назад"
+
+#: templates/eos_sig_checker/index.html:17
+msgid "The server could not be reached. The position shown may be outdated."
+msgstr "Сервер недоступен. Показанное местоположение может быть устаревшим."
+
+#: templates/eos_sig_checker/index.html:25
+msgid "Track location"
+msgstr "Отслеживать местоположение"
+
+#: templates/eos_sig_checker/index.html:28
+msgid "Tracked character"
+msgstr "Отслеживаемый персонаж"
+
+#: templates/eos_sig_checker/index.html:33
+msgid "Read the location now"
+msgstr "Прочитать местоположение сейчас"
+
+#: templates/eos_sig_checker/index.html:34
+msgid "Refresh"
+msgstr "Обновить"
+
+#: templates/eos_sig_checker/index.html:39
+msgctxt "eos-sig-checker"
+msgid "Position"
+msgstr "Местоположение"
+
+#: templates/eos_sig_checker/index.html:40
+msgid "unknown"
+msgstr "неизвестно"
+
+#: templates/eos_sig_checker/index.html:46
+#, python-format
+msgid "None of your characters has a token with the scope %(scope)s."
+msgstr "Ни у одного из ваших персонажей нет токена с областью %(scope)s."
+
+#: templates/eos_sig_checker/index.html:65
 msgid "Pasting checks on its own"
 msgstr "Вставка проверяется автоматически"
 
-#: templates/eos_sig_checker/index.html:20
+#: templates/eos_sig_checker/index.html:66
 msgid "Check"
 msgstr "Проверить"
 
-#: templates/eos_sig_checker/index.html:38
+#: templates/eos_sig_checker/index.html:85
 msgid "Result"
 msgstr "Результат"
 
-#: templates/eos_sig_checker/index.html:41
+#: templates/eos_sig_checker/index.html:90
 msgid "Copied"
 msgstr "Скопировано"
 
-#: templates/eos_sig_checker/index.html:42
+#: templates/eos_sig_checker/index.html:91
 msgid "Copy the completed list in the probe scanner format"
 msgstr "Скопировать дополненный список в формате Probe Scanner"
 
-#: templates/eos_sig_checker/index.html:43
+#: templates/eos_sig_checker/index.html:92
 msgid "Copy"
 msgstr "Копировать"
 
-#: templates/eos_sig_checker/index.html:54
-#: templates/eos_sig_checker/signatures.html:14
-#: templates/eos_sig_checker/signatures.html:31
+#: templates/eos_sig_checker/index.html:104
+#: templates/eos_sig_checker/signatures.html:18
+#: templates/eos_sig_checker/signatures.html:36
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:55
-#: templates/eos_sig_checker/signatures.html:32
+#: templates/eos_sig_checker/index.html:105
+#: templates/eos_sig_checker/signatures.html:37
 msgctxt "eos-sig-checker"
 msgid "Kind"
 msgstr "Вид"
 
-#: templates/eos_sig_checker/index.html:56
-#: templates/eos_sig_checker/signatures.html:18
-#: templates/eos_sig_checker/signatures.html:33
+#: templates/eos_sig_checker/index.html:106
+#: templates/eos_sig_checker/signatures.html:22
+#: templates/eos_sig_checker/signatures.html:38
 msgctxt "eos-sig-checker"
 msgid "Group"
 msgstr "Группа"
 
-#: templates/eos_sig_checker/index.html:57
-#: templates/eos_sig_checker/signatures.html:22
-#: templates/eos_sig_checker/signatures.html:34
+#: templates/eos_sig_checker/index.html:107
+#: templates/eos_sig_checker/signatures.html:26
+#: templates/eos_sig_checker/signatures.html:39
 msgctxt "eos-sig-checker"
 msgid "Name"
 msgstr "Название"
 
-#: templates/eos_sig_checker/index.html:58
-#: templates/eos_sig_checker/signatures.html:35
+#: templates/eos_sig_checker/index.html:108
+#: templates/eos_sig_checker/signatures.html:40
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "Сигнал"
 
-#: templates/eos_sig_checker/index.html:59
+#: templates/eos_sig_checker/index.html:109
 msgid "Distance"
 msgstr "Расстояние"
 
-#: templates/eos_sig_checker/index.html:60
-#: templates/eos_sig_checker/signatures.html:37
+#: templates/eos_sig_checker/index.html:110
+#: templates/eos_sig_checker/signatures.html:42
 msgid "Last checked"
 msgstr "Последняя проверка"
 
-#: templates/eos_sig_checker/index.html:86
+#: templates/eos_sig_checker/index.html:137
 msgid "new"
 msgstr "новая"
 
-#: templates/eos_sig_checker/index.html:96
+#: templates/eos_sig_checker/index.html:141
+msgid "not in this paste"
+msgstr "нет в этой вставке"
+
+#: templates/eos_sig_checker/index.html:151
+#, python-format
+msgid "Nothing known in %(system)s yet. Paste the probe scanner on the left."
+msgstr "В %(system)s пока ничего не известно. Вставьте Probe Scanner слева."
+
+#: templates/eos_sig_checker/index.html:155
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
@@ -208,12 +262,12 @@ msgstr ""
 "Вставь Probe Scanner слева и нажми «Проверить»: каждая строка появится "
 "здесь, с группой и названием там, где кто-то уже её просканировал."
 
-#: templates/eos_sig_checker/index.html:102
+#: templates/eos_sig_checker/index.html:161
 #: templates/eos_sig_checker/partials/resolved-cell.html:4
 msgid "filled in from the shared list"
 msgstr "дополнено из общего списка"
 
-#: templates/eos_sig_checker/index.html:108
+#: templates/eos_sig_checker/index.html:167
 #, python-format
 msgid ""
 "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
@@ -283,27 +337,52 @@ msgctxt "eos-sig-checker"
 msgid "Delete"
 msgstr "Удалить"
 
-#: templates/eos_sig_checker/signatures.html:36
+#: templates/eos_sig_checker/signatures.html:41
 msgid "First seen"
 msgstr "Впервые замечена"
 
-#: templates/eos_sig_checker/signatures.html:38
+#: templates/eos_sig_checker/signatures.html:43
 msgid "Checked by"
 msgstr "Проверил"
 
-#: templates/eos_sig_checker/signatures.html:53
+#: templates/eos_sig_checker/signatures.html:59
 msgid "expired"
 msgstr "истекла"
 
-#: views.py:71
+#: tracking.py:70
+msgid ""
+"This character cannot be tracked: it is not yours or has no token with the "
+"location scope."
+msgstr ""
+"Этого персонажа нельзя отслеживать: он не ваш или у него нет токена с "
+"областью местоположения."
+
+#: tracking.py:87
+msgid ""
+"The token of this character is no longer valid. Add the character again with"
+" the location scope."
+msgstr ""
+"Токен этого персонажа больше недействителен. Добавьте персонажа заново с "
+"областью местоположения."
+
+#: tracking.py:93
+msgid "The location could not be read from ESI. Try again in a moment."
+msgstr ""
+"Не удалось прочитать местоположение из ESI. Повторите попытку чуть позже."
+
+#: views.py:99
 msgid "Too many checks: wait a second and press Check again."
 msgstr "Слишком много проверок: подожди секунду и снова нажми «Проверить»."
 
-#: views.py:111
+#: views.py:140
+msgid "No character given."
+msgstr "Персонаж не указан."
+
+#: views.py:166
 msgid "Settings saved."
 msgstr "Настройки сохранены."
 
-#: views.py:125
+#: views.py:180
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."

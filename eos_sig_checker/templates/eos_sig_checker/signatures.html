@@ -10,23 +10,28 @@
         <div class="card-body">
             {# one field per column; signatures.js hands each to its column of the table #}
             <div class="row g-2 mb-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label class="form-label small mb-1" for="eos-sig-checker-filter-system">{% translate "System" %}</label>
+                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-system" data-eos-sig-checker-column="0" autocomplete="off">
+                </div>
+                <div class="col-md-3">
                     <label class="form-label small mb-1" for="eos-sig-checker-filter-id">{% translate "ID" context "eos-sig-checker" %}</label>
-                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-id" data-eos-sig-checker-column="0" autocomplete="off">
+                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-id" data-eos-sig-checker-column="1" autocomplete="off">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small mb-1" for="eos-sig-checker-filter-group">{% translate "Group" context "eos-sig-checker" %}</label>
-                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-group" data-eos-sig-checker-column="2" autocomplete="off">
+                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-group" data-eos-sig-checker-column="3" autocomplete="off">
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label small mb-1" for="eos-sig-checker-filter-name">{% translate "Name" context "eos-sig-checker" %}</label>
-                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-name" data-eos-sig-checker-column="3" autocomplete="off">
+                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-name" data-eos-sig-checker-column="4" autocomplete="off">
                 </div>
             </div>
 
             <table class="table table-sm table-hover small w-100 eos-sig-checker-signatures" data-eos-sig-checker-datatables-language="{{ datatables_language }}">
                 <thead>
                     <tr>
+                        <th>{% translate "System" %}</th>
                         {# the probe scanner's own words: its "Group" is Combat Site, Wormhole ... #}
                         <th>{% translate "ID" context "eos-sig-checker" %}</th>
                         <th>{% translate "Kind" context "eos-sig-checker" %}</th>
@@ -42,6 +47,7 @@
                     {% for signature in signatures %}
                         {# past its age: ignored when resolving, waiting for the cleanup task #}
                         <tr{% if signature.last_checked < oldest %} class="opacity-50"{% endif %}>
+                            <td>{{ signature.solar_system_name }}</td>
                             <td class="font-monospace text-nowrap">{{ signature.signature_id }}</td>
                             <td>{{ signature.group }}</td>
                             <td>{{ signature.site_type }}</td>
