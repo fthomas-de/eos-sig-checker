@@ -9,7 +9,8 @@ from eos_sig_checker.models import SigCheckerConfiguration
 # The probe scanner's copy, as the English client puts it on the clipboard.
 SCANNED = "UDN-422\tCosmic Anomaly\tCombat Site\tSansha Den\t100,0%\t10,63 AU"
 UNSCANNED = "ACJ-672\tCosmic Signature\t\t\t0,0%\t10,61 AU"
-DATA_SITE = "ACJ-672\tCosmic Signature\tData Site\tUnsecured Frontier Server\t100,0%\t3,20 AU"
+WORMHOLE = "KJH-123\tCosmic Signature\tWormhole\tUnstable Wormhole\t100,0%\t4,10 AU"
+DATA_SITE ="ACJ-672\tCosmic Signature\tData Site\tUnsecured Frontier Server\t100,0%\t3,20 AU"
 
 
 # The dev instance points the default cache at its own Redis. The test

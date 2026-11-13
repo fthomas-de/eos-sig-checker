@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.7] - 2026-11-13
+
+### Added
+
+- Card **WH** on the paste page, left of the probe scanner box: every
+  wormhole checked in the last 3 hours, in any system, newest first, with
+  system, ID and time. The result only shows the pasted or tracked system;
+  the card tells where a fresh wormhole is without opening the Signatures
+  tab, which needs `manage_settings`. It shows the state of the page load
+  and follows every paste.
+
 ## [0.0.6] - 2026-11-13
 
 ### Added

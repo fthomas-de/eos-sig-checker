@@ -135,6 +135,9 @@ def index(request):
             row for row in output or [] if not isinstance(row, Invalid) and row.line.group != ANOMALY
         ),
         "max_age_days": max_age_days(),
+        # read after the merge, so this paste's wormholes are in it
+        "wormholes": sync.recent_wormholes(),
+        "wormhole_hours": sync.WORMHOLE_HOURS,
         "characters": tracking.trackable_characters(request.user),
         # locate() returns or raises, so a named character always has a location or an error
         "tracked_character_id": character_id,

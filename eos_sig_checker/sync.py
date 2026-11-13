@@ -11,6 +11,11 @@ from .app_settings import max_age_days
 from .models import NO_SYSTEM, Signature
 from .parser import Invalid, Line, Skipped
 
+# the probe scanner's group of a wormhole, and how long a checked one stays
+# in the WH list of the paste page
+WORMHOLE = "Wormhole"
+WORMHOLE_HOURS = 3
+
 
 @dataclass
 class Row:
@@ -198,6 +203,14 @@ def system_rows(system, skip_ids=(), now=None) -> list[Row]:
         )
         for signature in signatures
     ]
+
+
+def recent_wormholes(now=None):
+    """The wormholes checked within WORMHOLE_HOURS, in any system, newest first."""
+    now = now or timezone.now()
+    return Signature.objects.filter(
+        site_type=WORMHOLE, last_checked__gte=now - timedelta(hours=WORMHOLE_HOURS)
+    ).order_by("-last_checked")
 
 
 def delete_expired(now=None) -> int:

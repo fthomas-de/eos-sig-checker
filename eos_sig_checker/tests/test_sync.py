@@ -11,7 +11,7 @@ from eos_sig_checker.sync import Row, delete_expired, merge, statistics
 from eos_sig_checker.tasks import delete_expired_signatures
 from eos_sig_checker.tracking import Location
 
-from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user, set_max_age_days
+from .base import DATA_SITE, SCANNED, UNSCANNED, WORMHOLE, SigTestCase, make_user, set_max_age_days
 
 
 class SyncTestCase(SigTestCase):
@@ -149,6 +149,20 @@ class TestStatistics(SyncTestCase):
         counts = statistics(now)
 
         self.assertEqual((counts["expired"], counts["overdue"]), (1, 0))
+
+
+class TestRecentWormholes(SyncTestCase):
+    def test_should_list_only_wormholes_checked_within_the_hours(self):
+        now = timezone.now()
+        old = WORMHOLE.replace("KJH-123", "OLD-001")
+        self.paste(old, now=now - timedelta(hours=sync.WORMHOLE_HOURS, minutes=1))
+        self.paste(WORMHOLE, now=now - timedelta(hours=sync.WORMHOLE_HOURS - 1))
+        self.paste(WORMHOLE.replace("KJH-123", "NEW-002"), now=now - timedelta(minutes=5))
+        self.paste(DATA_SITE, now=now)
+
+        found = sync.recent_wormholes(now)
+
+        self.assertEqual([wormhole.signature_id for wormhole in found], ["NEW-002", "KJH-123"])
 
 
 class TestExpiry(SyncTestCase):

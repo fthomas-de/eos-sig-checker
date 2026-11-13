@@ -284,6 +284,18 @@ PLURALS = {
         ],
         ["信号与所有有权限的人共享，在最后一次检查后 %(days)s 天内有效。"],
     ),
+    "No wormhole checked in the last %(hours)s hour.": (
+        [
+            "Kein Wormhole in der letzten %(hours)s Stunde geprüft.",
+            "Kein Wormhole in den letzten %(hours)s Stunden geprüft.",
+        ],
+        [
+            "За последний %(hours)s час не проверено ни одной Wormhole.",
+            "За последние %(hours)s часа не проверено ни одной Wormhole.",
+            "За последние %(hours)s часов не проверено ни одной Wormhole.",
+        ],
+        ["最近 %(hours)s 小时内没有检查过 Wormhole。"],
+    ),
 }
 
 

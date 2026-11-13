@@ -4,7 +4,7 @@ from django.urls import reverse
 from eos_sig_checker.models import SigCheckerConfiguration, Signature
 from eos_sig_checker.parser import MAX_CHARS, MAX_LINES
 
-from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
+from .base import DATA_SITE, SCANNED, UNSCANNED, WORMHOLE, SigTestCase, make_user
 
 URL = reverse("eos_sig_checker:index")
 
@@ -30,6 +30,15 @@ class TestIndex(SigTestCase):
         self.assertIsNone(response.context["output"])
         # the anomaly switch can be set before the first paste
         self.assertContains(response, 'id="eos-sig-checker-hide-anomalies"')
+
+    def test_should_list_the_wormhole_of_this_paste(self):
+        response = self.client.get(URL)
+        self.assertContains(response, "No wormhole checked in the last 3 hours.")
+
+        response = self.client.post(URL, {"text": f"{WORMHOLE}\n{SCANNED}"})
+
+        self.assertEqual([wormhole.signature_id for wormhole in response.context["wormholes"]], ["KJH-123"])
+        self.assertNotContains(response, "No wormhole checked")
 
     def test_should_return_every_line_completed_from_the_list(self):
         self.client.post(URL, {"text": DATA_SITE})

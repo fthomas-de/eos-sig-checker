@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 13:01+0000\n"
-"PO-Revision-Date: 2026-11-13 13:01+0000\n"
+"POT-Creation-Date: 2026-11-13 17:47+0000\n"
+"PO-Revision-Date: 2026-11-13 17:47+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: zh_Hans\n"
 "Language: zh_Hans\n"
@@ -81,7 +81,8 @@ msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "配置"
 
-#: models.py:94 templates/eos_sig_checker/index.html:111
+#: models.py:94 templates/eos_sig_checker/index.html:71
+#: templates/eos_sig_checker/index.html:148
 #: templates/eos_sig_checker/signatures.html:14
 #: templates/eos_sig_checker/signatures.html:34
 msgid "System"
@@ -209,97 +210,105 @@ msgstr "未知"
 msgid "None of your characters has a token with the scope %(scope)s."
 msgstr "你的角色都没有带有权限范围 %(scope)s 的令牌。"
 
-#: templates/eos_sig_checker/index.html:65
-msgid "Pasting checks on its own"
-msgstr "粘贴后会自动检查"
-
-#: templates/eos_sig_checker/index.html:66
-msgid "Check"
-msgstr "检查"
-
-#: templates/eos_sig_checker/index.html:85
-msgid "Result"
-msgstr "结果"
-
-#: templates/eos_sig_checker/index.html:93
-msgid "Hide Cosmic Anomalies"
-msgstr "隐藏 Cosmic Anomalies"
-
-#: templates/eos_sig_checker/index.html:98
-msgid "Copied"
-msgstr "已复制"
-
-#: templates/eos_sig_checker/index.html:99
-msgid "Copy the completed list in the probe scanner format"
-msgstr "以 Probe Scanner 格式复制补全后的列表"
-
-#: templates/eos_sig_checker/index.html:100
-msgid "Copy"
-msgstr "复制"
-
-#: templates/eos_sig_checker/index.html:113
+#: templates/eos_sig_checker/index.html:72
+#: templates/eos_sig_checker/index.html:150
 #: templates/eos_sig_checker/signatures.html:18
 #: templates/eos_sig_checker/signatures.html:36
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:114
+#: templates/eos_sig_checker/index.html:73
+#: templates/eos_sig_checker/index.html:155
+#: templates/eos_sig_checker/signatures.html:42
+msgid "Last checked"
+msgstr "上次检查"
+
+#: templates/eos_sig_checker/index.html:88
+#, python-format
+msgid "No wormhole checked in the last %(hours)s hour."
+msgid_plural "No wormhole checked in the last %(hours)s hours."
+msgstr[0] "最近 %(hours)s 小时内没有检查过 Wormhole。"
+
+#: templates/eos_sig_checker/index.html:102
+msgid "Pasting checks on its own"
+msgstr "粘贴后会自动检查"
+
+#: templates/eos_sig_checker/index.html:103
+msgid "Check"
+msgstr "检查"
+
+#: templates/eos_sig_checker/index.html:122
+msgid "Result"
+msgstr "结果"
+
+#: templates/eos_sig_checker/index.html:130
+msgid "Hide Cosmic Anomalies"
+msgstr "隐藏 Cosmic Anomalies"
+
+#: templates/eos_sig_checker/index.html:135
+msgid "Copied"
+msgstr "已复制"
+
+#: templates/eos_sig_checker/index.html:136
+msgid "Copy the completed list in the probe scanner format"
+msgstr "以 Probe Scanner 格式复制补全后的列表"
+
+#: templates/eos_sig_checker/index.html:137
+msgid "Copy"
+msgstr "复制"
+
+#: templates/eos_sig_checker/index.html:151
 #: templates/eos_sig_checker/signatures.html:37
 msgctxt "eos-sig-checker"
 msgid "Kind"
 msgstr "种类"
 
-#: templates/eos_sig_checker/index.html:115
+#: templates/eos_sig_checker/index.html:152
 #: templates/eos_sig_checker/signatures.html:22
 #: templates/eos_sig_checker/signatures.html:38
 msgctxt "eos-sig-checker"
 msgid "Group"
 msgstr "分组"
 
-#: templates/eos_sig_checker/index.html:116
+#: templates/eos_sig_checker/index.html:153
 #: templates/eos_sig_checker/signatures.html:26
 #: templates/eos_sig_checker/signatures.html:39
 msgctxt "eos-sig-checker"
 msgid "Name"
 msgstr "名称"
 
-#: templates/eos_sig_checker/index.html:117
+#: templates/eos_sig_checker/index.html:154
 #: templates/eos_sig_checker/signatures.html:40
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "信号强度"
 
-#: templates/eos_sig_checker/index.html:118
-#: templates/eos_sig_checker/signatures.html:42
-msgid "Last checked"
-msgstr "上次检查"
-
-#: templates/eos_sig_checker/index.html:144
+#: templates/eos_sig_checker/index.html:181
 msgid "new"
 msgstr "新"
 
-#: templates/eos_sig_checker/index.html:148
+#: templates/eos_sig_checker/index.html:185
 msgid "not in this paste"
 msgstr "不在本次粘贴中"
 
-#: templates/eos_sig_checker/index.html:158
+#: templates/eos_sig_checker/index.html:195
 #, python-format
 msgid "Nothing known in %(system)s yet. Paste the probe scanner on the left."
 msgstr "%(system)s 中尚无已知信号。请在左侧粘贴 Probe Scanner 内容。"
 
-#: templates/eos_sig_checker/index.html:162
+#: templates/eos_sig_checker/index.html:199
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
 msgstr "将 Probe Scanner 内容粘贴到左侧并点击检查：每一行都会显示在这里，已有人扫描过的会补全分组和名称。"
 
-#: templates/eos_sig_checker/index.html:168
+#: templates/eos_sig_checker/index.html:205
 #: templates/eos_sig_checker/partials/resolved-cell.html:4
 msgid "filled in from the shared list"
 msgstr "从共享列表补全"
 
-#: templates/eos_sig_checker/index.html:174
+#: templates/eos_sig_checker/index.html:211
 #, python-format
 msgid ""
 "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
@@ -380,15 +389,15 @@ msgstr "无法从 ESI 读取位置。请稍后再试。"
 msgid "Too many checks: wait a second and press Check again."
 msgstr "检查过于频繁：请等待一秒后再次点击检查。"
 
-#: views.py:156
+#: views.py:159
 msgid "No character given."
 msgstr "未指定角色。"
 
-#: views.py:182
+#: views.py:185
 msgid "Settings saved."
 msgstr "设置已保存。"
 
-#: views.py:196
+#: views.py:199
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."
