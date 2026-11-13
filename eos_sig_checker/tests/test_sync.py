@@ -1,12 +1,15 @@
 from datetime import timedelta
 from decimal import Decimal
+from unittest import mock
 
 from django.utils import timezone
 
+from eos_sig_checker import sync
 from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS, Signature
 from eos_sig_checker.parser import Invalid, parse
-from eos_sig_checker.sync import Row, delete_expired, merge
+from eos_sig_checker.sync import Row, delete_expired, merge, statistics
 from eos_sig_checker.tasks import delete_expired_signatures
+from eos_sig_checker.tracking import Location
 
 from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user, set_max_age_days
 
@@ -109,6 +112,35 @@ class TestMerge(SyncTestCase):
 
         self.assertEqual([type(row) for row in rows], [Row])
         self.assertFalse(Signature.objects.filter(signature_id="XYZ-123").exists())
+
+    def test_should_lock_in_id_order_and_answer_in_paste_order(self):
+        # SCANNED is UDN-422, UNSCANNED is ACJ-672: pasted in descending order
+        with mock.patch.object(sync, "_find", wraps=sync._find) as find:
+            output = self.paste(f"{SCANNED}\n{UNSCANNED}")
+
+        self.assertEqual([call.args[0].signature_id for call in find.call_args_list], ["ACJ-672", "UDN-422"])
+        self.assertEqual([row.line.signature_id for row in output], ["UDN-422", "ACJ-672"])
+
+
+class TestStatistics(SyncTestCase):
+    def test_should_count_the_list(self):
+        now = timezone.now()
+        # past its age by two days: expired, and the cleanup is overdue
+        self.paste(SCANNED, now=now - timedelta(days=DEFAULT_MAX_AGE_DAYS + 2))
+        merge(parse(DATA_SITE), self.bob, now=now - timedelta(hours=1), system=Location(30000142, "Jita"))
+
+        self.assertEqual(
+            statistics(now),
+            {"total": 2, "new": 1, "checked": 1, "systems": 1, "scanners": 1, "expired": 1, "overdue": 1},
+        )
+
+    def test_should_not_call_a_freshly_expired_row_overdue(self):
+        now = timezone.now()
+        self.paste(SCANNED, now=now - timedelta(days=DEFAULT_MAX_AGE_DAYS, hours=1))
+
+        counts = statistics(now)
+
+        self.assertEqual((counts["expired"], counts["overdue"]), (1, 0))
 
 
 class TestExpiry(SyncTestCase):

@@ -2,14 +2,20 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
 
-from .models import MAX_AGE_DAYS_LIMIT, SigCheckerConfiguration
+from .app_settings import max_lines
+from .models import (
+    LOCATION_RETRY_SECONDS_LIMIT,
+    LOCATION_RETRY_SECONDS_MIN,
+    MAX_AGE_DAYS_LIMIT,
+    SigCheckerConfiguration,
+)
 from .parser import MAX_CHARS, MAX_LINES
 
 
 class ConfigurationForm(forms.ModelForm):
     class Meta:
         model = SigCheckerConfiguration
-        fields = ["max_age_days"]
+        fields = ["max_age_days", "location_retry_seconds", "max_lines"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -17,6 +23,10 @@ class ConfigurationForm(forms.ModelForm):
         # say so before the round trip. Set after the field is built: it
         # writes its own min=0 (positive integer) over a Meta widget's.
         self.fields["max_age_days"].widget.attrs.update(min=1, max=MAX_AGE_DAYS_LIMIT)
+        self.fields["location_retry_seconds"].widget.attrs.update(
+            min=LOCATION_RETRY_SECONDS_MIN, max=LOCATION_RETRY_SECONDS_LIMIT
+        )
+        self.fields["max_lines"].widget.attrs.update(min=1, max=MAX_LINES)
 
 
 class PasteForm(forms.Form):
@@ -38,13 +48,14 @@ class PasteForm(forms.Form):
     def clean_text(self):
         text = self.cleaned_data["text"]
         lines = sum(1 for line in text.splitlines() if line.strip())
-        if lines > MAX_LINES:
+        limit = max_lines()
+        if lines > limit:
             raise forms.ValidationError(
                 ngettext(
                     "At most %(max)d line per paste.",
                     "At most %(max)d lines per paste.",
-                    MAX_LINES,
+                    limit,
                 )
-                % {"max": MAX_LINES}
+                % {"max": limit}
             )
         return text

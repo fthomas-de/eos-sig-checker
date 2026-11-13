@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 19:48+0000\n"
-"PO-Revision-Date: 2026-11-04 19:48+0000\n"
+"POT-Creation-Date: 2026-11-13 08:38+0000\n"
+"PO-Revision-Date: 2026-11-13 08:38+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: de\n"
 "Language: de\n"
@@ -22,11 +22,11 @@ msgstr ""
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:25
+#: forms.py:35
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:33
+#: forms.py:43
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
@@ -34,26 +34,26 @@ msgstr ""
 "Ergebnisse im Probe Scanner markieren, mit Strg+C kopieren und hier "
 "einfügen."
 
-#: forms.py:44
+#: forms.py:55
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
 msgstr[0] "Höchstens %(max)d Zeile pro Einfügen."
 msgstr[1] "Höchstens %(max)d Zeilen pro Einfügen."
 
-#: models.py:26
+#: models.py:37
 msgid "Can paste and resolve signatures"
 msgstr "Kann Signaturen einfügen und auflösen"
 
-#: models.py:27
+#: models.py:38
 msgid "Can change the settings and delete all signatures"
 msgstr "Kann die Einstellungen ändern und alle Signaturen löschen"
 
-#: models.py:37
+#: models.py:48
 msgid "Keep signatures (days)"
 msgstr "Signaturen behalten (Tage)"
 
-#: models.py:39
+#: models.py:50
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
@@ -61,63 +61,118 @@ msgstr ""
 "Tage, die eine Signatur nach ihrer letzten Prüfung gilt. Danach wird sie "
 "ignoriert und von der täglichen Bereinigung entfernt."
 
-#: models.py:46
+#: models.py:57
+msgid "Longest wait after failed location reads (seconds)"
+msgstr "Längste Wartezeit nach fehlgeschlagenen Positionsabfragen (Sekunden)"
+
+#: models.py:59
+msgid ""
+"A location that cannot be read is asked again after 5 seconds at first, then"
+" later with every further failure, in 5 steps up to this many seconds."
+msgstr ""
+"Eine Position, die sich nicht lesen lässt, wird zuerst nach 5 Sekunden "
+"erneut abgefragt, dann mit jedem weiteren Fehlschlag später, in 5 Stufen bis"
+" zu so vielen Sekunden."
+
+#: models.py:66
+msgid "Lines per paste"
+msgstr "Zeilen pro Paste"
+
+#: models.py:67
+msgid ""
+"The most lines one paste may hold. A full system has a few dozen signatures "
+"and anomalies."
+msgstr ""
+"Die meisten Zeilen, die ein Paste enthalten darf. Ein volles System hat "
+"einige Dutzend Signaturen und Anomalien."
+
+#: models.py:72
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "Konfiguration"
 
-#: models.py:68 templates/eos_sig_checker/index.html:102
+#: models.py:94 templates/eos_sig_checker/index.html:102
 #: templates/eos_sig_checker/signatures.html:14
 #: templates/eos_sig_checker/signatures.html:34
 msgid "System"
 msgstr "System"
 
-#: models.py:83
+#: models.py:109
 msgid "Signature"
 msgstr "Signatur"
 
-#: models.py:84 templates/eos_sig_checker/base.html:15
+#: models.py:110 templates/eos_sig_checker/base.html:15
+#: templates/eos_sig_checker/base.html:34
 msgid "Signatures"
 msgstr "Signaturen"
 
-#: parser.py:90
+#: parser.py:91
+msgid "The line holds control characters."
+msgstr "Die Zeile enthält Steuerzeichen."
+
+#: parser.py:96
 msgid "Expected 6 tab-separated columns, as the probe scanner copies them."
 msgstr ""
 "Erwartet werden 6 durch Tabs getrennte Spalten, wie der Probe Scanner sie "
 "kopiert."
 
-#: parser.py:94
+#: parser.py:100
 msgid "The signature ID must look like ABC-123."
 msgstr "Die Signatur-ID muss wie ABC-123 aussehen."
 
-#: parser.py:96
+#: parser.py:102
 msgid "The site type holds characters a site type never has."
 msgstr "Der Site-Typ enthält Zeichen, die ein Site-Typ nie hat."
 
-#: parser.py:98
+#: parser.py:104
 msgid "The name holds characters a site name never has."
 msgstr "Der Name enthält Zeichen, die ein Site-Name nie hat."
 
-#: parser.py:100
+#: parser.py:106
 msgid "A name without a site type does not come from the probe scanner."
 msgstr "Ein Name ohne Site-Typ kommt nicht aus dem Probe Scanner."
 
-#: parser.py:105
+#: parser.py:111
 msgid "The scan strength must be a percentage between 0 and 100."
 msgstr "Die Scanstärke muss ein Prozentwert zwischen 0 und 100 sein."
 
-#: parser.py:107
+#: parser.py:113
 msgid "The distance must be a number with AU, km or m."
 msgstr "Die Entfernung muss eine Zahl mit AU, km oder m sein."
 
-#: parser.py:123
-msgid "The line holds control characters."
-msgstr "Die Zeile enthält Steuerzeichen."
-
 #: templates/eos_sig_checker/base.html:18
+#: templates/eos_sig_checker/settings.html:11
 msgctxt "eos-sig-checker"
 msgid "Settings"
 msgstr "Einstellungen"
+
+#: templates/eos_sig_checker/base.html:35
+msgid "new in 24 h"
+msgstr "neu in 24 h"
+
+#: templates/eos_sig_checker/base.html:36
+msgid "checked in 24 h"
+msgstr "geprüft in 24 h"
+
+#: templates/eos_sig_checker/base.html:37
+msgid "systems"
+msgstr "Systeme"
+
+#: templates/eos_sig_checker/base.html:38
+msgid "scanners in 24 h"
+msgstr "Scanner in 24 h"
+
+#: templates/eos_sig_checker/base.html:39
+msgid ""
+"Entries past their age by more than a day are still stored: the cleanup task"
+" does not run."
+msgstr ""
+"Einträge, die seit mehr als einem Tag abgelaufen sind, sind noch "
+"gespeichert: die Bereinigungsaufgabe läuft nicht."
+
+#: templates/eos_sig_checker/base.html:39
+msgid "waiting for cleanup"
+msgstr "wartet auf Bereinigung"
 
 #: templates/eos_sig_checker/index.html:8
 #, python-format
@@ -283,22 +338,18 @@ msgstr[1] ""
 "%(counter)s Zeilen übersprungen: keine Cosmic Signature oder Cosmic Anomaly "
 "eines englischen Clients (Schiffe, Strukturen, andere Client-Sprachen)."
 
-#: templates/eos_sig_checker/settings.html:11
-msgid "Cleanup"
-msgstr "Bereinigung"
-
-#: templates/eos_sig_checker/settings.html:15
+#: templates/eos_sig_checker/settings.html:17
 msgctxt "eos-sig-checker"
 msgid "Save"
 msgstr "Speichern"
 
-#: templates/eos_sig_checker/settings.html:23
-#: templates/eos_sig_checker/settings.html:31
-#: templates/eos_sig_checker/settings.html:43
+#: templates/eos_sig_checker/settings.html:25
+#: templates/eos_sig_checker/settings.html:33
+#: templates/eos_sig_checker/settings.html:45
 msgid "Delete all signatures"
 msgstr "Alle Signaturen löschen"
 
-#: templates/eos_sig_checker/settings.html:27
+#: templates/eos_sig_checker/settings.html:29
 #, python-format
 msgid ""
 "The shared list holds %(counter)s signature. Deleting empties it for "
@@ -313,20 +364,20 @@ msgstr[1] ""
 "Die gemeinsame Liste enthält %(counter)s Signaturen. Löschen leert sie für "
 "alle auf einmal; das lässt sich nicht rückgängig machen."
 
-#: templates/eos_sig_checker/settings.html:44
-#: templates/eos_sig_checker/settings.html:50
+#: templates/eos_sig_checker/settings.html:46
+#: templates/eos_sig_checker/settings.html:52
 msgctxt "eos-sig-checker"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: templates/eos_sig_checker/settings.html:47
+#: templates/eos_sig_checker/settings.html:49
 #, python-format
 msgid "Delete %(counter)s signature from the shared list?"
 msgid_plural "Delete all %(counter)s signatures from the shared list?"
 msgstr[0] "%(counter)s Signatur aus der gemeinsamen Liste löschen?"
 msgstr[1] "Alle %(counter)s Signaturen aus der gemeinsamen Liste löschen?"
 
-#: templates/eos_sig_checker/settings.html:51
+#: templates/eos_sig_checker/settings.html:53
 msgctxt "eos-sig-checker"
 msgid "Delete"
 msgstr "Löschen"
@@ -343,7 +394,7 @@ msgstr "Geprüft von"
 msgid "expired"
 msgstr "abgelaufen"
 
-#: tracking.py:70
+#: tracking.py:97
 msgid ""
 "This character cannot be tracked: it is not yours or has no token with the "
 "location scope."
@@ -351,7 +402,7 @@ msgstr ""
 "Dieser Charakter kann nicht verfolgt werden: Er gehört nicht dir oder hat "
 "keinen Token mit dem Positions-Scope."
 
-#: tracking.py:87
+#: tracking.py:119
 msgid ""
 "The token of this character is no longer valid. Add the character again with"
 " the location scope."
@@ -359,25 +410,25 @@ msgstr ""
 "Der Token dieses Charakters ist nicht mehr gültig. Füge den Charakter erneut"
 " mit dem Positions-Scope hinzu."
 
-#: tracking.py:93
+#: tracking.py:126
 msgid "The location could not be read from ESI. Try again in a moment."
 msgstr ""
 "Die Position konnte nicht von ESI gelesen werden. Versuche es gleich noch "
 "einmal."
 
-#: views.py:99
+#: views.py:104
 msgid "Too many checks: wait a second and press Check again."
 msgstr "Zu viele Prüfungen: eine Sekunde warten und erneut Prüfen drücken."
 
-#: views.py:140
+#: views.py:146
 msgid "No character given."
 msgstr "Kein Charakter angegeben."
 
-#: views.py:166
+#: views.py:172
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-#: views.py:180
+#: views.py:186
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."

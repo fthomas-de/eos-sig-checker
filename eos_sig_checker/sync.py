@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
 from django.db import transaction
+from django.db.models import Count, Q
 from django.utils import timezone
 
 from .app_settings import max_age_days
@@ -84,6 +85,55 @@ def _find(line: Line, system, oldest) -> Signature | None:
     return rows.filter(solar_system_id=NO_SYSTEM).first()
 
 
+def _store(line: Line, character, now, oldest, system) -> Row:
+    """Store one valid line and return it completed from the list."""
+    signature = _find(line, system, oldest)
+    if signature is None:
+        # get_or_create, not create: a second paste of the same
+        # system at the same moment finds the row instead of failing
+        # on the unique constraint
+        signature, created = Signature.objects.get_or_create(
+            signature_id=line.signature_id,
+            solar_system_id=system.system_id if system else NO_SYSTEM,
+            defaults={
+                "solar_system_name": system.system_name if system else "",
+                "group": line.group,
+                "site_type": line.site_type,
+                "name": line.name,
+                "signal": line.signal,
+                "distance": line.distance,
+                "first_seen": now,
+                "last_checked": now,
+                "last_checked_by": character,
+            },
+        )
+        if created:
+            return Row(line, line.site_type, line.name, system_name=signature.solar_system_name)
+
+    known = signature.last_checked >= oldest
+    previous_check = signature.last_checked if known else None
+    previous_by = signature.last_checked_by.character_name if known and signature.last_checked_by else ""
+    # a row past its age counts as gone, even before the cleanup task removed it
+    if not known or _is_other_site(signature, line):
+        _replace(signature, line, now)
+        resolved = set()
+    else:
+        resolved = _merge(signature, line)
+    signature.distance = line.distance
+    signature.last_checked = now
+    signature.last_checked_by = character
+    signature.save()
+    return Row(
+        line,
+        signature.site_type,
+        signature.name,
+        resolved,
+        previous_check,
+        previous_by,
+        system_name=signature.solar_system_name,
+    )
+
+
 def merge(rows: list[Line | Invalid | Skipped], character, now=None, system=None) -> list[Row | Invalid]:
     """Store every valid line and return the paste completed from the list.
 
@@ -94,62 +144,17 @@ def merge(rows: list[Line | Invalid | Skipped], character, now=None, system=None
     """
     now = now or timezone.now()
     oldest = cutoff(now)
-    output = []
+    output = [line for line in rows if not isinstance(line, Skipped)]
+    # locked in ID order, not paste order: two people pasting the same system
+    # sorted differently would lock the rows crosswise and deadlock. The sort
+    # is stable, so an ID pasted twice keeps its order.
+    by_id = sorted(
+        (index for index, line in enumerate(output) if isinstance(line, Line)),
+        key=lambda index: output[index].signature_id,
+    )
     with transaction.atomic():
-        for line in rows:
-            if isinstance(line, Skipped):
-                continue
-            if isinstance(line, Invalid):
-                output.append(line)
-                continue
-            signature = _find(line, system, oldest)
-            if signature is None:
-                # get_or_create, not create: a second paste of the same
-                # system at the same moment finds the row instead of failing
-                # on the unique constraint
-                signature, created = Signature.objects.get_or_create(
-                    signature_id=line.signature_id,
-                    solar_system_id=system.system_id if system else NO_SYSTEM,
-                    defaults={
-                        "solar_system_name": system.system_name if system else "",
-                        "group": line.group,
-                        "site_type": line.site_type,
-                        "name": line.name,
-                        "signal": line.signal,
-                        "distance": line.distance,
-                        "first_seen": now,
-                        "last_checked": now,
-                        "last_checked_by": character,
-                    },
-                )
-                if created:
-                    output.append(Row(line, line.site_type, line.name, system_name=signature.solar_system_name))
-                    continue
-
-            known = signature.last_checked >= oldest
-            previous_check = signature.last_checked if known else None
-            previous_by = signature.last_checked_by.character_name if known and signature.last_checked_by else ""
-            # a row past its age counts as gone, even before the cleanup task removed it
-            if not known or _is_other_site(signature, line):
-                _replace(signature, line, now)
-                resolved = set()
-            else:
-                resolved = _merge(signature, line)
-            signature.distance = line.distance
-            signature.last_checked = now
-            signature.last_checked_by = character
-            signature.save()
-            output.append(
-                Row(
-                    line,
-                    signature.site_type,
-                    signature.name,
-                    resolved,
-                    previous_check,
-                    previous_by,
-                    system_name=signature.solar_system_name,
-                )
-            )
+        for index in by_id:
+            output[index] = _store(output[index], character, now, oldest, system)
     return output
 
 
@@ -195,3 +200,22 @@ def system_rows(system, skip_ids=(), now=None) -> list[Row]:
 def delete_expired(now=None) -> int:
     deleted, _ = Signature.objects.filter(last_checked__lt=cutoff(now)).delete()
     return deleted
+
+
+def statistics(now=None) -> dict:
+    """The counts at the foot of every page: how the list grows, whether it
+    is used and whether the cleanup runs."""
+    now = now or timezone.now()
+    oldest = cutoff(now)
+    day = now - timedelta(hours=24)
+    # shortcut: one scan of the table per page view, cache the result once the table passes about 100,000 rows
+    return Signature.objects.aggregate(
+        total=Count("pk"),
+        new=Count("pk", filter=Q(first_seen__gte=day)),
+        checked=Count("pk", filter=Q(last_checked__gte=day)),
+        systems=Count("solar_system_id", filter=Q(solar_system_id__gt=NO_SYSTEM), distinct=True),
+        scanners=Count("last_checked_by", filter=Q(last_checked__gte=day), distinct=True),
+        expired=Count("pk", filter=Q(last_checked__lt=oldest)),
+        # past its age by more than a day: the daily cleanup did not run
+        overdue=Count("pk", filter=Q(last_checked__lt=oldest - timedelta(days=1))),
+    )

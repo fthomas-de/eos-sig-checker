@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.5] - 2026-11-13
+
+From the audit in `docs/AUDIT.md` (SIG-01 to SIG-05). Migration 0004 adds two
+columns to the settings.
+
+### Added
+
+- A line of statistics at the foot of every page: all signatures, new and
+  checked in the last 24 hours, systems, scanners, and entries waiting for
+  the cleanup. The last one turns red when an entry is past its age by more
+  than a day - until now nothing on the page showed that the periodic
+  cleanup task was not running, or that the list was being flooded.
+- Setting **Lines per paste** (default 200, 1 to 500) and setting **Longest
+  wait after failed location reads** (default 60 seconds, 5 to 3600) on the
+  settings page; the card is titled Settings instead of Cleanup.
+
+### Changed
+
+- A paste may hold 200 lines instead of 500. A member could store 500
+  made-up rows a second, far more than a system ever shows; the limit is
+  now what a real paste needs and a manager can change it.
+
+### Fixed
+
+- A failed location read was not remembered: only a good read went into the
+  5 second cache, so a dead token, an ESI outage or a script on the location
+  URL sent every poll of every tab to SSO or ESI again and could spend the
+  ESI error budget of the whole Alliance Auth instance. A failure is now
+  cached like a position, and the wait grows with every failure in a row in
+  5 even steps from 5 seconds to the limit from the settings page; a good
+  read starts over.
+- Two members pasting the same signatures at the same moment in a different
+  order could deadlock in the database, and one of them got a server error:
+  the rows were locked in the order of the paste. They are now locked in
+  signature ID order, whatever the order of the paste; the result keeps the
+  paste's order.
+- The parser took the digits of every script for `\d`, so an ID, a signal
+  or a distance written in, say, Arabic-Indic digits passed as valid and was
+  stored in the shared list. The three patterns now carry `re.ASCII`: only
+  0-9 count.
+
 ## [0.0.4] - 2026-11-04
 
 ### Changed

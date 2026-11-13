@@ -142,7 +142,22 @@ TRANSLATIONS = {
         "Сколько дней сигнатура действует после последней проверки. Затем она игнорируется и удаляется ежедневной очисткой.",
         "信号在最后一次检查后有效的天数。之后它将被忽略，并由每日清理删除。",
     ),
-    "Cleanup": ("Bereinigung", "Очистка", "清理"),
+    "Longest wait after failed location reads (seconds)": (
+        "Längste Wartezeit nach fehlgeschlagenen Positionsabfragen (Sekunden)",
+        "Максимальное ожидание после неудачных запросов местоположения (секунд)",
+        "位置读取失败后的最长等待时间（秒）",
+    ),
+    "A location that cannot be read is asked again after 5 seconds at first, then later with every further failure, in 5 steps up to this many seconds.": (
+        "Eine Position, die sich nicht lesen lässt, wird zuerst nach 5 Sekunden erneut abgefragt, dann mit jedem weiteren Fehlschlag später, in 5 Stufen bis zu so vielen Sekunden.",
+        "Местоположение, которое не удалось прочитать, сначала запрашивается снова через 5 секунд, затем с каждой следующей неудачей позже, в 5 шагов до этого числа секунд.",
+        "无法读取的位置会先在 5 秒后重新查询，之后每多失败一次就推迟一些，分 5 步，最长为此秒数。",
+    ),
+    "Lines per paste": ("Zeilen pro Paste", "Строк на вставку", "每次粘贴的行数"),
+    "The most lines one paste may hold. A full system has a few dozen signatures and anomalies.": (
+        "Die meisten Zeilen, die ein Paste enthalten darf. Ein volles System hat einige Dutzend Signaturen und Anomalien.",
+        "Максимальное число строк в одной вставке. В полной системе несколько десятков сигнатур и аномалий.",
+        "一次粘贴最多可包含的行数。一个满的星系有几十个信号和异常。",
+    ),
     "Save": ("Speichern", "Сохранить", "保存"),
     "Settings saved.": ("Einstellungen gespeichert.", "Настройки сохранены.", "设置已保存。"),
     "Delete all signatures": ("Alle Signaturen löschen", "Удалить все сигнатуры", "删除所有信号"),
@@ -152,6 +167,17 @@ TRANSLATIONS = {
     "First seen": ("Zuerst gesehen", "Впервые замечена", "首次发现"),
     "Checked by": ("Geprüft von", "Проверил", "检查者"),
     "expired": ("abgelaufen", "истекла", "已过期"),
+    # statistics at the foot of every page
+    "new in 24 h": ("neu in 24 h", "новых за 24 ч", "24 小时内新增"),
+    "checked in 24 h": ("geprüft in 24 h", "проверено за 24 ч", "24 小时内检查"),
+    "systems": ("Systeme", "систем", "星系"),
+    "scanners in 24 h": ("Scanner in 24 h", "сканеров за 24 ч", "24 小时内扫描者"),
+    "waiting for cleanup": ("wartet auf Bereinigung", "ждут очистки", "等待清理"),
+    "Entries past their age by more than a day are still stored: the cleanup task does not run.": (
+        "Einträge, die seit mehr als einem Tag abgelaufen sind, sind noch gespeichert: die Bereinigungsaufgabe läuft nicht.",
+        "Записи, истёкшие более суток назад, всё ещё хранятся: задача очистки не выполняется.",
+        "过期超过一天的条目仍被保存：清理任务没有运行。",
+    ),
     # location tracking
     "System": ("System", "Система", "星系"),
     "Track location": ("Position verfolgen", "Отслеживать местоположение", "追踪位置"),

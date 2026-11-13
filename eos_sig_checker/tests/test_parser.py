@@ -54,6 +54,10 @@ class TestParse(SimpleTestCase):
             # str.strip() takes \x1f for whitespace: only the control check stops it
             "stripped control character": "ABC-123\tCosmic Signature\tData Site\tSansha Den\x1f\t100,0%\t1 AU",
             "overlong name": "ABC-123\tCosmic Signature\tData Site\t" + "A" * 101 + "\t100,0%\t1 AU",
+            # \d alone takes the digits of every script
+            "foreign digits in the ID": "ABC-١٢٣\tCosmic Signature\t\t\t0,0%\t1 AU",
+            "foreign digits in the signal": "ABC-123\tCosmic Signature\t\t\t٥٠,٠%\t1 AU",
+            "foreign digits in the distance": "ABC-123\tCosmic Signature\t\t\t0,0%\t١ AU",
         }
         for reason, text in bad.items():
             with self.subTest(reason):

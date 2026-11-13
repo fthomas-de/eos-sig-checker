@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-04 19:48+0000\n"
-"PO-Revision-Date: 2026-11-04 19:48+0000\n"
+"POT-Creation-Date: 2026-11-13 08:38+0000\n"
+"PO-Revision-Date: 2026-11-13 08:38+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: zh_Hans\n"
 "Language: zh_Hans\n"
@@ -22,95 +22,143 @@ msgstr ""
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:25
+#: forms.py:35
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:33
+#: forms.py:43
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
 msgstr "在 Probe Scanner 中选中结果，用 Ctrl+C 复制并粘贴到这里。"
 
-#: forms.py:44
+#: forms.py:55
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
 msgstr[0] "每次粘贴最多 %(max)d 行。"
 
-#: models.py:26
+#: models.py:37
 msgid "Can paste and resolve signatures"
 msgstr "可以粘贴并解析信号"
 
-#: models.py:27
+#: models.py:38
 msgid "Can change the settings and delete all signatures"
 msgstr "可以更改设置并删除所有信号"
 
-#: models.py:37
+#: models.py:48
 msgid "Keep signatures (days)"
 msgstr "信号保留（天）"
 
-#: models.py:39
+#: models.py:50
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
 msgstr "信号在最后一次检查后有效的天数。之后它将被忽略，并由每日清理删除。"
 
-#: models.py:46
+#: models.py:57
+msgid "Longest wait after failed location reads (seconds)"
+msgstr "位置读取失败后的最长等待时间（秒）"
+
+#: models.py:59
+msgid ""
+"A location that cannot be read is asked again after 5 seconds at first, then"
+" later with every further failure, in 5 steps up to this many seconds."
+msgstr "无法读取的位置会先在 5 秒后重新查询，之后每多失败一次就推迟一些，分 5 步，最长为此秒数。"
+
+#: models.py:66
+msgid "Lines per paste"
+msgstr "每次粘贴的行数"
+
+#: models.py:67
+msgid ""
+"The most lines one paste may hold. A full system has a few dozen signatures "
+"and anomalies."
+msgstr "一次粘贴最多可包含的行数。一个满的星系有几十个信号和异常。"
+
+#: models.py:72
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "配置"
 
-#: models.py:68 templates/eos_sig_checker/index.html:102
+#: models.py:94 templates/eos_sig_checker/index.html:102
 #: templates/eos_sig_checker/signatures.html:14
 #: templates/eos_sig_checker/signatures.html:34
 msgid "System"
 msgstr "星系"
 
-#: models.py:83
+#: models.py:109
 msgid "Signature"
 msgstr "信号"
 
-#: models.py:84 templates/eos_sig_checker/base.html:15
+#: models.py:110 templates/eos_sig_checker/base.html:15
+#: templates/eos_sig_checker/base.html:34
 msgid "Signatures"
 msgstr "信号"
 
-#: parser.py:90
-msgid "Expected 6 tab-separated columns, as the probe scanner copies them."
-msgstr "应为 6 个以制表符分隔的列，与 Probe Scanner 复制的格式相同。"
-
-#: parser.py:94
-msgid "The signature ID must look like ABC-123."
-msgstr "信号 ID 必须形如 ABC-123。"
-
-#: parser.py:96
-msgid "The site type holds characters a site type never has."
-msgstr "站点类型包含站点类型中不会出现的字符。"
-
-#: parser.py:98
-msgid "The name holds characters a site name never has."
-msgstr "名称包含站点名称中不会出现的字符。"
-
-#: parser.py:100
-msgid "A name without a site type does not come from the probe scanner."
-msgstr "没有站点类型的名称不可能来自 Probe Scanner。"
-
-#: parser.py:105
-msgid "The scan strength must be a percentage between 0 and 100."
-msgstr "扫描强度必须是 0 到 100 之间的百分比。"
-
-#: parser.py:107
-msgid "The distance must be a number with AU, km or m."
-msgstr "距离必须是带有 AU、km 或 m 的数字。"
-
-#: parser.py:123
+#: parser.py:91
 msgid "The line holds control characters."
 msgstr "该行包含控制字符。"
 
+#: parser.py:96
+msgid "Expected 6 tab-separated columns, as the probe scanner copies them."
+msgstr "应为 6 个以制表符分隔的列，与 Probe Scanner 复制的格式相同。"
+
+#: parser.py:100
+msgid "The signature ID must look like ABC-123."
+msgstr "信号 ID 必须形如 ABC-123。"
+
+#: parser.py:102
+msgid "The site type holds characters a site type never has."
+msgstr "站点类型包含站点类型中不会出现的字符。"
+
+#: parser.py:104
+msgid "The name holds characters a site name never has."
+msgstr "名称包含站点名称中不会出现的字符。"
+
+#: parser.py:106
+msgid "A name without a site type does not come from the probe scanner."
+msgstr "没有站点类型的名称不可能来自 Probe Scanner。"
+
+#: parser.py:111
+msgid "The scan strength must be a percentage between 0 and 100."
+msgstr "扫描强度必须是 0 到 100 之间的百分比。"
+
+#: parser.py:113
+msgid "The distance must be a number with AU, km or m."
+msgstr "距离必须是带有 AU、km 或 m 的数字。"
+
 #: templates/eos_sig_checker/base.html:18
+#: templates/eos_sig_checker/settings.html:11
 msgctxt "eos-sig-checker"
 msgid "Settings"
 msgstr "设置"
+
+#: templates/eos_sig_checker/base.html:35
+msgid "new in 24 h"
+msgstr "24 小时内新增"
+
+#: templates/eos_sig_checker/base.html:36
+msgid "checked in 24 h"
+msgstr "24 小时内检查"
+
+#: templates/eos_sig_checker/base.html:37
+msgid "systems"
+msgstr "星系"
+
+#: templates/eos_sig_checker/base.html:38
+msgid "scanners in 24 h"
+msgstr "24 小时内扫描者"
+
+#: templates/eos_sig_checker/base.html:39
+msgid ""
+"Entries past their age by more than a day are still stored: the cleanup task"
+" does not run."
+msgstr "过期超过一天的条目仍被保存：清理任务没有运行。"
+
+#: templates/eos_sig_checker/base.html:39
+msgid "waiting for cleanup"
+msgstr "等待清理"
 
 #: templates/eos_sig_checker/index.html:8
 #, python-format
@@ -262,22 +310,18 @@ msgid_plural ""
 msgstr[0] ""
 "已跳过 %(counter)s 行：不是英文客户端的 Cosmic Signature 或 Cosmic Anomaly（舰船、建筑、其他客户端语言）。"
 
-#: templates/eos_sig_checker/settings.html:11
-msgid "Cleanup"
-msgstr "清理"
-
-#: templates/eos_sig_checker/settings.html:15
+#: templates/eos_sig_checker/settings.html:17
 msgctxt "eos-sig-checker"
 msgid "Save"
 msgstr "保存"
 
-#: templates/eos_sig_checker/settings.html:23
-#: templates/eos_sig_checker/settings.html:31
-#: templates/eos_sig_checker/settings.html:43
+#: templates/eos_sig_checker/settings.html:25
+#: templates/eos_sig_checker/settings.html:33
+#: templates/eos_sig_checker/settings.html:45
 msgid "Delete all signatures"
 msgstr "删除所有信号"
 
-#: templates/eos_sig_checker/settings.html:27
+#: templates/eos_sig_checker/settings.html:29
 #, python-format
 msgid ""
 "The shared list holds %(counter)s signature. Deleting empties it for "
@@ -287,19 +331,19 @@ msgid_plural ""
 "everybody at once; it cannot be undone."
 msgstr[0] "共享列表中有 %(counter)s 个信号。删除会立即为所有人清空列表，且无法撤销。"
 
-#: templates/eos_sig_checker/settings.html:44
-#: templates/eos_sig_checker/settings.html:50
+#: templates/eos_sig_checker/settings.html:46
+#: templates/eos_sig_checker/settings.html:52
 msgctxt "eos-sig-checker"
 msgid "Cancel"
 msgstr "取消"
 
-#: templates/eos_sig_checker/settings.html:47
+#: templates/eos_sig_checker/settings.html:49
 #, python-format
 msgid "Delete %(counter)s signature from the shared list?"
 msgid_plural "Delete all %(counter)s signatures from the shared list?"
 msgstr[0] "从共享列表中删除全部 %(counter)s 个信号？"
 
-#: templates/eos_sig_checker/settings.html:51
+#: templates/eos_sig_checker/settings.html:53
 msgctxt "eos-sig-checker"
 msgid "Delete"
 msgstr "删除"
@@ -316,35 +360,35 @@ msgstr "检查者"
 msgid "expired"
 msgstr "已过期"
 
-#: tracking.py:70
+#: tracking.py:97
 msgid ""
 "This character cannot be tracked: it is not yours or has no token with the "
 "location scope."
 msgstr "无法追踪此角色：它不属于你，或没有带位置权限范围的令牌。"
 
-#: tracking.py:87
+#: tracking.py:119
 msgid ""
 "The token of this character is no longer valid. Add the character again with"
 " the location scope."
 msgstr "此角色的令牌已失效。请使用位置权限范围重新添加该角色。"
 
-#: tracking.py:93
+#: tracking.py:126
 msgid "The location could not be read from ESI. Try again in a moment."
 msgstr "无法从 ESI 读取位置。请稍后再试。"
 
-#: views.py:99
+#: views.py:104
 msgid "Too many checks: wait a second and press Check again."
 msgstr "检查过于频繁：请等待一秒后再次点击检查。"
 
-#: views.py:140
+#: views.py:146
 msgid "No character given."
 msgstr "未指定角色。"
 
-#: views.py:166
+#: views.py:172
 msgid "Settings saved."
 msgstr "设置已保存。"
 
-#: views.py:180
+#: views.py:186
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."

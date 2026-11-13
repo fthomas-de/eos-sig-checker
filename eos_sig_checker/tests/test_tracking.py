@@ -2,6 +2,7 @@ from datetime import timedelta
 from types import SimpleNamespace
 from unittest import mock
 
+from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 
@@ -11,7 +12,7 @@ from esi.errors import SSOOAuthError
 from esi.models import Scope, Token
 
 from eos_sig_checker import tracking
-from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS, NO_SYSTEM, Signature
+from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS, NO_SYSTEM, SigCheckerConfiguration, Signature
 from eos_sig_checker.parser import parse
 from eos_sig_checker.sync import merge, system_rows
 from eos_sig_checker.tracking import Location, LocationError, locate, trackable_characters
@@ -214,6 +215,61 @@ class TestLocate(SigTestCase):
 
         with self.assertRaisesMessage(LocationError, "no longer valid"):
             locate(self.user, self.main.character_id)
+
+    def fail_read(self, times=1):
+        """Failed reads in a row, each after the wait of the one before."""
+        for _attempt in range(times):
+            # the wait is over: the remembered failure has left the cache
+            cache.delete(f"eos_sig_checker:location:{self.main.character_id}")
+            with self.assertRaises(LocationError):
+                locate(self.user, self.main.character_id)
+
+    def test_should_not_ask_again_while_a_failure_is_remembered(self):
+        add_token(self.user, self.main)
+        self.esi.client.Location.GetCharactersCharacterIdLocation.return_value.result.side_effect = OSError("down")
+
+        for _attempt in range(2):
+            with self.assertRaisesMessage(LocationError, "Try again"):
+                locate(self.user, self.main.character_id)
+
+        self.assertEqual(self.esi.client.Location.GetCharactersCharacterIdLocation.call_count, 1)
+
+    def test_should_not_ask_sso_again_while_a_dead_token_is_remembered(self):
+        add_token(self.user, self.main)
+        self.esi.client.Location.GetCharactersCharacterIdLocation.return_value.result.side_effect = SSOOAuthError(
+            "invalid_grant", "Invalid refresh token. Token missing/expired."
+        )
+
+        for _attempt in range(2):
+            with self.assertRaisesMessage(LocationError, "no longer valid"):
+                locate(self.user, self.main.character_id)
+
+        self.assertEqual(self.esi.client.Location.GetCharactersCharacterIdLocation.call_count, 1)
+
+    def test_should_wait_longer_with_every_failure_up_to_the_limit(self):
+        # the default limit of 60 seconds, in 5 steps from the 5 seconds of a good read
+        self.assertEqual([tracking._retry_seconds(failures) for failures in range(1, 8)], [5, 19, 33, 46, 60, 60, 60])
+
+    def test_should_follow_the_limit_from_the_settings_page(self):
+        config = SigCheckerConfiguration.get_solo()
+        config.location_retry_seconds = 25
+        config.save()
+
+        self.assertEqual([tracking._retry_seconds(failures) for failures in range(1, 6)], [5, 10, 15, 20, 25])
+
+    def test_should_count_failures_in_a_row_and_start_over_after_a_good_read(self):
+        add_token(self.user, self.main)
+        result = self.esi.client.Location.GetCharactersCharacterIdLocation.return_value.result
+        failures_key = tracking.FAILURES_KEY.format(self.main.character_id)
+        result.side_effect = OSError("down")
+
+        self.fail_read(times=3)
+        self.assertEqual(cache.get(failures_key), 3)
+
+        result.side_effect = None
+        cache.delete(f"eos_sig_checker:location:{self.main.character_id}")
+        self.assertEqual(locate(self.user, self.main.character_id), JITA)
+        self.assertIsNone(cache.get(failures_key))
 
 
 class TestTrackingViews(SigTestCase):

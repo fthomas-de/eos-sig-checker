@@ -7,10 +7,21 @@ from django.utils.translation import pgettext_lazy
 
 from allianceauth.eveonline.models import EveCharacter
 
+from .parser import MAX_LINES
+
 DEFAULT_MAX_AGE_DAYS = 7
 # beyond a month reused signature IDs become likely, and the list would
 # resolve a new site with the name of an old one
 MAX_AGE_DAYS_LIMIT = 30
+
+DEFAULT_LOCATION_RETRY_SECONDS = 60
+# 5 is tracking.LOCATION_CACHE_SECONDS, the first step; beyond an hour a
+# repaired token would look broken for too long
+LOCATION_RETRY_SECONDS_MIN = 5
+LOCATION_RETRY_SECONDS_LIMIT = 3600
+
+# more than 200 lines in one paste is unlikely; parser.MAX_LINES is the ceiling
+DEFAULT_MAX_LINES = 200
 
 # the solar system of a signature pasted without a tracked character
 NO_SYSTEM = 0
@@ -39,6 +50,21 @@ class SigCheckerConfiguration(SingletonModel):
             "Days a signature counts after its last check. After that it is ignored "
             "and removed by the daily cleanup."
         ),
+    )
+    location_retry_seconds = models.PositiveSmallIntegerField(
+        default=DEFAULT_LOCATION_RETRY_SECONDS,
+        validators=[MinValueValidator(LOCATION_RETRY_SECONDS_MIN), MaxValueValidator(LOCATION_RETRY_SECONDS_LIMIT)],
+        verbose_name=_("Longest wait after failed location reads (seconds)"),
+        help_text=_(
+            "A location that cannot be read is asked again after 5 seconds at first, "
+            "then later with every further failure, in 5 steps up to this many seconds."
+        ),
+    )
+    max_lines = models.PositiveSmallIntegerField(
+        default=DEFAULT_MAX_LINES,
+        validators=[MinValueValidator(1), MaxValueValidator(MAX_LINES)],
+        verbose_name=_("Lines per paste"),
+        help_text=_("The most lines one paste may hold. A full system has a few dozen signatures and anomalies."),
     )
 
     class Meta:

@@ -28,5 +28,15 @@
         {% endwith %}
 
         {% block details %}{% endblock %}
+
+        {# the shared list at a glance on every page: growth, use, and whether the cleanup runs #}
+        <p class="text-center text-body-secondary small mt-3 mb-0">
+            {% translate "Signatures" %}: {{ statistics.total }}
+            &middot; {% translate "new in 24 h" %}: {{ statistics.new }}
+            &middot; {% translate "checked in 24 h" %}: {{ statistics.checked }}
+            &middot; {% translate "systems" %}: {{ statistics.systems }}
+            &middot; {% translate "scanners in 24 h" %}: {{ statistics.scanners }}
+            &middot; <span{% if statistics.overdue %} class="text-danger" title="{% translate 'Entries past their age by more than a day are still stored: the cleanup task does not run.' %}"{% endif %}>{% translate "waiting for cleanup" %}: {{ statistics.expired }}</span>
+        </p>
     </div>
 {% endblock %}

@@ -18,23 +18,26 @@ from decimal import Decimal
 
 from django.utils.translation import gettext_lazy as _
 
-# A whole paste: a full system holds a few dozen signatures and anomalies.
+# The ceiling of a whole paste; the limit in force is lower and comes from
+# the settings page (forms.PasteForm). A full system holds a few dozen
+# signatures and anomalies.
 MAX_LINES = 500
 MAX_CHARS = 50_000
 
 GROUPS = ("Cosmic Signature", "Cosmic Anomaly")
 
-SIGNATURE_ID = re.compile(r"[A-Z]{3}-\d{3}")
+# re.ASCII: without it \d takes the digits of every script, not just 0-9
+SIGNATURE_ID = re.compile(r"[A-Z]{3}-\d{3}", re.ASCII)
 # CCP adds site types now and then (Combat, Data, Relic, Gas, Ore Site,
 # Wormhole today): checked by shape, not against a list that would go stale
 SITE_TYPE = re.compile(r"[A-Za-z][A-Za-z ]{0,39}")
 # site names hold letters, digits and a little punctuation ("Guristas' Hidden
 # Den", "Unstable Wormhole", "Small Arkonor and Bistot Deposit")
 NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9 '\-.,:()/&]{0,99}")
-SIGNAL = re.compile(r"(\d{1,3})(?:[.,](\d))?%")
+SIGNAL = re.compile(r"(\d{1,3})(?:[.,](\d))?%", re.ASCII)
 # "10,61 AU", "1.234 km", "5 432 m" - thousands separators differ by locale,
 # EVE uses a non-breaking space for some
-DISTANCE = re.compile(r"\d[\d.,   ]{0,20} (?:AU|km|m)")
+DISTANCE = re.compile(r"\d[\d.,   ]{0,20} (?:AU|km|m)", re.ASCII)
 
 
 @dataclass(frozen=True)

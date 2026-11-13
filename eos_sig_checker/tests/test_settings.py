@@ -5,7 +5,13 @@ from django.urls import reverse
 from allianceauth.eveonline.models import EveCharacter
 
 from eos_sig_checker.auth_hooks import SigCheckerMenuItem
-from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS, SigCheckerConfiguration, Signature
+from eos_sig_checker.models import (
+    DEFAULT_LOCATION_RETRY_SECONDS,
+    DEFAULT_MAX_AGE_DAYS,
+    DEFAULT_MAX_LINES,
+    SigCheckerConfiguration,
+    Signature,
+)
 from eos_sig_checker.parser import parse
 from eos_sig_checker.sync import merge
 
@@ -18,6 +24,13 @@ DELETE_ALL = reverse("eos_sig_checker:delete_all")
 BASIC_ACCESS = "eos_sig_checker.basic_access"
 MANAGE_SETTINGS = "eos_sig_checker.manage_settings"
 
+# what the settings form needs to be valid; a test overrides what it is about
+VALID = {
+    "max_age_days": DEFAULT_MAX_AGE_DAYS,
+    "location_retry_seconds": DEFAULT_LOCATION_RETRY_SECONDS,
+    "max_lines": DEFAULT_MAX_LINES,
+}
+
 
 class TestSettingsPage(SigTestCase):
     def setUp(self):
@@ -28,7 +41,7 @@ class TestSettingsPage(SigTestCase):
     def test_should_refuse_a_user_with_basic_access_only(self):
         self.client.force_login(make_user("bob", BASIC_ACCESS))
 
-        response = self.client.post(SETTINGS, {"max_age_days": 2})
+        response = self.client.post(SETTINGS, {**VALID, "max_age_days":2})
 
         self.assertNotEqual(response.status_code, 200)
         self.assertEqual(SigCheckerConfiguration.get_solo().max_age_days, DEFAULT_MAX_AGE_DAYS)
@@ -40,7 +53,7 @@ class TestSettingsPage(SigTestCase):
         self.assertEqual(response.context["form"]["max_age_days"].value(), DEFAULT_MAX_AGE_DAYS)
 
     def test_should_store_the_days(self):
-        response = self.client.post(SETTINGS, {"max_age_days": 2})
+        response = self.client.post(SETTINGS, {**VALID, "max_age_days":2})
 
         self.assertRedirects(response, SETTINGS)
         self.assertEqual(SigCheckerConfiguration.get_solo().max_age_days, 2)
@@ -48,7 +61,7 @@ class TestSettingsPage(SigTestCase):
     def test_should_refuse_days_out_of_range(self):
         for days in (0, 31, -1, "", "x"):
             with self.subTest(days):
-                response = self.client.post(SETTINGS, {"max_age_days": days})
+                response = self.client.post(SETTINGS, {**VALID, "max_age_days":days})
 
                 self.assertEqual(response.status_code, 200)
                 self.assertTrue(response.context["form"].errors)
@@ -57,7 +70,7 @@ class TestSettingsPage(SigTestCase):
     def test_should_accept_the_bounds(self):
         for days in (1, 30):
             with self.subTest(days):
-                self.client.post(SETTINGS, {"max_age_days": days})
+                self.client.post(SETTINGS, {**VALID, "max_age_days":days})
 
                 self.assertEqual(SigCheckerConfiguration.get_solo().max_age_days, days)
 
@@ -66,6 +79,37 @@ class TestSettingsPage(SigTestCase):
 
         self.assertContains(response, 'min="1"')
         self.assertContains(response, 'max="30"')
+        self.assertContains(response, 'min="5"')
+        self.assertContains(response, 'max="3600"')
+        self.assertContains(response, 'max="500"')
+
+    def test_should_store_the_longest_wait(self):
+        self.client.post(SETTINGS, {**VALID, "location_retry_seconds": 120})
+
+        self.assertEqual(SigCheckerConfiguration.get_solo().location_retry_seconds, 120)
+
+    def test_should_refuse_a_wait_out_of_range(self):
+        for seconds in (4, 3601, "", "x"):
+            with self.subTest(seconds):
+                response = self.client.post(SETTINGS, {**VALID, "location_retry_seconds": seconds})
+
+                self.assertTrue(response.context["form"].errors)
+                self.assertEqual(
+                    SigCheckerConfiguration.get_solo().location_retry_seconds, DEFAULT_LOCATION_RETRY_SECONDS
+                )
+
+    def test_should_store_the_lines_per_paste(self):
+        self.client.post(SETTINGS, {**VALID, "max_lines": 50})
+
+        self.assertEqual(SigCheckerConfiguration.get_solo().max_lines, 50)
+
+    def test_should_refuse_lines_out_of_range(self):
+        for lines in (0, 501, "", "x"):
+            with self.subTest(lines):
+                response = self.client.post(SETTINGS, {**VALID, "max_lines": lines})
+
+                self.assertTrue(response.context["form"].errors)
+                self.assertEqual(SigCheckerConfiguration.get_solo().max_lines, DEFAULT_MAX_LINES)
 
     def test_index_should_send_a_settings_only_user_to_the_settings(self):
         response = self.client.get(INDEX)

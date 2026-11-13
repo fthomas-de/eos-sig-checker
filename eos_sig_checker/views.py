@@ -35,7 +35,7 @@ def has_access(user) -> bool:
 
 
 def _render(request, template, context, nav, status=200):
-    return render(request, template, {"version": __version__, "nav": nav, **context}, status=status)
+    return render(request, template, {"version": __version__, "nav": nav, "statistics": sync.statistics(), **context}, status=status)
 
 
 def _copy_text(output) -> str:

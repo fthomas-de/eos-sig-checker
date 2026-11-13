@@ -8,10 +8,12 @@
             <form method="post" action="" class="card h-100">
                 {% csrf_token %}
                 <div class="card-header">
-                    <div class="card-title mb-0">{% translate "Cleanup" %}</div>
+                    <div class="card-title mb-0">{% translate "Settings" context "eos-sig-checker" %}</div>
                 </div>
                 <div class="card-body">
                     {% bootstrap_field form.max_age_days %}
+                    {% bootstrap_field form.location_retry_seconds %}
+                    {% bootstrap_field form.max_lines %}
                     <button type="submit" class="btn btn-primary">{% translate "Save" context "eos-sig-checker" %}</button>
                 </div>
             </form>

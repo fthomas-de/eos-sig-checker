@@ -1,7 +1,7 @@
 from django.core.cache import cache
 from django.urls import reverse
 
-from eos_sig_checker.models import Signature
+from eos_sig_checker.models import SigCheckerConfiguration, Signature
 from eos_sig_checker.parser import MAX_CHARS, MAX_LINES
 
 from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
@@ -136,3 +136,31 @@ class TestIndex(SigTestCase):
         self.client.post(URL, {"text": SCANNED})
 
         self.assertEqual(Signature.objects.get().last_checked_by, self.user.profile.main_character)
+
+    def test_should_refuse_more_lines_than_the_settings_page_allows(self):
+        config = SigCheckerConfiguration.get_solo()
+        config.max_lines = 1
+        config.save()
+
+        response = self.client.post(URL, {"text": f"{SCANNED}\n{UNSCANNED}"})
+
+        self.assertIsNone(response.context["output"])
+        self.assertContains(response, "At most 1 line per paste.")
+        self.assertFalse(Signature.objects.exists())
+
+    def test_should_refuse_201_lines_by_default(self):
+        text = "\n".join(f"ABC-{i:03d}\tCosmic Signature\t\t\t0,0%\t1 AU" for i in range(201))
+
+        response = self.client.post(URL, {"text": text})
+
+        self.assertContains(response, "At most 200 lines per paste.")
+        self.assertFalse(Signature.objects.exists())
+
+    def test_should_show_the_statistics_below_the_page(self):
+        self.client.post(URL, {"text": SCANNED})
+
+        response = self.client.get(URL)
+
+        self.assertEqual(response.context["statistics"]["total"], 1)
+        self.assertContains(response, "new in 24 h")
+        self.assertNotContains(response, "the cleanup task does not run")
