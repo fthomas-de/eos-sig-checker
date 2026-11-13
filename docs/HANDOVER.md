@@ -6,13 +6,18 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Version: `0.0.7`, 2026-11-13 (see `CHANGELOG.md` under 0.0.7). Pushed to
-  `origin/main` with the annotated tags `v0.0.1` to `v0.0.7` ("Release
+- Version: `0.0.8`, 2026-11-13 (see `CHANGELOG.md` under 0.0.8). Pushed to
+  `origin/main` with the annotated tags `v0.0.1` to `v0.0.8` ("Release
   <version>" on the release commit).
+- New in 0.0.8 (migration 0005): setting **Show wormholes (hours)**
+  (`SigCheckerConfiguration.wormhole_hours`, default 3, 1-48,
+  `app_settings.wormhole_hours()`), read at call time by
+  `sync.recent_wormholes` and the paste page. The constant
+  `sync.WORMHOLE_HOURS` is gone.
 - New in 0.0.7 (no migration): card **WH** (`fa-hurricane`) on the paste
   page, left of the probe scanner box - every row with group `Wormhole`
-  checked in the last 3 hours (`sync.recent_wormholes`,
-  `sync.WORMHOLE_HOURS`), any system, newest first; columns System, ID,
+  checked within the hours from the settings page
+  (`sync.recent_wormholes`), any system, newest first; columns System, ID,
   time (`H:i`). Read after the merge, so a paste's wormholes show at once;
   no polling. Layout `col-lg-3` / `col-lg-3` / `col-lg-6` (WH / probe
   scanner / result): at 2/5/5 the WH card scrolled sideways.
@@ -41,27 +46,28 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   deletes rows past their age. `manage_settings` opens the **Signatures**
   tab (DataTable, a filter each for System, ID, Group, Name; expired rows
   greyed out) and the **Settings** tab (days an entry counts, 1-30; longest
-  wait after failed location reads; lines per paste; Delete all
-  signatures).
+  wait after failed location reads; lines per paste; hours of the WH card;
+  Delete all signatures).
 - Location tracking through ESI (`tracking.py`, `provider.py`,
   `js/tracking.js`), off by default, per browser tab, only existing tokens
   with `esi-location.read_location.v1`. Every check stores the system (one
   row per signature ID **and** system).
-- Tests: 107 without the `translations` tag (all pass at 0.0.7), plus the
+- Tests: 109 without the `translations` tag (all pass at 0.0.8), plus the
   catalogue tests run by `tools/translate.py`. The two WH tests fail when
-  the `Wormhole` filter is dropped. No automated test for the browser side
+  the `Wormhole` filter is dropped; the WH sync test uses 10 hours and fails
+  when the setting is ignored. No automated test for the browser side
   of the scripts; the WH card was checked in the browser pane at 1500 px,
   empty and with one entry, dark theme.
 
 ## Open
 
-- **Not looked at in the browser yet** (0.0.5): the statistics line on the
-  three pages, the settings page with three fields, the 200-line message,
+- **Not looked at in the browser yet**: the statistics line on the three
+  pages, the settings page (now four fields, 0.0.8), the 200-line message,
   the tracking message during a growing wait.
 - WH card not checked yet: light theme, narrow screen (the three cards
   stack), many wormholes with long system names.
 - The live instance: remove `EOS_SIG_CHECKER_MAX_AGE_DAYS` from its
-  `local.py` if set, install `@v0.0.7`, run migrate (0002 to 0004) and
+  `local.py` if set, install `@v0.0.8`, run migrate (0002 to 0005) and
   `collectstatic`, restart AA and Celery, then give `manage_settings` to
   whoever looks after the list. Members who want tracking need a token
   with `esi-location.read_location.v1` from another app (corptools asks for
@@ -73,14 +79,17 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - Not checked yet: a real Ctrl+V from the EVE client, the light theme, an
   expired row on the Signatures tab outside the unit tests, the Refresh
   button by a real click, a system change while tracking.
-- Next sensible step: deploy 0.0.7 to the live instance (README's install
+- Next sensible step: deploy 0.0.8 to the live instance (README's install
   section), then a real paste from the EVE client.
 
 ## Decisions
 
+- 0.0.8 (2026-11-13): the WH hours are a setting on the settings page (not
+  per member), in whole hours, 1 to 48 (a wormhole lives at most 48 hours),
+  default 3. This replaces the 0.0.7 choice of a constant.
 - 0.0.7 (2026-11-13): the WH card is on the paste page only, not on the
   Signatures tab. "Seen" means `last_checked` (not `first_seen`) within 3
-  hours, a constant rather than a setting. Columns System, ID, time; rows
+  hours (a setting since 0.0.8). Columns System, ID, time; rows
   without a system stay in with a blank system. Title "WH" stays
   untranslated; icon `fa-hurricane` (Font Awesome has no wormhole).
 - 0.0.6 (2026-11-13): the anomaly switch is always visible, on by default,
@@ -138,9 +147,9 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 - Installed editable (`--no-deps`), `'eos_sig_checker',` in
   `INSTALLED_APPS`, cleanup task in `CELERYBEAT_SCHEDULE` (11:15 daily),
-  migrations 0001-0004 applied, static collected at 0.0.6 (0.0.7 changed
-  no static file). Settings stored:
-  max age 7; 60 s, 200 lines. The Celery worker was not restarted after
+  migrations 0001-0005 applied, static collected at 0.0.6 (0.0.7 and 0.0.8
+  changed no static file). Settings stored:
+  max age 7; 60 s, 200 lines; WH 3 hours. The Celery worker was not restarted after
   0.0.5 - no task changed since, restart it anyway at the next chance.
 - `Signature` holds the user's sample pastes plus browser test rows
   `ZZT-901`/`ZZT-902` (R-ARKN) and `ZZT-911`/`ZZT-912`/`ZZT-921` (wormhole)/
@@ -165,7 +174,7 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   control characters before splitting.
 - `models.py` imports `parser.MAX_LINES`: the parser must never import from
   `models` (or anything that does), or the import goes circular.
-- The settings form has three required fields: a test that posts to the
+- The settings form has four required fields: a test that posts to the
   settings page sends `{**VALID, ...}` (`tests/test_settings.py`), or the
   post is refused.
 - A test that wants a failed location read again must delete the cached
