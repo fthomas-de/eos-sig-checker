@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 17:47+0000\n"
-"PO-Revision-Date: 2026-11-13 17:47+0000\n"
+"POT-Creation-Date: 2026-11-13 18:34+0000\n"
+"PO-Revision-Date: 2026-11-13 18:34+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: ru\n"
 "Language: ru\n"
@@ -22,18 +22,18 @@ msgstr ""
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:35
+#: forms.py:37
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:43
+#: forms.py:45
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
 msgstr ""
 "Выдели результаты в Probe Scanner, скопируй их через Ctrl+C и вставь сюда."
 
-#: forms.py:55
+#: forms.py:57
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
@@ -41,19 +41,19 @@ msgstr[0] "Не более %(max)d строки за одну вставку."
 msgstr[1] "Не более %(max)d строк за одну вставку."
 msgstr[2] "Не более %(max)d строк за одну вставку."
 
-#: models.py:37
+#: models.py:41
 msgid "Can paste and resolve signatures"
 msgstr "Может вставлять и распознавать сигнатуры"
 
-#: models.py:38
+#: models.py:42
 msgid "Can change the settings and delete all signatures"
 msgstr "Может менять настройки и удалять все сигнатуры"
 
-#: models.py:48
+#: models.py:52
 msgid "Keep signatures (days)"
 msgstr "Хранить сигнатуры (дней)"
 
-#: models.py:50
+#: models.py:54
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
@@ -61,12 +61,12 @@ msgstr ""
 "Сколько дней сигнатура действует после последней проверки. Затем она "
 "игнорируется и удаляется ежедневной очисткой."
 
-#: models.py:57
+#: models.py:61
 msgid "Longest wait after failed location reads (seconds)"
 msgstr ""
 "Максимальное ожидание после неудачных запросов местоположения (секунд)"
 
-#: models.py:59
+#: models.py:63
 msgid ""
 "A location that cannot be read is asked again after 5 seconds at first, then"
 " later with every further failure, in 5 steps up to this many seconds."
@@ -75,11 +75,11 @@ msgstr ""
 "через 5 секунд, затем с каждой следующей неудачей позже, в 5 шагов до этого "
 "числа секунд."
 
-#: models.py:66
+#: models.py:70
 msgid "Lines per paste"
 msgstr "Строк на вставку"
 
-#: models.py:67
+#: models.py:71
 msgid ""
 "The most lines one paste may hold. A full system has a few dozen signatures "
 "and anomalies."
@@ -87,23 +87,32 @@ msgstr ""
 "Максимальное число строк в одной вставке. В полной системе несколько "
 "десятков сигнатур и аномалий."
 
-#: models.py:72
+#: models.py:76
+msgid "Show wormholes (hours)"
+msgstr "Показывать Wormhole (часы)"
+
+#: models.py:77
+msgid "Hours a checked wormhole stays in the WH list of the paste page."
+msgstr ""
+"Сколько часов проверенный Wormhole остаётся в списке WH на странице вставки."
+
+#: models.py:82
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "Конфигурация"
 
-#: models.py:94 templates/eos_sig_checker/index.html:71
+#: models.py:104 templates/eos_sig_checker/index.html:71
 #: templates/eos_sig_checker/index.html:148
 #: templates/eos_sig_checker/signatures.html:14
 #: templates/eos_sig_checker/signatures.html:34
 msgid "System"
 msgstr "Система"
 
-#: models.py:109
+#: models.py:119
 msgid "Signature"
 msgstr "Сигнатура"
 
-#: models.py:110 templates/eos_sig_checker/base.html:15
+#: models.py:120 templates/eos_sig_checker/base.html:15
 #: templates/eos_sig_checker/base.html:34
 msgid "Signatures"
 msgstr "Сигнатуры"
@@ -352,18 +361,18 @@ msgstr[2] ""
 "%(counter)s строк пропущено: не Cosmic Signature и не Cosmic Anomaly "
 "английского клиента (корабли, структуры, другие языки клиента)."
 
-#: templates/eos_sig_checker/settings.html:17
+#: templates/eos_sig_checker/settings.html:18
 msgctxt "eos-sig-checker"
 msgid "Save"
 msgstr "Сохранить"
 
-#: templates/eos_sig_checker/settings.html:25
-#: templates/eos_sig_checker/settings.html:33
-#: templates/eos_sig_checker/settings.html:45
+#: templates/eos_sig_checker/settings.html:26
+#: templates/eos_sig_checker/settings.html:34
+#: templates/eos_sig_checker/settings.html:46
 msgid "Delete all signatures"
 msgstr "Удалить все сигнатуры"
 
-#: templates/eos_sig_checker/settings.html:29
+#: templates/eos_sig_checker/settings.html:30
 #, python-format
 msgid ""
 "The shared list holds %(counter)s signature. Deleting empties it for "
@@ -381,13 +390,13 @@ msgstr[2] ""
 "В общем списке %(counter)s сигнатур. Удаление сразу очищает его для всех; "
 "отменить нельзя."
 
-#: templates/eos_sig_checker/settings.html:46
-#: templates/eos_sig_checker/settings.html:52
+#: templates/eos_sig_checker/settings.html:47
+#: templates/eos_sig_checker/settings.html:53
 msgctxt "eos-sig-checker"
 msgid "Cancel"
 msgstr "Отмена"
 
-#: templates/eos_sig_checker/settings.html:49
+#: templates/eos_sig_checker/settings.html:50
 #, python-format
 msgid "Delete %(counter)s signature from the shared list?"
 msgid_plural "Delete all %(counter)s signatures from the shared list?"
@@ -395,7 +404,7 @@ msgstr[0] "Удалить %(counter)s сигнатуру из общего сп�
 msgstr[1] "Удалить все %(counter)s сигнатуры из общего списка?"
 msgstr[2] "Удалить все %(counter)s сигнатур из общего списка?"
 
-#: templates/eos_sig_checker/settings.html:53
+#: templates/eos_sig_checker/settings.html:54
 msgctxt "eos-sig-checker"
 msgid "Delete"
 msgstr "Удалить"

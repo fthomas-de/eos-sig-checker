@@ -32,6 +32,12 @@ def set_max_age_days(days):
     config.save()
 
 
+def set_wormhole_hours(hours):
+    config = SigCheckerConfiguration.get_solo()
+    config.wormhole_hours = hours
+    config.save()
+
+
 def make_user(name, *perms):
     """A user with a main character; permissions as 'app.codename'."""
     user = AuthUtils.create_user(name)

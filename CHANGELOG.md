@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.8] - 2026-11-13
+
+### Changed
+
+- Setting **Show wormholes (hours)** on the settings page (default 3, 1 to
+  48): how long a checked wormhole stays in the WH card. It was a fixed 3
+  hours in the code, too short for a wormhole that lives up to two days.
+  Migration 0005 adds the field with the old value, so nothing changes
+  until someone sets it.
+
 ## [0.0.7] - 2026-11-13
 
 ### Added

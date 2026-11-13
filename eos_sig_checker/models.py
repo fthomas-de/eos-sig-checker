@@ -23,6 +23,10 @@ LOCATION_RETRY_SECONDS_LIMIT = 3600
 # more than 200 lines in one paste is unlikely; parser.MAX_LINES is the ceiling
 DEFAULT_MAX_LINES = 200
 
+DEFAULT_WORMHOLE_HOURS = 3
+# a wormhole lives at most 48 hours; an older one is gone in the game
+WORMHOLE_HOURS_LIMIT = 48
+
 # the solar system of a signature pasted without a tracked character
 NO_SYSTEM = 0
 
@@ -65,6 +69,12 @@ class SigCheckerConfiguration(SingletonModel):
         validators=[MinValueValidator(1), MaxValueValidator(MAX_LINES)],
         verbose_name=_("Lines per paste"),
         help_text=_("The most lines one paste may hold. A full system has a few dozen signatures and anomalies."),
+    )
+    wormhole_hours = models.PositiveSmallIntegerField(
+        default=DEFAULT_WORMHOLE_HOURS,
+        validators=[MinValueValidator(1), MaxValueValidator(WORMHOLE_HOURS_LIMIT)],
+        verbose_name=_("Show wormholes (hours)"),
+        help_text=_("Hours a checked wormhole stays in the WH list of the paste page."),
     )
 
     class Meta:

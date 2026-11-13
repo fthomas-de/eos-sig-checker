@@ -157,6 +157,12 @@ TRANSLATIONS = {
         "Максимальное число строк в одной вставке. В полной системе несколько десятков сигнатур и аномалий.",
         "一次粘贴最多可包含的行数。一个满的星系有几十个信号和异常。",
     ),
+    "Show wormholes (hours)": ("Wormholes anzeigen (Stunden)", "Показывать Wormhole (часы)", "显示 Wormhole（小时）"),
+    "Hours a checked wormhole stays in the WH list of the paste page.": (
+        "Stunden, die ein geprüftes Wormhole in der WH-Liste der Paste-Seite bleibt.",
+        "Сколько часов проверенный Wormhole остаётся в списке WH на странице вставки.",
+        "已检查的 Wormhole 在粘贴页面 WH 列表中保留的小时数。",
+    ),
     "Save": ("Speichern", "Сохранить", "保存"),
     "Settings saved.": ("Einstellungen gespeichert.", "Настройки сохранены.", "设置已保存。"),
     "Delete all signatures": ("Alle Signaturen löschen", "Удалить все сигнатуры", "删除所有信号"),

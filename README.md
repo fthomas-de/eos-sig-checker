@@ -121,6 +121,7 @@ page (*Sig Checker › Settings*, needs `eos_sig_checker.manage_settings`):
 | Keep signatures (days) | `7` | Days an entry counts after its last check, 1 to 30. The page, the merge and the cleanup task follow a change at once, without a restart. |
 | Longest wait after failed location reads (seconds) | `60` | A location that cannot be read (dead token, ESI down) is asked again after 5 seconds, then later with every further failure in a row, in 5 even steps up to this value (with 60: 5, 19, 33, 46, 60 seconds); 5 to 3600. A successful read starts over. |
 | Lines per paste | `200` | The most lines one paste may hold, 1 to 500. |
+| Show wormholes (hours) | `3` | Hours a checked wormhole stays in the WH card of the paste page, 1 to 48. |
 
 The same page has a **Delete all signatures** button, behind a confirmation:
 it empties the shared list for everybody and cannot be undone.

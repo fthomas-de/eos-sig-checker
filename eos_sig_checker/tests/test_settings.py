@@ -9,6 +9,7 @@ from eos_sig_checker.models import (
     DEFAULT_LOCATION_RETRY_SECONDS,
     DEFAULT_MAX_AGE_DAYS,
     DEFAULT_MAX_LINES,
+    DEFAULT_WORMHOLE_HOURS,
     SigCheckerConfiguration,
     Signature,
 )
@@ -29,6 +30,7 @@ VALID = {
     "max_age_days": DEFAULT_MAX_AGE_DAYS,
     "location_retry_seconds": DEFAULT_LOCATION_RETRY_SECONDS,
     "max_lines": DEFAULT_MAX_LINES,
+    "wormhole_hours": DEFAULT_WORMHOLE_HOURS,
 }
 
 
@@ -82,6 +84,7 @@ class TestSettingsPage(SigTestCase):
         self.assertContains(response, 'min="5"')
         self.assertContains(response, 'max="3600"')
         self.assertContains(response, 'max="500"')
+        self.assertContains(response, 'max="48"')
 
     def test_should_store_the_longest_wait(self):
         self.client.post(SETTINGS, {**VALID, "location_retry_seconds": 120})
@@ -110,6 +113,19 @@ class TestSettingsPage(SigTestCase):
 
                 self.assertTrue(response.context["form"].errors)
                 self.assertEqual(SigCheckerConfiguration.get_solo().max_lines, DEFAULT_MAX_LINES)
+
+    def test_should_store_the_wormhole_hours(self):
+        self.client.post(SETTINGS, {**VALID, "wormhole_hours": 48})
+
+        self.assertEqual(SigCheckerConfiguration.get_solo().wormhole_hours, 48)
+
+    def test_should_refuse_wormhole_hours_out_of_range(self):
+        for hours in (0, 49, "", "x"):
+            with self.subTest(hours):
+                response = self.client.post(SETTINGS, {**VALID, "wormhole_hours": hours})
+
+                self.assertTrue(response.context["form"].errors)
+                self.assertEqual(SigCheckerConfiguration.get_solo().wormhole_hours, DEFAULT_WORMHOLE_HOURS)
 
     def test_index_should_send_a_settings_only_user_to_the_settings(self):
         response = self.client.get(INDEX)

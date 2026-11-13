@@ -18,3 +18,8 @@ def location_retry_seconds() -> int:
 def max_lines() -> int:
     """The most lines one paste may hold, from the settings page."""
     return SigCheckerConfiguration.get_solo().max_lines
+
+
+def wormhole_hours() -> int:
+    """How long a checked wormhole stays in the WH list, from the settings page."""
+    return SigCheckerConfiguration.get_solo().wormhole_hours

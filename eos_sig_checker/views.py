@@ -8,7 +8,7 @@ from django.utils.translation import ngettext
 from django.views.decorators.http import require_POST
 
 from . import __version__, parser, sync, tracking
-from .app_settings import max_age_days
+from .app_settings import max_age_days, wormhole_hours
 from .forms import ConfigurationForm, PasteForm
 from .models import SigCheckerConfiguration, Signature
 from .parser import Invalid, Skipped
@@ -137,7 +137,7 @@ def index(request):
         "max_age_days": max_age_days(),
         # read after the merge, so this paste's wormholes are in it
         "wormholes": sync.recent_wormholes(),
-        "wormhole_hours": sync.WORMHOLE_HOURS,
+        "wormhole_hours": wormhole_hours(),
         "characters": tracking.trackable_characters(request.user),
         # locate() returns or raises, so a named character always has a location or an error
         "tracked_character_id": character_id,

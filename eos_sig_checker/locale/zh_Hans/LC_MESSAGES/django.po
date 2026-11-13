@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 17:47+0000\n"
-"PO-Revision-Date: 2026-11-13 17:47+0000\n"
+"POT-Creation-Date: 2026-11-13 18:34+0000\n"
+"PO-Revision-Date: 2026-11-13 18:34+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: zh_Hans\n"
 "Language: zh_Hans\n"
@@ -22,77 +22,85 @@ msgstr ""
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:35
+#: forms.py:37
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:43
+#: forms.py:45
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
 msgstr "在 Probe Scanner 中选中结果，用 Ctrl+C 复制并粘贴到这里。"
 
-#: forms.py:55
+#: forms.py:57
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
 msgstr[0] "每次粘贴最多 %(max)d 行。"
 
-#: models.py:37
+#: models.py:41
 msgid "Can paste and resolve signatures"
 msgstr "可以粘贴并解析信号"
 
-#: models.py:38
+#: models.py:42
 msgid "Can change the settings and delete all signatures"
 msgstr "可以更改设置并删除所有信号"
 
-#: models.py:48
+#: models.py:52
 msgid "Keep signatures (days)"
 msgstr "信号保留（天）"
 
-#: models.py:50
+#: models.py:54
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
 msgstr "信号在最后一次检查后有效的天数。之后它将被忽略，并由每日清理删除。"
 
-#: models.py:57
+#: models.py:61
 msgid "Longest wait after failed location reads (seconds)"
 msgstr "位置读取失败后的最长等待时间（秒）"
 
-#: models.py:59
+#: models.py:63
 msgid ""
 "A location that cannot be read is asked again after 5 seconds at first, then"
 " later with every further failure, in 5 steps up to this many seconds."
 msgstr "无法读取的位置会先在 5 秒后重新查询，之后每多失败一次就推迟一些，分 5 步，最长为此秒数。"
 
-#: models.py:66
+#: models.py:70
 msgid "Lines per paste"
 msgstr "每次粘贴的行数"
 
-#: models.py:67
+#: models.py:71
 msgid ""
 "The most lines one paste may hold. A full system has a few dozen signatures "
 "and anomalies."
 msgstr "一次粘贴最多可包含的行数。一个满的星系有几十个信号和异常。"
 
-#: models.py:72
+#: models.py:76
+msgid "Show wormholes (hours)"
+msgstr "显示 Wormhole（小时）"
+
+#: models.py:77
+msgid "Hours a checked wormhole stays in the WH list of the paste page."
+msgstr "已检查的 Wormhole 在粘贴页面 WH 列表中保留的小时数。"
+
+#: models.py:82
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "配置"
 
-#: models.py:94 templates/eos_sig_checker/index.html:71
+#: models.py:104 templates/eos_sig_checker/index.html:71
 #: templates/eos_sig_checker/index.html:148
 #: templates/eos_sig_checker/signatures.html:14
 #: templates/eos_sig_checker/signatures.html:34
 msgid "System"
 msgstr "星系"
 
-#: models.py:109
+#: models.py:119
 msgid "Signature"
 msgstr "信号"
 
-#: models.py:110 templates/eos_sig_checker/base.html:15
+#: models.py:120 templates/eos_sig_checker/base.html:15
 #: templates/eos_sig_checker/base.html:34
 msgid "Signatures"
 msgstr "信号"
@@ -319,18 +327,18 @@ msgid_plural ""
 msgstr[0] ""
 "已跳过 %(counter)s 行：不是英文客户端的 Cosmic Signature 或 Cosmic Anomaly（舰船、建筑、其他客户端语言）。"
 
-#: templates/eos_sig_checker/settings.html:17
+#: templates/eos_sig_checker/settings.html:18
 msgctxt "eos-sig-checker"
 msgid "Save"
 msgstr "保存"
 
-#: templates/eos_sig_checker/settings.html:25
-#: templates/eos_sig_checker/settings.html:33
-#: templates/eos_sig_checker/settings.html:45
+#: templates/eos_sig_checker/settings.html:26
+#: templates/eos_sig_checker/settings.html:34
+#: templates/eos_sig_checker/settings.html:46
 msgid "Delete all signatures"
 msgstr "删除所有信号"
 
-#: templates/eos_sig_checker/settings.html:29
+#: templates/eos_sig_checker/settings.html:30
 #, python-format
 msgid ""
 "The shared list holds %(counter)s signature. Deleting empties it for "
@@ -340,19 +348,19 @@ msgid_plural ""
 "everybody at once; it cannot be undone."
 msgstr[0] "共享列表中有 %(counter)s 个信号。删除会立即为所有人清空列表，且无法撤销。"
 
-#: templates/eos_sig_checker/settings.html:46
-#: templates/eos_sig_checker/settings.html:52
+#: templates/eos_sig_checker/settings.html:47
+#: templates/eos_sig_checker/settings.html:53
 msgctxt "eos-sig-checker"
 msgid "Cancel"
 msgstr "取消"
 
-#: templates/eos_sig_checker/settings.html:49
+#: templates/eos_sig_checker/settings.html:50
 #, python-format
 msgid "Delete %(counter)s signature from the shared list?"
 msgid_plural "Delete all %(counter)s signatures from the shared list?"
 msgstr[0] "从共享列表中删除全部 %(counter)s 个信号？"
 
-#: templates/eos_sig_checker/settings.html:53
+#: templates/eos_sig_checker/settings.html:54
 msgctxt "eos-sig-checker"
 msgid "Delete"
 msgstr "删除"

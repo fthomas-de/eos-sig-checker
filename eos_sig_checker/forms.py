@@ -7,6 +7,7 @@ from .models import (
     LOCATION_RETRY_SECONDS_LIMIT,
     LOCATION_RETRY_SECONDS_MIN,
     MAX_AGE_DAYS_LIMIT,
+    WORMHOLE_HOURS_LIMIT,
     SigCheckerConfiguration,
 )
 from .parser import MAX_CHARS, MAX_LINES
@@ -15,7 +16,7 @@ from .parser import MAX_CHARS, MAX_LINES
 class ConfigurationForm(forms.ModelForm):
     class Meta:
         model = SigCheckerConfiguration
-        fields = ["max_age_days", "location_retry_seconds", "max_lines"]
+        fields = ["max_age_days", "location_retry_seconds", "max_lines", "wormhole_hours"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,6 +28,7 @@ class ConfigurationForm(forms.ModelForm):
             min=LOCATION_RETRY_SECONDS_MIN, max=LOCATION_RETRY_SECONDS_LIMIT
         )
         self.fields["max_lines"].widget.attrs.update(min=1, max=MAX_LINES)
+        self.fields["wormhole_hours"].widget.attrs.update(min=1, max=WORMHOLE_HOURS_LIMIT)
 
 
 class PasteForm(forms.Form):
