@@ -85,13 +85,22 @@
                             {% translate "Result" %}
                             {% if location %}<span class="text-body-secondary">&middot; <i class="fas fa-location-dot"></i> {{ location.system_name }}</span>{% endif %}
                         </div>
-                        {% if copy_text %}
-                            <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap"
-                                    data-eos-sig-checker-copy="{{ copy_text }}" data-eos-sig-checker-copied="{% translate 'Copied' %}"
-                                    title="{% translate 'Copy the completed list in the probe scanner format' %}">
-                                <i class="fas fa-copy"></i> <span>{% translate "Copy" %}</span>
-                            </button>
-                        {% endif %}
+                        <div class="d-flex align-items-center gap-3">
+                            {# anomalies.js hides the rows marked data-eos-sig-checker-anomaly and points Copy at the list without them; #}
+                            {# shown before the first result too, so it can be set beforehand #}
+                            <div class="form-check form-switch mb-0">
+                                <input class="form-check-input" type="checkbox" role="switch" id="eos-sig-checker-hide-anomalies" checked>
+                                <label class="form-check-label small text-nowrap" for="eos-sig-checker-hide-anomalies">{% translate "Hide Cosmic Anomalies" %}</label>
+                            </div>
+                            {% if copy_text %}
+                                <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap"
+                                        data-eos-sig-checker-copy="{{ copy_text }}" data-eos-sig-checker-copy-signatures="{{ copy_text_signatures }}"
+                                        data-eos-sig-checker-copied="{% translate 'Copied' %}"
+                                        title="{% translate 'Copy the completed list in the probe scanner format' %}">
+                                    <i class="fas fa-copy"></i> <span>{% translate "Copy" %}</span>
+                                </button>
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="eos-sig-checker-pane overflow-auto">
@@ -106,7 +115,6 @@
                                             <th>{% translate "Group" context "eos-sig-checker" %}</th>
                                             <th>{% translate "Name" context "eos-sig-checker" %}</th>
                                             <th class="text-end">{% translate "Signal" context "eos-sig-checker" %}</th>
-                                            <th class="text-end">{% translate "Distance" %}</th>
                                             <th>{% translate "Last checked" %}</th>
                                         </tr>
                                     </thead>
@@ -114,21 +122,20 @@
                                         {% for row in output %}
                                             {% if row.error %}
                                                 <tr class="table-danger">
-                                                    <td colspan="8">
+                                                    <td colspan="7">
                                                         <div class="font-monospace text-break">{{ row.text }}</div>
                                                         <div><i class="fas fa-triangle-exclamation"></i> {{ row.error }}</div>
                                                     </td>
                                                 </tr>
                                             {% else %}
-                                                <tr>
+                                                <tr{% if row.line.group == "Cosmic Anomaly" %} data-eos-sig-checker-anomaly{% endif %}>
                                                     <td>{{ row.system_name }}</td>
                                                     <td class="font-monospace text-nowrap">{{ row.line.signature_id }}</td>
-                                                    {# the text columns may wrap: half a screen cannot hold seven columns in one line #}
+                                                    {# the text columns may wrap: half a screen cannot hold six columns in one line #}
                                                     <td>{{ row.line.group }}</td>
                                                     {% include "eos_sig_checker/partials/resolved-cell.html" with value=row.site_type resolved="site_type" %}
                                                     {% include "eos_sig_checker/partials/resolved-cell.html" with value=row.name resolved="name" %}
                                                     <td class="text-end text-nowrap fw-semibold eos-sig-checker-signal-{{ row.line.signal_band }}">{{ row.line.signal_text }}</td>
-                                                    <td class="text-end text-nowrap">{{ row.line.distance }}</td>
                                                     <td>
                                                         {% if row.previous_check %}
                                                             <span class="text-nowrap">{{ row.previous_check|date:"Y-m-d H:i" }}</span>
@@ -179,6 +186,7 @@
 
 {% block extra_javascript %}
     {% sri_static "eos_sig_checker/js/copy.js" %}
+    {% sri_static "eos_sig_checker/js/anomalies.js" %}
     {% sri_static "eos_sig_checker/js/autocheck.js" %}
     {% sri_static "eos_sig_checker/js/tracking.js" %}
 {% endblock %}

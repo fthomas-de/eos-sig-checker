@@ -1,6 +1,6 @@
 """Merge a paste into the shared list and resolve it from there."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 
 from django.db import transaction
@@ -119,6 +119,9 @@ def _store(line: Line, character, now, oldest, system) -> Row:
         resolved = set()
     else:
         resolved = _merge(signature, line)
+    if signature.signal != line.signal:
+        # the best scan seen, not this paste's: a weaker scan must not look like a reset
+        line = replace(line, signal=signature.signal, signal_text=_signal_text(signature.signal))
     signature.distance = line.distance
     signature.last_checked = now
     signature.last_checked_by = character

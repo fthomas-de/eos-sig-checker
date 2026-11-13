@@ -56,6 +56,14 @@ class TestMerge(SyncTestCase):
         self.assertEqual(signature.last_checked_by, self.bob)
         self.assertEqual(signature.distance, "10,61 AU")
 
+    def test_should_show_the_best_signal_after_a_weaker_scan(self):
+        self.paste(DATA_SITE)
+
+        (row,) = self.paste(UNSCANNED, character=self.bob)
+
+        self.assertEqual((row.line.signal, row.line.signal_text), (Decimal("100.0"), "100,0%"))
+        self.assertEqual(row.line.signal_band, "full")
+
     def test_should_resolve_only_the_missing_name(self):
         self.paste(DATA_SITE)
 

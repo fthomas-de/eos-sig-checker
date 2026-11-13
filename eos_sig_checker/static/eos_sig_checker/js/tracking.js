@@ -27,6 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const key = "eos_sig_checker.tracked_character";
+    // the character last picked, for every tab: switching tracking off
+    // keeps it in the menu instead of falling back to the first one
+    const lastKey = "eos_sig_checker.last_character";
     const locationUrl = bar.dataset.eosSigCheckerLocationUrl;
     const tracked = bar.dataset.eosSigCheckerCharacter;
     const shownSystem = bar.dataset.eosSigCheckerSystem;
@@ -49,6 +52,21 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 window.sessionStorage.removeItem(key);
             }
+        } catch {
+            // see above
+        }
+    };
+
+    const remembered = () => {
+        try {
+            return window.localStorage.getItem(lastKey) || "";
+        } catch {
+            return "";
+        }
+    };
+    const remember = (id) => {
+        try {
+            window.localStorage.setItem(lastKey, id);
         } catch {
             // see above
         }
@@ -81,6 +99,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     } else if (tracked) {
         store(tracked);
+        remember(tracked);
+    } else if (isOwn(remembered())) {
+        select.value = remembered();
     }
 
     toggle.addEventListener("change", () => {
@@ -90,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     select?.addEventListener("change", () => {
+        remember(select.value);
         if (toggle.checked) {
             store(select.value);
             open(select.value);

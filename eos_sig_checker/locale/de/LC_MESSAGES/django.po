@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 08:38+0000\n"
-"PO-Revision-Date: 2026-11-13 08:38+0000\n"
+"POT-Creation-Date: 2026-11-13 13:01+0000\n"
+"PO-Revision-Date: 2026-11-13 13:01+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: de\n"
 "Language: de\n"
@@ -91,7 +91,7 @@ msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "Konfiguration"
 
-#: models.py:94 templates/eos_sig_checker/index.html:102
+#: models.py:94 templates/eos_sig_checker/index.html:111
 #: templates/eos_sig_checker/signatures.html:14
 #: templates/eos_sig_checker/signatures.html:34
 msgid "System"
@@ -242,75 +242,75 @@ msgstr "Prüfen"
 msgid "Result"
 msgstr "Ergebnis"
 
-#: templates/eos_sig_checker/index.html:90
+#: templates/eos_sig_checker/index.html:93
+msgid "Hide Cosmic Anomalies"
+msgstr "Cosmic Anomalies ausblenden"
+
+#: templates/eos_sig_checker/index.html:98
 msgid "Copied"
 msgstr "Kopiert"
 
-#: templates/eos_sig_checker/index.html:91
+#: templates/eos_sig_checker/index.html:99
 msgid "Copy the completed list in the probe scanner format"
 msgstr "Die vervollständigte Liste im Format des Probe Scanners kopieren"
 
-#: templates/eos_sig_checker/index.html:92
+#: templates/eos_sig_checker/index.html:100
 msgid "Copy"
 msgstr "Kopieren"
 
-#: templates/eos_sig_checker/index.html:104
+#: templates/eos_sig_checker/index.html:113
 #: templates/eos_sig_checker/signatures.html:18
 #: templates/eos_sig_checker/signatures.html:36
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:105
+#: templates/eos_sig_checker/index.html:114
 #: templates/eos_sig_checker/signatures.html:37
 msgctxt "eos-sig-checker"
 msgid "Kind"
 msgstr "Art"
 
-#: templates/eos_sig_checker/index.html:106
+#: templates/eos_sig_checker/index.html:115
 #: templates/eos_sig_checker/signatures.html:22
 #: templates/eos_sig_checker/signatures.html:38
 msgctxt "eos-sig-checker"
 msgid "Group"
 msgstr "Gruppe"
 
-#: templates/eos_sig_checker/index.html:107
+#: templates/eos_sig_checker/index.html:116
 #: templates/eos_sig_checker/signatures.html:26
 #: templates/eos_sig_checker/signatures.html:39
 msgctxt "eos-sig-checker"
 msgid "Name"
 msgstr "Name"
 
-#: templates/eos_sig_checker/index.html:108
+#: templates/eos_sig_checker/index.html:117
 #: templates/eos_sig_checker/signatures.html:40
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "Signal"
 
-#: templates/eos_sig_checker/index.html:109
-msgid "Distance"
-msgstr "Entfernung"
-
-#: templates/eos_sig_checker/index.html:110
+#: templates/eos_sig_checker/index.html:118
 #: templates/eos_sig_checker/signatures.html:42
 msgid "Last checked"
 msgstr "Zuletzt geprüft"
 
-#: templates/eos_sig_checker/index.html:137
+#: templates/eos_sig_checker/index.html:144
 msgid "new"
 msgstr "neu"
 
-#: templates/eos_sig_checker/index.html:141
+#: templates/eos_sig_checker/index.html:148
 msgid "not in this paste"
 msgstr "nicht in diesem Paste"
 
-#: templates/eos_sig_checker/index.html:151
+#: templates/eos_sig_checker/index.html:158
 #, python-format
 msgid "Nothing known in %(system)s yet. Paste the probe scanner on the left."
 msgstr ""
 "In %(system)s ist noch nichts bekannt. Füge links den Probe Scanner ein."
 
-#: templates/eos_sig_checker/index.html:155
+#: templates/eos_sig_checker/index.html:162
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
@@ -318,12 +318,12 @@ msgstr ""
 "Probe Scanner links einfügen und Prüfen drücken: Jede Zeile erscheint hier "
 "wieder, mit Gruppe und Name, wo jemand sie schon gescannt hat."
 
-#: templates/eos_sig_checker/index.html:161
+#: templates/eos_sig_checker/index.html:168
 #: templates/eos_sig_checker/partials/resolved-cell.html:4
 msgid "filled in from the shared list"
 msgstr "aus der gemeinsamen Liste ergänzt"
 
-#: templates/eos_sig_checker/index.html:167
+#: templates/eos_sig_checker/index.html:174
 #, python-format
 msgid ""
 "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
@@ -416,19 +416,19 @@ msgstr ""
 "Die Position konnte nicht von ESI gelesen werden. Versuche es gleich noch "
 "einmal."
 
-#: views.py:104
+#: views.py:107
 msgid "Too many checks: wait a second and press Check again."
 msgstr "Zu viele Prüfungen: eine Sekunde warten und erneut Prüfen drücken."
 
-#: views.py:146
+#: views.py:156
 msgid "No character given."
 msgstr "Kein Charakter angegeben."
 
-#: views.py:172
+#: views.py:182
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-#: views.py:186
+#: views.py:196
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."

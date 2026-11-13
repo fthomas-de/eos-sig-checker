@@ -28,6 +28,8 @@ class TestIndex(SigTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["output"])
+        # the anomaly switch can be set before the first paste
+        self.assertContains(response, 'id="eos-sig-checker-hide-anomalies"')
 
     def test_should_return_every_line_completed_from_the_list(self):
         self.client.post(URL, {"text": DATA_SITE})
@@ -42,8 +44,37 @@ class TestIndex(SigTestCase):
         # the copy text keeps the client's format and leaves the invalid line out
         self.assertEqual(
             response.context["copy_text"],
-            f"{SCANNED}\nACJ-672\tCosmic Signature\tData Site\tUnsecured Frontier Server\t0,0%\t10,61 AU",
+            f"{SCANNED}\nACJ-672\tCosmic Signature\tData Site\tUnsecured Frontier Server\t100,0%\t10,61 AU",
         )
+
+    def test_should_empty_the_box_after_a_check(self):
+        response = self.client.post(URL, {"text": f"{SCANNED}\nbroken"})
+
+        self.assertFalse(response.context["form"].is_bound)
+        self.assertEqual(len(response.context["output"]), 2)
+
+    def test_should_keep_the_box_when_the_check_is_refused(self):
+        self.client.post(URL, {"text": SCANNED})
+
+        response = self.client.post(URL, {"text": UNSCANNED})
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response.context["form"]["text"].value(), UNSCANNED)
+
+    def test_should_leave_the_distance_out_of_the_result(self):
+        response = self.client.post(URL, {"text": SCANNED})
+
+        self.assertNotContains(response, ">Distance<")
+        self.assertNotContains(response, "<td class=\"text-end text-nowrap\">10,63 AU</td>", html=False)
+        # Copy keeps the probe scanner's format, distance included
+        self.assertIn("10,63 AU", response.context["copy_text"])
+
+    def test_should_mark_anomalies_and_copy_without_them(self):
+        response = self.client.post(URL, {"text": f"{SCANNED}\n{UNSCANNED}\nbroken"})
+
+        self.assertContains(response, "data-eos-sig-checker-anomaly", count=1)
+        self.assertEqual(response.context["copy_text_signatures"], UNSCANNED)
+        self.assertIn("UDN-422", response.context["copy_text"])
 
     def test_should_colour_the_signal(self):
         response = self.client.post(URL, {"text": f"{SCANNED}\n{UNSCANNED}"})
@@ -57,7 +88,7 @@ class TestIndex(SigTestCase):
         response = self.client.post(URL, {"text": f"{SCANNED}\n{ship}\n{ship}"})
 
         self.assertEqual(response.context["skipped"], 2)
-        # the input pane still shows the paste; the result holds only the signature
+        # the result holds only the signature
         self.assertEqual([row.line.signature_id for row in response.context["output"]], ["UDN-422"])
         self.assertNotIn("Heron", response.context["copy_text"])
         self.assertContains(response, "2 lines skipped")

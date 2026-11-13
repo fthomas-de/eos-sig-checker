@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-11-13
+
+### Added
+
+- Switch **Hide Cosmic Anomalies** in the result header, on by default:
+  anomalies crowd out the signatures people paste the list for. Copy takes
+  what is shown, so with the switch on the anomalies are left out there as
+  well. Switched off, it stays off in every tab of the browser. It shows
+  before the first paste too, so it can be set beforehand.
+
+### Changed
+
+- The probe scanner box is empty after a check (paste or Check button), so
+  the next paste does not land behind the last one. The text stays only when
+  the check was refused (too soon, too many lines); the result still shows
+  every line, the invalid ones with their text.
+- The result no longer shows the distance: it changes with every warp and
+  says nothing about the site. Copy keeps it, the probe scanner's format.
+- Switching tracking off keeps the character last picked in the menu, in
+  every tab of the browser, instead of falling back to the first one.
+
+### Fixed
+
+- A weaker scan of a known signature showed its signal reset (0 % after
+  100 %), in the result and in Copy, although the list keeps the best one.
+  Both now show the stored best signal; another site under the same ID
+  still starts over.
+
 ## [0.0.5] - 2026-11-13
 
 From the audit in `docs/AUDIT.md` (SIG-01 to SIG-05). Migration 0004 adds two

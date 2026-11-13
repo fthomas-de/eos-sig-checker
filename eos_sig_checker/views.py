@@ -19,6 +19,9 @@ MANAGE_SETTINGS = "eos_sig_checker.manage_settings"
 # at most one check per user and second - each one writes up to 500 rows
 MIN_INTERVAL_SECONDS = 1
 
+# the probe scanner's group the result can hide (anomalies.js)
+ANOMALY = "Cosmic Anomaly"
+
 # how often a tracking tab asks where its character is; the Refresh button
 # may ask sooner, but not within tracking.LOCATION_CACHE_SECONDS
 LOCATION_INTERVAL_SECONDS = 10
@@ -109,6 +112,9 @@ def index(request):
                 # would otherwise vanish without a word
                 skipped = sum(isinstance(row, Skipped) for row in rows)
                 output = sync.merge(rows, request.user.profile.main_character, system=location)
+                # processed: the box is empty for the next paste, the result
+                # keeps every line, the invalid ones with their text
+                form = PasteForm()
     else:
         form = PasteForm()
 
@@ -124,6 +130,10 @@ def index(request):
         "pasted": pasted,
         "skipped": skipped,
         "copy_text": _copy_text(output) if output else "",
+        # what Copy takes while the anomaly switch is on
+        "copy_text_signatures": _copy_text(
+            row for row in output or [] if not isinstance(row, Invalid) and row.line.group != ANOMALY
+        ),
         "max_age_days": max_age_days(),
         "characters": tracking.trackable_characters(request.user),
         # locate() returns or raises, so a named character always has a location or an error

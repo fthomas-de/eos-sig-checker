@@ -111,7 +111,6 @@ TRANSLATIONS = {
     "Group": ("Gruppe", "Группа", "分组"),
     "Name": ("Name", "Название", "名称"),
     "Signal": ("Signal", "Сигнал", "信号强度"),
-    "Distance": ("Entfernung", "Расстояние", "距离"),
     "Last checked": ("Zuletzt geprüft", "Последняя проверка", "上次检查"),
     "new": ("neu", "новая", "新"),
     "Paste the probe scanner on the left and press Check: every line comes back here, with group and name filled in where somebody has scanned it already.": (
@@ -181,6 +180,7 @@ TRANSLATIONS = {
     # location tracking
     "System": ("System", "Система", "星系"),
     "Track location": ("Position verfolgen", "Отслеживать местоположение", "追踪位置"),
+    "Hide Cosmic Anomalies": ("Cosmic Anomalies ausblenden", "Скрыть Cosmic Anomalies", "隐藏 Cosmic Anomalies"),
     "Tracked character": ("Verfolgter Charakter", "Отслеживаемый персонаж", "追踪的角色"),
     "Read the location now": ("Position jetzt lesen", "Прочитать местоположение сейчас", "立即读取位置"),
     "Refresh": ("Aktualisieren", "Обновить", "刷新"),
