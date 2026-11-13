@@ -6,9 +6,16 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Version: `0.0.6`, 2026-11-13 (see `CHANGELOG.md` under 0.0.6). Pushed to
-  `origin/main` with the annotated tags `v0.0.1` to `v0.0.6` ("Release
+- Version: `0.0.7`, 2026-11-13 (see `CHANGELOG.md` under 0.0.7). Pushed to
+  `origin/main` with the annotated tags `v0.0.1` to `v0.0.7` ("Release
   <version>" on the release commit).
+- New in 0.0.7 (no migration): card **WH** (`fa-hurricane`) on the paste
+  page, left of the probe scanner box - every row with group `Wormhole`
+  checked in the last 3 hours (`sync.recent_wormholes`,
+  `sync.WORMHOLE_HOURS`), any system, newest first; columns System, ID,
+  time (`H:i`). Read after the merge, so a paste's wormholes show at once;
+  no polling. Layout `col-lg-3` / `col-lg-3` / `col-lg-6` (WH / probe
+  scanner / result): at 2/5/5 the WH card scrolled sideways.
 - New in 0.0.6, all on the paste page (no migration):
   - switch **Hide Cosmic Anomalies** in the result header, always shown,
     on by default (`js/anomalies.js`, state in localStorage under
@@ -26,9 +33,9 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   growing wait after failed location reads, 200 lines per paste as a
   setting, rows locked in ID order, `re.ASCII` patterns, the statistics
   line below every page; migration 0004.
-- What the app does: the paste page (`basic_access`) - two equal panes,
-  paste the probe scanner (English client) on the left, the same lines come
-  back on the right as a table with site type and name filled in from the
+- What the app does: the paste page (`basic_access`) - the WH card, then
+  the probe scanner box (English client), then the result: the same lines
+  come back as a table with site type and name filled in from the
   shared list (green), invalid lines red with the reason, a Copy button.
   Every valid line is stored or merged into `Signature`; a Celery task
   deletes rows past their age. `manage_settings` opens the **Signatures**
@@ -40,19 +47,21 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   `js/tracking.js`), off by default, per browser tab, only existing tokens
   with `esi-location.read_location.v1`. Every check stores the system (one
   row per signature ID **and** system).
-- Tests: 105 without the `translations` tag (all pass at 0.0.6), plus the
-  catalogue tests run by `tools/translate.py`. Every new test of 0.0.6 was
-  checked against the old code. No automated test for the browser side of
-  the scripts; the 0.0.6 scripts were checked by hand in the browser pane
-  (switch, Copy, persistence, dropdown after tracking off).
+- Tests: 107 without the `translations` tag (all pass at 0.0.7), plus the
+  catalogue tests run by `tools/translate.py`. The two WH tests fail when
+  the `Wormhole` filter is dropped. No automated test for the browser side
+  of the scripts; the WH card was checked in the browser pane at 1500 px,
+  empty and with one entry, dark theme.
 
 ## Open
 
 - **Not looked at in the browser yet** (0.0.5): the statistics line on the
   three pages, the settings page with three fields, the 200-line message,
   the tracking message during a growing wait.
+- WH card not checked yet: light theme, narrow screen (the three cards
+  stack), many wormholes with long system names.
 - The live instance: remove `EOS_SIG_CHECKER_MAX_AGE_DAYS` from its
-  `local.py` if set, install `@v0.0.6`, run migrate (0002 to 0004) and
+  `local.py` if set, install `@v0.0.7`, run migrate (0002 to 0004) and
   `collectstatic`, restart AA and Celery, then give `manage_settings` to
   whoever looks after the list. Members who want tracking need a token
   with `esi-location.read_location.v1` from another app (corptools asks for
@@ -64,11 +73,16 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - Not checked yet: a real Ctrl+V from the EVE client, the light theme, an
   expired row on the Signatures tab outside the unit tests, the Refresh
   button by a real click, a system change while tracking.
-- Next sensible step: deploy 0.0.6 to the live instance (README's install
+- Next sensible step: deploy 0.0.7 to the live instance (README's install
   section), then a real paste from the EVE client.
 
 ## Decisions
 
+- 0.0.7 (2026-11-13): the WH card is on the paste page only, not on the
+  Signatures tab. "Seen" means `last_checked` (not `first_seen`) within 3
+  hours, a constant rather than a setting. Columns System, ID, time; rows
+  without a system stay in with a blank system. Title "WH" stays
+  untranslated; icon `fa-hurricane` (Font Awesome has no wormhole).
 - 0.0.6 (2026-11-13): the anomaly switch is always visible, on by default,
   remembered per browser; Copy takes only what is shown. The box empties
   after every processed check, invalid lines included (they stay in the
@@ -124,17 +138,21 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 - Installed editable (`--no-deps`), `'eos_sig_checker',` in
   `INSTALLED_APPS`, cleanup task in `CELERYBEAT_SCHEDULE` (11:15 daily),
-  migrations 0001-0004 applied, static collected at 0.0.6. Settings stored:
+  migrations 0001-0004 applied, static collected at 0.0.6 (0.0.7 changed
+  no static file). Settings stored:
   max age 7; 60 s, 200 lines. The Celery worker was not restarted after
   0.0.5 - no task changed since, restart it anyway at the next chance.
 - `Signature` holds the user's sample pastes plus browser test rows
-  `ZZT-901`/`ZZT-902` (R-ARKN) and `ZZT-911`/`ZZT-912` (no system): this
+  `ZZT-901`/`ZZT-902` (R-ARKN) and `ZZT-911`/`ZZT-912`/`ZZT-921` (wormhole)/
+  `ZZT-922` (no system): this
   app's own, they expire on their own.
 - Browser checks log in as account `E_o` (superuser, location tokens):
   BigBlackout C and E 'o work, Eh 'o's refresh token is dead (SSO
   `invalid_grant`). Account `Eh_o` has no `basic_access`.
 - `discord_announcer.0008_transaction_kind` is pending in `aa_dev` - not
   ours, left alone.
+- The app's URL is `/eos_sig_checker/` (underscores); `/eos-sig-checker/`
+  is a 404.
 - The dev server answers on `http://127.0.0.1:8000`; `localhost:8000` is
   refused by `ALLOWED_HOSTS`. Claude starts it through the preview config
   `aa-dev` in `C:\Users\flt\Claude\.claude\launch.json` (runserver in WSL).
