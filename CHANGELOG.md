@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.9] - 2026-11-18
+
+### Changed
+
+- Permission text of `basic_access` is now "Can paste signatures and see
+  the shared list", and the README says what it shows and that it belongs
+  to member states only. "Paste and resolve" hid that everybody with it
+  sees the systems, the WH card and the main of the last checker of every
+  pasted ID. Migration 0006 only updates the model options: an existing
+  installation keeps the old text in the admin until the permission is
+  created anew.
+
 ## [0.0.8] - 2026-11-13
 
 ### Changed

@@ -134,7 +134,7 @@ remove the line.
 
 | Permission | Meant for | What it opens |
 |---|---|---|
-| `eos_sig_checker.basic_access` | Everybody who scans | The page: paste, store and resolve signatures, and track the location of their own characters. Everybody with it shares the same list. |
+| `eos_sig_checker.basic_access` | The members who scan - give it to member states only, not to blues or guests | The page: paste, store and resolve signatures, and track the location of their own characters. Everybody with it shares the same list and sees what the others scanned: for every ID they paste the system, site type and name, when it was last checked and the main of whoever checked it, and the WH card with every wormhole checked recently in any system. |
 | `eos_sig_checker.manage_settings` | Whoever looks after the list | The **Signatures** tab: the whole list as a sortable table with a filter each for System, ID, Group and Name; entries past their age are greyed out until the cleanup removes them. The settings page: the days an entry counts, and deleting all signatures. Works on its own; it does not include `basic_access`. |
 
 Admins can also look at and edit the list in the Django admin

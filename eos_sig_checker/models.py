@@ -38,7 +38,7 @@ class General(models.Model):
         managed = False
         default_permissions = ()
         permissions = (
-            ("basic_access", _("Can paste and resolve signatures")),
+            ("basic_access", _("Can paste signatures and see the shared list")),
             ("manage_settings", _("Can change the settings and delete all signatures")),
         )
 

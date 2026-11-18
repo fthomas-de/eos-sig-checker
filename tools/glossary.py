@@ -29,10 +29,10 @@ PLURAL_FORMS = {
 
 TRANSLATIONS = {
     "Sig Checker": ("Sig Checker", "Sig Checker", "Sig Checker"),
-    "Can paste and resolve signatures": (
-        "Kann Signaturen einfügen und auflösen",
-        "Может вставлять и распознавать сигнатуры",
-        "可以粘贴并解析信号",
+    "Can paste signatures and see the shared list": (
+        "Kann Signaturen einfügen und die gemeinsame Liste sehen",
+        "Может вставлять сигнатуры и видеть общий список",
+        "可以粘贴信号并查看共享列表",
     ),
     "Signature": ("Signatur", "Сигнатура", "信号"),
     "Signatures": ("Signaturen", "Сигнатуры", "信号"),

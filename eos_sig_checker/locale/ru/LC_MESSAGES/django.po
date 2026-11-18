@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-13 18:34+0000\n"
-"PO-Revision-Date: 2026-11-13 18:34+0000\n"
+"POT-Creation-Date: 2026-11-18 18:14+0000\n"
+"PO-Revision-Date: 2026-11-18 18:14+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: ru\n"
 "Language: ru\n"
@@ -42,8 +42,8 @@ msgstr[1] "Не более %(max)d строк за одну вставку."
 msgstr[2] "Не более %(max)d строк за одну вставку."
 
 #: models.py:41
-msgid "Can paste and resolve signatures"
-msgstr "Может вставлять и распознавать сигнатуры"
+msgid "Can paste signatures and see the shared list"
+msgstr "Может вставлять сигнатуры и видеть общий список"
 
 #: models.py:42
 msgid "Can change the settings and delete all signatures"
