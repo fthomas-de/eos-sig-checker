@@ -6,9 +6,16 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Version: `0.0.8`, 2026-11-13 (see `CHANGELOG.md` under 0.0.8). Pushed to
-  `origin/main` with the annotated tags `v0.0.1` to `v0.0.8` ("Release
+- Version: `0.0.9`, 2026-11-18 (see `CHANGELOG.md` under 0.0.9). Pushed to
+  `origin/main` with the annotated tags `v0.0.1` to `v0.0.9` ("Release
   <version>" on the release commit).
+- New in 0.0.9 (migration 0006, model options only): the text of
+  `basic_access` is "Can paste signatures and see the shared list"; the
+  README's permission table names what it shows (systems, WH card, main of
+  the last checker) and that it belongs to member states only. Came out of
+  a permission review of all eos-* apps (2026-11-18, decisions below).
+  Django does not rename an existing permission: installations that had
+  the app before keep the old text in the admin.
 - New in 0.0.8 (migration 0005): setting **Show wormholes (hours)**
   (`SigCheckerConfiguration.wormhole_hours`, default 3, 1-48,
   `app_settings.wormhole_hours()`), read at call time by
@@ -52,7 +59,7 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   `js/tracking.js`), off by default, per browser tab, only existing tokens
   with `esi-location.read_location.v1`. Every check stores the system (one
   row per signature ID **and** system).
-- Tests: 109 without the `translations` tag (all pass at 0.0.8), plus the
+- Tests: 109 without the `translations` tag (all pass at 0.0.9), plus the
   catalogue tests run by `tools/translate.py`. The two WH tests fail when
   the `Wormhole` filter is dropped; the WH sync test uses 10 hours and fails
   when the setting is ignored. No automated test for the browser side
@@ -67,9 +74,10 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - WH card not checked yet: light theme, narrow screen (the three cards
   stack), many wormholes with long system names.
 - The live instance: remove `EOS_SIG_CHECKER_MAX_AGE_DAYS` from its
-  `local.py` if set, install `@v0.0.8`, run migrate (0002 to 0005) and
-  `collectstatic`, restart AA and Celery, then give `manage_settings` to
-  whoever looks after the list. Members who want tracking need a token
+  `local.py` if set, install `@v0.0.9`, run migrate (0002 to 0006) and
+  `collectstatic`, restart AA and Celery, then give `basic_access` to the
+  member states only and `manage_settings` to whoever looks after the
+  list. Members who want tracking need a token
   with `esi-location.read_location.v1` from another app (corptools asks for
   it).
 - README's install line still names `@v0.0.1`: point it at the current tag
@@ -79,10 +87,17 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - Not checked yet: a real Ctrl+V from the EVE client, the light theme, an
   expired row on the Signatures tab outside the unit tests, the Refresh
   button by a real click, a system change while tracking.
-- Next sensible step: deploy 0.0.8 to the live instance (README's install
+- Next sensible step: deploy 0.0.9 to the live instance (README's install
   section), then a real paste from the EVE client.
 
 ## Decisions
+
+- Permission review (2026-11-18): `basic_access` goes to member states
+  only, not to blues or guests. The main of the last checker stays visible
+  to everybody with `basic_access`. A pasted line without scan data (no
+  tracking) keeps refreshing the row and setting the paster as last
+  checker, although that lets any member look up an ID without being
+  there. So no code change; only the permission text and the README.
 
 - 0.0.8 (2026-11-13): the WH hours are a setting on the settings page (not
   per member), in whole hours, 1 to 48 (a wormhole lives at most 48 hours),
@@ -147,8 +162,9 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 - Installed editable (`--no-deps`), `'eos_sig_checker',` in
   `INSTALLED_APPS`, cleanup task in `CELERYBEAT_SCHEDULE` (11:15 daily),
-  migrations 0001-0005 applied, static collected at 0.0.6 (0.0.7 and 0.0.8
-  changed no static file). Settings stored:
+  migrations 0001-0006 applied, static collected at 0.0.6 (0.0.7 to 0.0.9
+  changed no static file); `basic_access` still shows its old text in the
+  admin there (see 0.0.9). Settings stored:
   max age 7; 60 s, 200 lines; WH 3 hours. The Celery worker was not restarted after
   0.0.5 - no task changed since, restart it anyway at the next chance.
 - `Signature` holds the user's sample pastes plus browser test rows
@@ -170,6 +186,11 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## Traps
 
+- Claude's Bash tool (Git Bash) turns `/home/...` arguments of `wsl.exe`
+  into `C:/Program Files/Git/home/...`: run `wsl.exe ... bash -l <script>`
+  from the PowerShell tool, or set `MSYS_NO_PATHCONV=1`.
+- A changed permission text needs a migration, but Django does not rename
+  the existing `auth_permission` row: only new installations see it.
 - `str.strip()` removes `\x1c`-`\x1f` as whitespace: `parser.parse` rejects
   control characters before splitting.
 - `models.py` imports `parser.MAX_LINES`: the parser must never import from
