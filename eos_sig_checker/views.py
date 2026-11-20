@@ -7,10 +7,10 @@ from django.utils.translation import gettext as _
 from django.utils.translation import ngettext
 from django.views.decorators.http import require_POST
 
-from . import __version__, parser, sync, tracking
-from .app_settings import max_age_days, wormhole_hours
+from . import __version__, client_text, parser, sync, tasks, tracking
+from .app_settings import error_log_days, max_age_days, system_hours, wormhole_hours
 from .forms import ConfigurationForm, PasteForm
-from .models import SigCheckerConfiguration, Signature
+from .models import RejectedLine, SigCheckerConfiguration, Signature
 from .parser import Invalid, Skipped
 
 BASIC_ACCESS = "eos_sig_checker.basic_access"
@@ -18,9 +18,6 @@ MANAGE_SETTINGS = "eos_sig_checker.manage_settings"
 
 # at most one check per user and second - each one writes up to 500 rows
 MIN_INTERVAL_SECONDS = 1
-
-# the probe scanner's group the result can hide (anomalies.js)
-ANOMALY = "Cosmic Anomaly"
 
 # how often a tracking tab asks where its character is; the Refresh button
 # may ask sooner, but not within tracking.LOCATION_CACHE_SECONDS
@@ -30,6 +27,7 @@ LOCATION_INTERVAL_SECONDS = 10
 NAV_CHECK = "check"
 NAV_SIGNATURES = "signatures"
 NAV_SETTINGS = "settings"
+NAV_ERRORS = "errors"
 
 
 def has_access(user) -> bool:
@@ -41,18 +39,15 @@ def _render(request, template, context, nav, status=200):
     return render(request, template, {"version": __version__, "nav": nav, "statistics": sync.statistics(), **context}, status=status)
 
 
-def _copy_text(output) -> str:
-    """The completed paste in the probe scanner's own format."""
+def _copy_text(output, texts) -> str:
+    """The completed paste in the probe scanner's own format, in the reader's client language."""
     lines = []
     for row in output:
         if isinstance(row, Invalid):
             continue
         line = row.line
-        lines.append(
-            "\t".join(
-                (line.signature_id, line.group, row.site_type, row.name, line.signal_text, line.distance)
-            )
-        )
+        words = (texts.get(word, word) for word in (line.group, row.site_type, row.name))
+        lines.append("\t".join((line.signature_id, *words, line.signal_text, line.distance)))
     return "\n".join(lines)
 
 
@@ -107,7 +102,8 @@ def index(request):
                 form.add_error(None, _("Too many checks: wait a second and press Check again."))
                 status = 429
             else:
-                rows = parser.parse(form.cleaned_data["text"])
+                rows = parser.parse(form.cleaned_data["text"], client_text.lookup)
+                sync.log_rejected(rows, request.user.profile.main_character)
                 # counted, not shown: a paste from another client language
                 # would otherwise vanish without a word
                 skipped = sum(isinstance(row, Skipped) for row in rows)
@@ -123,21 +119,27 @@ def index(request):
         pasted_ids = [row.line.signature_id for row in output or [] if not isinstance(row, Invalid)]
         output = (output or []) + sync.system_rows(location, skip_ids=pasted_ids)
 
+    texts = client_text.display(
+        word
+        for row in output or []
+        if not isinstance(row, Invalid)
+        for word in (row.line.group, row.site_type, row.name)
+    )
     context = {
         "min_interval_ms": MIN_INTERVAL_SECONDS * 1000,
         "form": form,
         "output": output,
         "pasted": pasted,
         "skipped": skipped,
-        "copy_text": _copy_text(output) if output else "",
-        # what Copy takes while the anomaly switch is on
-        "copy_text_signatures": _copy_text(
-            row for row in output or [] if not isinstance(row, Invalid) and row.line.group != ANOMALY
-        ),
+        # site data in the reader's client language; the list itself stays English
+        "texts": texts,
+        "copy_text": _copy_text(output, texts) if output else "",
         "max_age_days": max_age_days(),
         # read after the merge, so this paste's wormholes are in it
         "wormholes": sync.recent_wormholes(),
         "wormhole_hours": wormhole_hours(),
+        "systems": sync.recent_systems(),
+        "system_hours": system_hours(),
         "characters": tracking.trackable_characters(request.user),
         # locate() returns or raises, so a named character always has a location or an error
         "tracked_character_id": character_id,
@@ -169,8 +171,10 @@ def tracked_location(request):
 def signatures(request):
     """Everything in the table, expired rows included: the count matches
     what Delete all would remove."""
+    signatures = list(Signature.objects.select_related("last_checked_by").order_by("-last_checked"))
     context = {
-        "signatures": Signature.objects.select_related("last_checked_by").order_by("-last_checked"),
+        "signatures": signatures,
+        "texts": client_text.display(word for signature in signatures for word in (signature.site_type, signature.name)),
         "oldest": sync.cutoff(),
     }
     return _render(request, "eos_sig_checker/signatures.html", context, NAV_SIGNATURES)
@@ -185,8 +189,23 @@ def settings(request):
         messages.success(request, _("Settings saved."))
         return redirect("eos_sig_checker:settings")
 
-    context = {"form": form, "signature_count": Signature.objects.count()}
+    context = {
+        "form": form,
+        "signature_count": Signature.objects.count(),
+        # asks the archive on every view: whether an update is waiting is the point of the card
+        "client_texts": client_text.status(),
+    }
     return _render(request, "eos_sig_checker/settings.html", context, NAV_SETTINGS)
+
+
+@login_required
+@permission_required(MANAGE_SETTINGS)
+@require_POST
+def client_texts_update(request):
+    # in the background: fetching every language takes minutes
+    tasks.update_client_texts.delay()
+    messages.success(request, _("Update of the client texts started. It runs in the background and takes a few minutes."))
+    return redirect("eos_sig_checker:settings")
 
 
 @login_required
@@ -199,3 +218,25 @@ def delete_all(request):
         ngettext("Deleted %(count)d signature.", "Deleted %(count)d signatures.", deleted) % {"count": deleted},
     )
     return redirect("eos_sig_checker:settings")
+
+
+@login_required
+@permission_required(MANAGE_SETTINGS)
+def errors(request):
+    context = {
+        "rejected": RejectedLine.objects.select_related("character").order_by("-created"),
+        "error_log_days": error_log_days(),
+    }
+    return _render(request, "eos_sig_checker/errors.html", context, NAV_ERRORS)
+
+
+@login_required
+@permission_required(MANAGE_SETTINGS)
+@require_POST
+def delete_errors(request):
+    deleted, _rows = RejectedLine.objects.all().delete()
+    messages.success(
+        request,
+        ngettext("Deleted %(count)d rejected line.", "Deleted %(count)d rejected lines.", deleted) % {"count": deleted},
+    )
+    return redirect("eos_sig_checker:errors")

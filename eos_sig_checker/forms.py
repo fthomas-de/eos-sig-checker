@@ -4,9 +4,11 @@ from django.utils.translation import ngettext
 
 from .app_settings import max_lines
 from .models import (
+    ERROR_LOG_DAYS_LIMIT,
     LOCATION_RETRY_SECONDS_LIMIT,
     LOCATION_RETRY_SECONDS_MIN,
     MAX_AGE_DAYS_LIMIT,
+    SYSTEM_HOURS_LIMIT,
     WORMHOLE_HOURS_LIMIT,
     SigCheckerConfiguration,
 )
@@ -16,7 +18,7 @@ from .parser import MAX_CHARS, MAX_LINES
 class ConfigurationForm(forms.ModelForm):
     class Meta:
         model = SigCheckerConfiguration
-        fields = ["max_age_days", "location_retry_seconds", "max_lines", "wormhole_hours"]
+        fields = ["max_age_days", "location_retry_seconds", "max_lines", "wormhole_hours", "system_hours", "error_log_days"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,6 +31,8 @@ class ConfigurationForm(forms.ModelForm):
         )
         self.fields["max_lines"].widget.attrs.update(min=1, max=MAX_LINES)
         self.fields["wormhole_hours"].widget.attrs.update(min=1, max=WORMHOLE_HOURS_LIMIT)
+        self.fields["system_hours"].widget.attrs.update(min=1, max=SYSTEM_HOURS_LIMIT)
+        self.fields["error_log_days"].widget.attrs.update(min=1, max=ERROR_LOG_DAYS_LIMIT)
 
 
 class PasteForm(forms.Form):

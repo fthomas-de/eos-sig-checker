@@ -27,6 +27,14 @@ DEFAULT_WORMHOLE_HOURS = 3
 # a wormhole lives at most 48 hours; an older one is gone in the game
 WORMHOLE_HOURS_LIMIT = 48
 
+DEFAULT_SYSTEM_HOURS = 3
+# two days, like the wormholes: older is no longer where people scan now
+SYSTEM_HOURS_LIMIT = 48
+
+DEFAULT_ERROR_LOG_DAYS = 7
+# the log holds pasted text: long enough to show a fault, short enough not to pile up
+ERROR_LOG_DAYS_LIMIT = 30
+
 # the solar system of a signature pasted without a tracked character
 NO_SYSTEM = 0
 
@@ -75,6 +83,18 @@ class SigCheckerConfiguration(SingletonModel):
         validators=[MinValueValidator(1), MaxValueValidator(WORMHOLE_HOURS_LIMIT)],
         verbose_name=_("Show wormholes (hours)"),
         help_text=_("Hours a checked wormhole stays in the WH list of the paste page."),
+    )
+    system_hours = models.PositiveSmallIntegerField(
+        default=DEFAULT_SYSTEM_HOURS,
+        validators=[MinValueValidator(1), MaxValueValidator(SYSTEM_HOURS_LIMIT)],
+        verbose_name=_("Show systems (hours)"),
+        help_text=_("Hours a system stays in the system list of the paste page after its last check."),
+    )
+    error_log_days = models.PositiveSmallIntegerField(
+        default=DEFAULT_ERROR_LOG_DAYS,
+        validators=[MinValueValidator(1), MaxValueValidator(ERROR_LOG_DAYS_LIMIT)],
+        verbose_name=_("Keep rejected lines (days)"),
+        help_text=_("Days a rejected line stays on the Errors tab. After that the daily cleanup removes it."),
     )
 
     class Meta:
@@ -131,3 +151,67 @@ class Signature(models.Model):
         from .parser import signal_band
 
         return signal_band(self.signal)
+
+
+class RejectedLine(models.Model):
+    """A pasted line the parser refused, kept for the Errors tab."""
+
+    # parser.Invalid has cut it to 120 characters already
+    text = models.CharField(max_length=120)
+    # English whatever the paster reads: the log is read to find the fault
+    reason = models.CharField(max_length=200)
+    character = models.ForeignKey(EveCharacter, null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
+    created = models.DateTimeField(db_index=True)
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = _("Rejected line")
+        verbose_name_plural = _("Rejected lines")
+
+    def __str__(self):
+        return self.text
+
+
+class ClientText(models.Model):
+    """One text of the EVE client in English and in one other language.
+
+    Filled by client_text.store. No unique constraint: MySQL's default
+    collation compares without case and accents and would refuse pairs the
+    client keeps apart. One English may have several rows, one text several
+    English: the lookups decide what is unambiguous.
+    """
+
+    language = models.CharField(max_length=5)
+    # parser.NAME caps the English at 100 characters
+    english = models.CharField(max_length=100)
+    text = models.CharField(max_length=200)
+
+    class Meta:
+        default_permissions = ()
+        # looked up both ways: the page shows English rows in the reader's
+        # language; a paste's words are looked up before its language is known
+        indexes = [
+            models.Index(fields=["language", "english"], name="eos_sig_checker_ct_english"),
+            models.Index(fields=["text"], name="eos_sig_checker_ct_by_text"),
+        ]
+
+    def __str__(self):
+        return f"{self.language}: {self.english}"
+
+
+class ClientTextLanguage(models.Model):
+    """What is imported for one client language."""
+
+    language = models.CharField(max_length=5, primary_key=True)
+    # the archive's build number at the import, shown on the settings page
+    build = models.CharField(max_length=20)
+    # the archive's hash of the file: an unchanged language is not fetched again
+    digest = models.CharField(max_length=64)
+    imported = models.DateTimeField()
+    count = models.PositiveIntegerField()
+
+    class Meta:
+        default_permissions = ()
+
+    def __str__(self):
+        return self.language

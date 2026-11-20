@@ -17,6 +17,9 @@
         <li class="nav-item">
             <a class="nav-link {% if nav == 'settings' %}active{% endif %}" href="{% url 'eos_sig_checker:settings' %}"{% if nav == 'settings' %} aria-current="page"{% endif %}>{% translate "Settings" context "eos-sig-checker" %}</a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {% if nav == 'errors' %}active{% endif %}" href="{% url 'eos_sig_checker:errors' %}"{% if nav == 'errors' %} aria-current="page"{% endif %}>{% translate "Errors" %}</a>
+        </li>
     {% endif %}
 {% endblock %}
 

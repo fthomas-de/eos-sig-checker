@@ -77,11 +77,17 @@ is no binary log and there are no dumps.
   allowed characters, percentage, distance) and a line that does not fit is
   reported, never stored. Loosen a pattern only with a test for the real
   client text that needed it. The form caps lines and characters. A line
-  with a valid ID but no Cosmic Signature/Anomaly is `Skipped` (ships,
-  structures, other client languages): dropped, only counted on the page.
-- The page uses the probe scanner's column words: Kind = the model's
-  `group`, Group = the model's `site_type`. Keep the two apart when adding
-  text.
+  with a valid ID but no Cosmic Signature is `Skipped` (anomalies, ships,
+  structures, client languages without client texts): dropped, only
+  counted on the page. Another client's words are put into English first
+  (`client_text.lookup`, handed in by the view - the parser never imports
+  models): the first word decides the language and must mean one of
+  `KINDS`, the site type one of `SITE_TYPES`, the name exactly one English
+  text; what has no single meaning is left blank and goes on the Errors
+  tab (`Line.problems`). Never guess between meanings.
+- The page uses the probe scanner's column words: Group = the model's
+  `site_type`. The model's `group` is always Cosmic Signature and not
+  shown.
 - `sync.py` merges into the list: one row per signature ID and solar system
   (`NO_SYSTEM` without tracking); a different group/type/name replaces the
   row (reused ID), blank columns resolve from it. A row past the age from
@@ -90,6 +96,14 @@ is no binary log and there are no dumps.
   It is the second security boundary: the browser names a character, never
   a system, and ownership is checked before the location cache is read.
   Tests mock `tracking.esi` or `tracking.locate`, never the network.
+- `client_text.py` holds the client's texts per language (`ClientText`),
+  filled from the archive of client texts. `pairs()` is the third security
+  boundary: the archive is foreign data, so only English the parser takes
+  for a name (`parser.NAME`) with a plain, printable translation gets in.
+  Ambiguity is kept (Japanese has one word for "Wormhole" and "Wormholes")
+  and decided by the lookups, per direction, never guessed. An untranslated
+  text is kept as itself (English = English): the client shows the English
+  there; `display` prefers a real translation to it.
 - The age lives in the singleton `SigCheckerConfiguration` (settings page,
   `manage_settings`) and is read at call time (`app_settings.max_age_days()`),
   so the merge, the task and the page follow a change without a restart.
@@ -125,7 +139,13 @@ to them.
 - Test users come from `tests.base.make_user`: it gives them a main and its
   ownership, which Alliance Auth's `main_character_required` needs.
 - `tests.base` holds real probe scanner lines (`SCANNED`, `UNSCANNED`,
-  `DATA_SITE`); build new cases from client text, not from guesses.
+  `DATA_SITE`, and `FOREIGN` from seven other clients, unscanned); build new
+  cases from client text, not from guesses. `CLIENT_TEXTS` are the client
+  texts those need: `lookup_of()` hands them to the parser without the
+  database, `store_client_texts()` puts them into it.
+- Tests are offline: `SigTestCase` makes every request to the archive of
+  client texts fail. A test that wants an answer patches
+  `eos_sig_checker.client_text.requests.get` again inside.
 
 Every change gets a test, and every new test gets checked against the broken
 version: put the fault back, run the test, confirm it fails, restore the
@@ -148,7 +168,11 @@ machine-generated and marked so in the `.po` header. They are only touched
   in the venv. The `.mo` files are committed.
 - The glossary `tools/glossary.py` is the source of truth. Add every new message there, never in
   a `.po` file: the next run overwrites a hand edit.
-- EVE jargon stays English in every language: Corporation, Alliance,
+- Site data (Group and Name of a signature, Copy) is not in the
+  catalogues: it comes from the client texts in the reader's language
+  (`client_text.display`, template filter `client_text`), English where
+  there is no single translation. The list stays English.
+- In the catalogues, EVE jargon stays English in every language: Corporation, Alliance,
   Character, Main, Wormhole, and the signature groups (Combat Site, Relic
   Site, Data Site, Gas Site, Ore Site). Alliance Auth translates some short
   words itself and wins a msgid clash, so those carry a context: `EVE jargon`

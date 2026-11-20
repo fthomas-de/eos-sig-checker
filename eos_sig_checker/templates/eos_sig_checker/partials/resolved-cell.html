@@ -1,7 +1,8 @@
 {% load i18n %}
-{# A group or name; green when it came from the shared list instead of the paste. `resolved` names the column. #}
+{% load eos_sig_checker %}
+{# A group or name, in the reader's client language (texts); green when it came from the shared list instead of the paste. `resolved` names the column. #}
 {% if resolved in row.resolved %}
-    <td class="table-success" title="{% translate 'filled in from the shared list' %}">{{ value }}</td>
+    <td class="table-success" title="{% translate 'filled in from the shared list' %}">{{ value|client_text:texts }}</td>
 {% else %}
-    <td>{{ value }}</td>
+    <td>{{ value|client_text:texts }}</td>
 {% endif %}

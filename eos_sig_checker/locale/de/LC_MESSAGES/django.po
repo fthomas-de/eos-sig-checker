@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: eos-sig-checker\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-18 18:14+0000\n"
-"PO-Revision-Date: 2026-11-18 18:14+0000\n"
+"POT-Creation-Date: 2026-11-20 11:44+0000\n"
+"PO-Revision-Date: 2026-11-20 11:44+0000\n"
 "Last-Translator: eos-sig-checker\n"
 "Language-Team: de\n"
 "Language: de\n"
@@ -18,15 +18,15 @@ msgstr ""
 
 #: auth_hooks.py:13 templates/eos_sig_checker/base.html:4
 #: templates/eos_sig_checker/base.html:10
-#: templates/eos_sig_checker/base.html:25
+#: templates/eos_sig_checker/base.html:28
 msgid "Sig Checker"
 msgstr "Sig Checker"
 
-#: forms.py:37
+#: forms.py:41
 msgid "Probe scanner"
 msgstr "Probe Scanner"
 
-#: forms.py:45
+#: forms.py:49
 msgid ""
 "Select the results in the probe scanner, copy them with Ctrl+C and paste "
 "them here."
@@ -34,26 +34,26 @@ msgstr ""
 "Ergebnisse im Probe Scanner markieren, mit Strg+C kopieren und hier "
 "einfügen."
 
-#: forms.py:57
+#: forms.py:61
 #, python-format
 msgid "At most %(max)d line per paste."
 msgid_plural "At most %(max)d lines per paste."
 msgstr[0] "Höchstens %(max)d Zeile pro Einfügen."
 msgstr[1] "Höchstens %(max)d Zeilen pro Einfügen."
 
-#: models.py:41
+#: models.py:49
 msgid "Can paste signatures and see the shared list"
 msgstr "Kann Signaturen einfügen und die gemeinsame Liste sehen"
 
-#: models.py:42
+#: models.py:50
 msgid "Can change the settings and delete all signatures"
 msgstr "Kann die Einstellungen ändern und alle Signaturen löschen"
 
-#: models.py:52
+#: models.py:60
 msgid "Keep signatures (days)"
 msgstr "Signaturen behalten (Tage)"
 
-#: models.py:54
+#: models.py:62
 msgid ""
 "Days a signature counts after its last check. After that it is ignored and "
 "removed by the daily cleanup."
@@ -61,11 +61,11 @@ msgstr ""
 "Tage, die eine Signatur nach ihrer letzten Prüfung gilt. Danach wird sie "
 "ignoriert und von der täglichen Bereinigung entfernt."
 
-#: models.py:61
+#: models.py:69
 msgid "Longest wait after failed location reads (seconds)"
 msgstr "Längste Wartezeit nach fehlgeschlagenen Positionsabfragen (Sekunden)"
 
-#: models.py:63
+#: models.py:71
 msgid ""
 "A location that cannot be read is asked again after 5 seconds at first, then"
 " later with every further failure, in 5 steps up to this many seconds."
@@ -74,11 +74,11 @@ msgstr ""
 "erneut abgefragt, dann mit jedem weiteren Fehlschlag später, in 5 Stufen bis"
 " zu so vielen Sekunden."
 
-#: models.py:70
+#: models.py:78
 msgid "Lines per paste"
 msgstr "Zeilen pro Paste"
 
-#: models.py:71
+#: models.py:79
 msgid ""
 "The most lines one paste may hold. A full system has a few dozen signatures "
 "and anomalies."
@@ -86,69 +86,127 @@ msgstr ""
 "Die meisten Zeilen, die ein Paste enthalten darf. Ein volles System hat "
 "einige Dutzend Signaturen und Anomalien."
 
-#: models.py:76
+#: models.py:84
 msgid "Show wormholes (hours)"
 msgstr "Wormholes anzeigen (Stunden)"
 
-#: models.py:77
+#: models.py:85
 msgid "Hours a checked wormhole stays in the WH list of the paste page."
 msgstr ""
 "Stunden, die ein geprüftes Wormhole in der WH-Liste der Paste-Seite bleibt."
 
-#: models.py:82
+#: models.py:90
+msgid "Show systems (hours)"
+msgstr "Systeme anzeigen (Stunden)"
+
+#: models.py:91
+msgid ""
+"Hours a system stays in the system list of the paste page after its last "
+"check."
+msgstr ""
+"Stunden, die ein System nach seiner letzten Prüfung in der Systemliste der "
+"Paste-Seite bleibt."
+
+#: models.py:96
+msgid "Keep rejected lines (days)"
+msgstr "Abgelehnte Zeilen behalten (Tage)"
+
+#: models.py:97
+msgid ""
+"Days a rejected line stays on the Errors tab. After that the daily cleanup "
+"removes it."
+msgstr ""
+"Tage, die eine abgelehnte Zeile im Tab Fehler bleibt. Danach entfernt sie "
+"die tägliche Bereinigung."
+
+#: models.py:102
 msgctxt "eos-sig-checker"
 msgid "Configuration"
 msgstr "Konfiguration"
 
-#: models.py:104 templates/eos_sig_checker/index.html:71
-#: templates/eos_sig_checker/index.html:148
-#: templates/eos_sig_checker/signatures.html:14
-#: templates/eos_sig_checker/signatures.html:34
+#: models.py:124 templates/eos_sig_checker/index.html:72
+#: templates/eos_sig_checker/index.html:163
+#: templates/eos_sig_checker/signatures.html:15
+#: templates/eos_sig_checker/signatures.html:35
 msgid "System"
 msgstr "System"
 
-#: models.py:119
+#: models.py:139
 msgid "Signature"
 msgstr "Signatur"
 
-#: models.py:120 templates/eos_sig_checker/base.html:15
-#: templates/eos_sig_checker/base.html:34
+#: models.py:140 templates/eos_sig_checker/base.html:15
+#: templates/eos_sig_checker/base.html:37
 msgid "Signatures"
 msgstr "Signaturen"
 
-#: parser.py:91
+#: models.py:168
+msgid "Rejected line"
+msgstr "Abgelehnte Zeile"
+
+#: models.py:169
+msgid "Rejected lines"
+msgstr "Abgelehnte Zeilen"
+
+#: parser.py:123
+msgid "several meanings"
+msgstr "mehrere Bedeutungen"
+
+#: parser.py:123
+msgid "not in the client texts"
+msgstr "nicht in den Client-Texten"
+
+#: parser.py:125
+msgid "not translated"
+msgstr "nicht übersetzt"
+
+#: parser.py:146 templates/eos_sig_checker/index.html:166
+#: templates/eos_sig_checker/signatures.html:23
+#: templates/eos_sig_checker/signatures.html:38
+msgctxt "eos-sig-checker"
+msgid "Group"
+msgstr "Gruppe"
+
+#: parser.py:153 templates/eos_sig_checker/index.html:167
+#: templates/eos_sig_checker/signatures.html:27
+#: templates/eos_sig_checker/signatures.html:39
+msgctxt "eos-sig-checker"
+msgid "Name"
+msgstr "Name"
+
+#: parser.py:164
 msgid "The line holds control characters."
 msgstr "Die Zeile enthält Steuerzeichen."
 
-#: parser.py:96
+#: parser.py:173
 msgid "Expected 6 tab-separated columns, as the probe scanner copies them."
 msgstr ""
 "Erwartet werden 6 durch Tabs getrennte Spalten, wie der Probe Scanner sie "
 "kopiert."
 
-#: parser.py:100
+#: parser.py:177
 msgid "The signature ID must look like ABC-123."
 msgstr "Die Signatur-ID muss wie ABC-123 aussehen."
 
-#: parser.py:102
+#: parser.py:179
 msgid "The site type holds characters a site type never has."
 msgstr "Der Site-Typ enthält Zeichen, die ein Site-Typ nie hat."
 
-#: parser.py:104
+#: parser.py:181
 msgid "The name holds characters a site name never has."
 msgstr "Der Name enthält Zeichen, die ein Site-Name nie hat."
 
-#: parser.py:106
+#: parser.py:183
 msgid "A name without a site type does not come from the probe scanner."
 msgstr "Ein Name ohne Site-Typ kommt nicht aus dem Probe Scanner."
 
-#: parser.py:111
+#: parser.py:188
 msgid "The scan strength must be a percentage between 0 and 100."
 msgstr "Die Scanstärke muss ein Prozentwert zwischen 0 und 100 sein."
 
-#: parser.py:113
-msgid "The distance must be a number with AU, km or m."
-msgstr "Die Entfernung muss eine Zahl mit AU, km oder m sein."
+#: parser.py:190
+msgid "The distance must be a number with a unit."
+msgstr "Die Entfernung muss eine Zahl mit Einheit sein."
 
 #: templates/eos_sig_checker/base.html:18
 #: templates/eos_sig_checker/settings.html:11
@@ -156,23 +214,28 @@ msgctxt "eos-sig-checker"
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: templates/eos_sig_checker/base.html:35
+#: templates/eos_sig_checker/base.html:21
+#: templates/eos_sig_checker/errors.html:8
+msgid "Errors"
+msgstr "Fehler"
+
+#: templates/eos_sig_checker/base.html:38
 msgid "new in 24 h"
 msgstr "neu in 24 h"
 
-#: templates/eos_sig_checker/base.html:36
+#: templates/eos_sig_checker/base.html:39
 msgid "checked in 24 h"
 msgstr "geprüft in 24 h"
 
-#: templates/eos_sig_checker/base.html:37
+#: templates/eos_sig_checker/base.html:40
 msgid "systems"
 msgstr "Systeme"
 
-#: templates/eos_sig_checker/base.html:38
+#: templates/eos_sig_checker/base.html:41
 msgid "scanners in 24 h"
 msgstr "Scanner in 24 h"
 
-#: templates/eos_sig_checker/base.html:39
+#: templates/eos_sig_checker/base.html:42
 msgid ""
 "Entries past their age by more than a day are still stored: the cleanup task"
 " does not run."
@@ -180,9 +243,75 @@ msgstr ""
 "Einträge, die seit mehr als einem Tag abgelaufen sind, sind noch "
 "gespeichert: die Bereinigungsaufgabe läuft nicht."
 
-#: templates/eos_sig_checker/base.html:39
+#: templates/eos_sig_checker/base.html:42
 msgid "waiting for cleanup"
 msgstr "wartet auf Bereinigung"
+
+#: templates/eos_sig_checker/errors.html:11
+#: templates/eos_sig_checker/errors.html:52
+msgid "Delete all rejected lines"
+msgstr "Alle abgelehnten Zeilen löschen"
+
+#: templates/eos_sig_checker/errors.html:16
+#, python-format
+msgid ""
+"Lines a check refused, and words of another client without a single English "
+"meaning, with the reason. Kept for %(days)s day, then removed by the daily "
+"cleanup."
+msgid_plural ""
+"Lines a check refused, and words of another client without a single English "
+"meaning, with the reason. Kept for %(days)s days, then removed by the daily "
+"cleanup."
+msgstr[0] ""
+"Zeilen, die eine Prüfung abgelehnt hat, und Wörter eines anderen Clients "
+"ohne eindeutige englische Bedeutung, mit Grund. Sie bleiben %(days)s Tag, "
+"dann entfernt sie die tägliche Bereinigung."
+msgstr[1] ""
+"Zeilen, die eine Prüfung abgelehnt hat, und Wörter eines anderen Clients "
+"ohne eindeutige englische Bedeutung, mit Grund. Sie bleiben %(days)s Tage, "
+"dann entfernt sie die tägliche Bereinigung."
+
+#: templates/eos_sig_checker/errors.html:23
+msgid "Pasted"
+msgstr "Eingefügt"
+
+#: templates/eos_sig_checker/errors.html:24
+msgid "Pasted by"
+msgstr "Eingefügt von"
+
+#: templates/eos_sig_checker/errors.html:25
+msgid "Line"
+msgstr "Zeile"
+
+#: templates/eos_sig_checker/errors.html:26
+msgctxt "eos-sig-checker"
+msgid "Reason"
+msgstr "Grund"
+
+#: templates/eos_sig_checker/errors.html:42
+msgid "No rejected lines."
+msgstr "Keine abgelehnten Zeilen."
+
+#: templates/eos_sig_checker/errors.html:53
+#: templates/eos_sig_checker/errors.html:59
+#: templates/eos_sig_checker/settings.html:109
+#: templates/eos_sig_checker/settings.html:115
+msgctxt "eos-sig-checker"
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: templates/eos_sig_checker/errors.html:56
+#, python-format
+msgid "Delete %(counter)s rejected line?"
+msgid_plural "Delete all %(counter)s rejected lines?"
+msgstr[0] "%(counter)s abgelehnte Zeile löschen?"
+msgstr[1] "Alle %(counter)s abgelehnten Zeilen löschen?"
+
+#: templates/eos_sig_checker/errors.html:60
+#: templates/eos_sig_checker/settings.html:116
+msgctxt "eos-sig-checker"
+msgid "Delete"
+msgstr "Löschen"
 
 #: templates/eos_sig_checker/index.html:8
 #, python-format
@@ -240,96 +369,84 @@ msgstr "unbekannt"
 msgid "None of your characters has a token with the scope %(scope)s."
 msgstr "Keiner deiner Charaktere hat einen Token mit dem Scope %(scope)s."
 
-#: templates/eos_sig_checker/index.html:72
-#: templates/eos_sig_checker/index.html:150
-#: templates/eos_sig_checker/signatures.html:18
-#: templates/eos_sig_checker/signatures.html:36
+#: templates/eos_sig_checker/index.html:73
+#: templates/eos_sig_checker/index.html:165
+#: templates/eos_sig_checker/signatures.html:19
+#: templates/eos_sig_checker/signatures.html:37
 msgctxt "eos-sig-checker"
 msgid "ID"
 msgstr "ID"
 
-#: templates/eos_sig_checker/index.html:73
-#: templates/eos_sig_checker/index.html:155
+#: templates/eos_sig_checker/index.html:74
+#: templates/eos_sig_checker/index.html:169
 #: templates/eos_sig_checker/signatures.html:42
 msgid "Last checked"
 msgstr "Zuletzt geprüft"
 
-#: templates/eos_sig_checker/index.html:88
+#: templates/eos_sig_checker/index.html:89
 #, python-format
 msgid "No wormhole checked in the last %(hours)s hour."
 msgid_plural "No wormhole checked in the last %(hours)s hours."
 msgstr[0] "Kein Wormhole in der letzten %(hours)s Stunde geprüft."
 msgstr[1] "Kein Wormhole in den letzten %(hours)s Stunden geprüft."
 
-#: templates/eos_sig_checker/index.html:102
+#: templates/eos_sig_checker/index.html:98
+#, python-format
+msgid "Systems (%(hours)s h)"
+msgstr "Systeme (%(hours)s h)"
+
+#: templates/eos_sig_checker/index.html:109
+#, python-format
+msgid "No system checked in the last %(hours)s hour."
+msgid_plural "No system checked in the last %(hours)s hours."
+msgstr[0] "Kein System in der letzten %(hours)s Stunde geprüft."
+msgstr[1] "Kein System in den letzten %(hours)s Stunden geprüft."
+
+#: templates/eos_sig_checker/index.html:123
 msgid "Pasting checks on its own"
 msgstr "Einfügen prüft von selbst"
 
-#: templates/eos_sig_checker/index.html:103
+#: templates/eos_sig_checker/index.html:124
 msgid "Check"
 msgstr "Prüfen"
 
-#: templates/eos_sig_checker/index.html:122
+#: templates/eos_sig_checker/index.html:143
 msgid "Result"
 msgstr "Ergebnis"
 
-#: templates/eos_sig_checker/index.html:130
-msgid "Hide Cosmic Anomalies"
-msgstr "Cosmic Anomalies ausblenden"
-
-#: templates/eos_sig_checker/index.html:135
+#: templates/eos_sig_checker/index.html:150
 msgid "Copied"
 msgstr "Kopiert"
 
-#: templates/eos_sig_checker/index.html:136
+#: templates/eos_sig_checker/index.html:151
 msgid "Copy the completed list in the probe scanner format"
 msgstr "Die vervollständigte Liste im Format des Probe Scanners kopieren"
 
-#: templates/eos_sig_checker/index.html:137
+#: templates/eos_sig_checker/index.html:152
 msgid "Copy"
 msgstr "Kopieren"
 
-#: templates/eos_sig_checker/index.html:151
-#: templates/eos_sig_checker/signatures.html:37
-msgctxt "eos-sig-checker"
-msgid "Kind"
-msgstr "Art"
-
-#: templates/eos_sig_checker/index.html:152
-#: templates/eos_sig_checker/signatures.html:22
-#: templates/eos_sig_checker/signatures.html:38
-msgctxt "eos-sig-checker"
-msgid "Group"
-msgstr "Gruppe"
-
-#: templates/eos_sig_checker/index.html:153
-#: templates/eos_sig_checker/signatures.html:26
-#: templates/eos_sig_checker/signatures.html:39
-msgctxt "eos-sig-checker"
-msgid "Name"
-msgstr "Name"
-
-#: templates/eos_sig_checker/index.html:154
+#: templates/eos_sig_checker/index.html:168
 #: templates/eos_sig_checker/signatures.html:40
 msgctxt "eos-sig-checker"
 msgid "Signal"
 msgstr "Signal"
 
-#: templates/eos_sig_checker/index.html:181
+#: templates/eos_sig_checker/index.html:194
 msgid "new"
 msgstr "neu"
 
-#: templates/eos_sig_checker/index.html:185
+#: templates/eos_sig_checker/index.html:198
 msgid "not in this paste"
 msgstr "nicht in diesem Paste"
 
-#: templates/eos_sig_checker/index.html:195
+#: templates/eos_sig_checker/index.html:208
 #, python-format
 msgid "Nothing known in %(system)s yet. Paste the probe scanner on the left."
 msgstr ""
 "In %(system)s ist noch nichts bekannt. Füge links den Probe Scanner ein."
 
-#: templates/eos_sig_checker/index.html:199
+#: templates/eos_sig_checker/index.html:212
 msgid ""
 "Paste the probe scanner on the left and press Check: every line comes back "
 "here, with group and name filled in where somebody has scanned it already."
@@ -337,38 +454,38 @@ msgstr ""
 "Probe Scanner links einfügen und Prüfen drücken: Jede Zeile erscheint hier "
 "wieder, mit Gruppe und Name, wo jemand sie schon gescannt hat."
 
-#: templates/eos_sig_checker/index.html:205
-#: templates/eos_sig_checker/partials/resolved-cell.html:4
+#: templates/eos_sig_checker/index.html:218
+#: templates/eos_sig_checker/partials/resolved-cell.html:5
 msgid "filled in from the shared list"
 msgstr "aus der gemeinsamen Liste ergänzt"
 
-#: templates/eos_sig_checker/index.html:211
+#: templates/eos_sig_checker/index.html:224
 #, python-format
 msgid ""
-"%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an "
-"English client (ships, structures, other client languages)."
+"%(counter)s line skipped: no Cosmic Signature (anomalies, ships, structures,"
+" client languages without client texts)."
 msgid_plural ""
-"%(counter)s lines skipped: no Cosmic Signature or Cosmic Anomaly of an "
-"English client (ships, structures, other client languages)."
+"%(counter)s lines skipped: no Cosmic Signature (anomalies, ships, "
+"structures, client languages without client texts)."
 msgstr[0] ""
-"%(counter)s Zeile übersprungen: keine Cosmic Signature oder Cosmic Anomaly "
-"eines englischen Clients (Schiffe, Strukturen, andere Client-Sprachen)."
+"%(counter)s Zeile übersprungen: keine Cosmic Signature (Anomalien, Schiffe, "
+"Strukturen, Client-Sprachen ohne Client-Texte)."
 msgstr[1] ""
-"%(counter)s Zeilen übersprungen: keine Cosmic Signature oder Cosmic Anomaly "
-"eines englischen Clients (Schiffe, Strukturen, andere Client-Sprachen)."
+"%(counter)s Zeilen übersprungen: keine Cosmic Signature (Anomalien, Schiffe,"
+" Strukturen, Client-Sprachen ohne Client-Texte)."
 
-#: templates/eos_sig_checker/settings.html:18
+#: templates/eos_sig_checker/settings.html:20
 msgctxt "eos-sig-checker"
 msgid "Save"
 msgstr "Speichern"
 
-#: templates/eos_sig_checker/settings.html:26
-#: templates/eos_sig_checker/settings.html:34
-#: templates/eos_sig_checker/settings.html:46
+#: templates/eos_sig_checker/settings.html:28
+#: templates/eos_sig_checker/settings.html:36
+#: templates/eos_sig_checker/settings.html:108
 msgid "Delete all signatures"
 msgstr "Alle Signaturen löschen"
 
-#: templates/eos_sig_checker/settings.html:30
+#: templates/eos_sig_checker/settings.html:32
 #, python-format
 msgid ""
 "The shared list holds %(counter)s signature. Deleting empties it for "
@@ -383,23 +500,78 @@ msgstr[1] ""
 "Die gemeinsame Liste enthält %(counter)s Signaturen. Löschen leert sie für "
 "alle auf einmal; das lässt sich nicht rückgängig machen."
 
-#: templates/eos_sig_checker/settings.html:47
-#: templates/eos_sig_checker/settings.html:53
-msgctxt "eos-sig-checker"
-msgid "Cancel"
-msgstr "Abbrechen"
+#: templates/eos_sig_checker/settings.html:45
+msgid "Client texts"
+msgstr "Client-Texte"
 
-#: templates/eos_sig_checker/settings.html:50
+#: templates/eos_sig_checker/settings.html:49
+msgid "Update now"
+msgstr "Jetzt aktualisieren"
+
+#: templates/eos_sig_checker/settings.html:55
+msgid ""
+"Site names and the probe scanner's words in every client language, from the "
+"archive of client texts. The daily task update_client_texts fetches the "
+"languages that changed; Update now starts it at once."
+msgstr ""
+"Site-Namen und die Wörter des Probe Scanners in jeder Client-Sprache, aus "
+"dem Archiv der Client-Texte. Die tägliche Aufgabe update_client_texts holt "
+"die Sprachen, die sich geändert haben; Jetzt aktualisieren startet sie "
+"sofort."
+
+#: templates/eos_sig_checker/settings.html:58
+msgid "An update is running."
+msgstr "Eine Aktualisierung läuft."
+
+#: templates/eos_sig_checker/settings.html:62
+msgid "The archive could not be asked for updates."
+msgstr "Das Archiv konnte nicht nach Aktualisierungen gefragt werden."
+
+#: templates/eos_sig_checker/settings.html:66
+#, python-format
+msgid "Latest build in the archive: %(build)s"
+msgstr "Neuester Build im Archiv: %(build)s"
+
+#: templates/eos_sig_checker/settings.html:72
+msgctxt "eos-sig-checker"
+msgid "Language"
+msgstr "Sprache"
+
+#: templates/eos_sig_checker/settings.html:73
+msgid "Texts"
+msgstr "Texte"
+
+#: templates/eos_sig_checker/settings.html:74
+msgid "Build"
+msgstr "Build"
+
+#: templates/eos_sig_checker/settings.html:75
+msgid "Imported"
+msgstr "Importiert"
+
+#: templates/eos_sig_checker/settings.html:76
+msgctxt "eos-sig-checker"
+msgid "Status"
+msgstr "Status"
+
+#: templates/eos_sig_checker/settings.html:88
+msgid "update available"
+msgstr "Aktualisierung verfügbar"
+
+#: templates/eos_sig_checker/settings.html:90
+msgid "not imported"
+msgstr "nicht importiert"
+
+#: templates/eos_sig_checker/settings.html:92
+msgid "up to date"
+msgstr "aktuell"
+
+#: templates/eos_sig_checker/settings.html:112
 #, python-format
 msgid "Delete %(counter)s signature from the shared list?"
 msgid_plural "Delete all %(counter)s signatures from the shared list?"
 msgstr[0] "%(counter)s Signatur aus der gemeinsamen Liste löschen?"
 msgstr[1] "Alle %(counter)s Signaturen aus der gemeinsamen Liste löschen?"
-
-#: templates/eos_sig_checker/settings.html:54
-msgctxt "eos-sig-checker"
-msgid "Delete"
-msgstr "Löschen"
 
 #: templates/eos_sig_checker/signatures.html:41
 msgid "First seen"
@@ -435,21 +607,36 @@ msgstr ""
 "Die Position konnte nicht von ESI gelesen werden. Versuche es gleich noch "
 "einmal."
 
-#: views.py:107
+#: views.py:102
 msgid "Too many checks: wait a second and press Check again."
 msgstr "Zu viele Prüfungen: eine Sekunde warten und erneut Prüfen drücken."
 
-#: views.py:159
+#: views.py:161
 msgid "No character given."
 msgstr "Kein Charakter angegeben."
 
-#: views.py:185
+#: views.py:189
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-#: views.py:199
+#: views.py:207
+msgid ""
+"Update of the client texts started. It runs in the background and takes a "
+"few minutes."
+msgstr ""
+"Aktualisierung der Client-Texte gestartet. Sie läuft im Hintergrund und "
+"dauert einige Minuten."
+
+#: views.py:218
 #, python-format
 msgid "Deleted %(count)d signature."
 msgid_plural "Deleted %(count)d signatures."
 msgstr[0] "%(count)d Signatur gelöscht."
 msgstr[1] "%(count)d Signaturen gelöscht."
+
+#: views.py:240
+#, python-format
+msgid "Deleted %(count)d rejected line."
+msgid_plural "Deleted %(count)d rejected lines."
+msgstr[0] "%(count)d abgelehnte Zeile gelöscht."
+msgstr[1] "%(count)d abgelehnte Zeilen gelöscht."

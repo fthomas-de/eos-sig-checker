@@ -1,0 +1,65 @@
+{% extends "eos_sig_checker/base.html" %}
+{% load i18n %}
+
+{% block details %}
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            {# not only refused lines: another client's untranslated words are stored and noted here too #}
+            <div class="card-title mb-0">{% translate "Errors" %}</div>
+            {# the button only opens the question; the modal's own button sends the form #}
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#eos-sig-checker-delete-errors"{% if not rejected %} disabled{% endif %}>
+                <i class="fas fa-trash-can"></i> {% translate "Delete all rejected lines" %}
+            </button>
+        </div>
+        <div class="card-body">
+            <p class="text-body-secondary small">
+                {% blocktranslate count days=error_log_days %}Lines a check refused, and words of another client without a single English meaning, with the reason. Kept for {{ days }} day, then removed by the daily cleanup.{% plural %}Lines a check refused, and words of another client without a single English meaning, with the reason. Kept for {{ days }} days, then removed by the daily cleanup.{% endblocktranslate %}
+            </p>
+            {% if rejected %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover small mb-0">
+                        <thead>
+                            <tr>
+                                <th>{% translate "Pasted" %}</th>
+                                <th>{% translate "Pasted by" %}</th>
+                                <th>{% translate "Line" %}</th>
+                                <th>{% translate "Reason" context "eos-sig-checker" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for line in rejected %}
+                                <tr>
+                                    <td class="text-nowrap">{{ line.created|date:"Y-m-d H:i" }}</td>
+                                    <td>{% if line.character %}{{ line.character.character_name }}{% endif %}</td>
+                                    <td class="font-monospace text-break">{{ line.text }}</td>
+                                    <td>{{ line.reason }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-body-secondary mb-0">{% translate "No rejected lines." %}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="modal fade" id="eos-sig-checker-delete-errors" tabindex="-1" aria-labelledby="eos-sig-checker-delete-errors-title" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" action="{% url 'eos_sig_checker:delete_errors' %}" class="modal-content">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eos-sig-checker-delete-errors-title">{% translate "Delete all rejected lines" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Cancel' context 'eos-sig-checker' %}"></button>
+                </div>
+                <div class="modal-body">
+                    {% blocktranslate count counter=rejected|length %}Delete {{ counter }} rejected line?{% plural %}Delete all {{ counter }} rejected lines?{% endblocktranslate %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" context "eos-sig-checker" %}</button>
+                    <button type="submit" class="btn btn-danger">{% translate "Delete" context "eos-sig-checker" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

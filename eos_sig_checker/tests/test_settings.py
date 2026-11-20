@@ -6,9 +6,11 @@ from allianceauth.eveonline.models import EveCharacter
 
 from eos_sig_checker.auth_hooks import SigCheckerMenuItem
 from eos_sig_checker.models import (
+    DEFAULT_ERROR_LOG_DAYS,
     DEFAULT_LOCATION_RETRY_SECONDS,
     DEFAULT_MAX_AGE_DAYS,
     DEFAULT_MAX_LINES,
+    DEFAULT_SYSTEM_HOURS,
     DEFAULT_WORMHOLE_HOURS,
     SigCheckerConfiguration,
     Signature,
@@ -31,6 +33,8 @@ VALID = {
     "location_retry_seconds": DEFAULT_LOCATION_RETRY_SECONDS,
     "max_lines": DEFAULT_MAX_LINES,
     "wormhole_hours": DEFAULT_WORMHOLE_HOURS,
+    "system_hours": DEFAULT_SYSTEM_HOURS,
+    "error_log_days": DEFAULT_ERROR_LOG_DAYS,
 }
 
 
@@ -118,6 +122,18 @@ class TestSettingsPage(SigTestCase):
         self.client.post(SETTINGS, {**VALID, "wormhole_hours": 48})
 
         self.assertEqual(SigCheckerConfiguration.get_solo().wormhole_hours, 48)
+
+    def test_should_store_the_system_hours(self):
+        self.client.post(SETTINGS, {**VALID, "system_hours": 48})
+
+        self.assertEqual(SigCheckerConfiguration.get_solo().system_hours, 48)
+
+    def test_should_refuse_system_hours_out_of_range(self):
+        for hours in (0, 49, "", "x"):
+            with self.subTest(hours):
+                response = self.client.post(SETTINGS, {**VALID, "system_hours": hours})
+
+                self.assertTrue(response.context["form"].errors)
 
     def test_should_refuse_wormhole_hours_out_of_range(self):
         for hours in (0, 49, "", "x"):

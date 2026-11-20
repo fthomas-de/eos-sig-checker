@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
 
 from eos_sig_checker.models import SigCheckerConfiguration, Signature
 from eos_sig_checker.parser import MAX_CHARS, MAX_LINES
 
-from .base import DATA_SITE, SCANNED, UNSCANNED, WORMHOLE, SigTestCase, make_user
+from .base import ANOMALY, DATA_SITE, FOREIGN, SCANNED, UNSCANNED, WORMHOLE, SigTestCase, make_user, store_client_texts
 
 URL = reverse("eos_sig_checker:index")
 
@@ -28,8 +29,12 @@ class TestIndex(SigTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIsNone(response.context["output"])
-        # the anomaly switch can be set before the first paste
-        self.assertContains(response, 'id="eos-sig-checker-hide-anomalies"')
+
+    def test_should_show_the_hours_of_the_system_list(self):
+        response = self.client.get(URL)
+
+        self.assertContains(response, "Systems (3 h)")
+        self.assertContains(response, "No system checked in the last 3 hours.")
 
     def test_should_list_the_wormhole_of_this_paste(self):
         response = self.client.get(URL)
@@ -47,13 +52,13 @@ class TestIndex(SigTestCase):
         response = self.client.post(URL, {"text": f"{SCANNED}\n{UNSCANNED}\nbroken"})
 
         self.assertEqual(len(response.context["output"]), 3)
-        self.assertContains(response, "Unsecured Frontier Server")
+        self.assertContains(response, "Unsecured Frontier Server Bank")
         self.assertContains(response, "table-success")
         self.assertContains(response, "table-danger")
         # the copy text keeps the client's format and leaves the invalid line out
         self.assertEqual(
             response.context["copy_text"],
-            f"{SCANNED}\nACJ-672\tCosmic Signature\tData Site\tUnsecured Frontier Server\t100,0%\t10,61 AU",
+            f"{SCANNED}\nACJ-672\tCosmic Signature\tData Site\tUnsecured Frontier Server Bank\t100,0%\t10,61 AU",
         )
 
     def test_should_empty_the_box_after_a_check(self):
@@ -78,18 +83,62 @@ class TestIndex(SigTestCase):
         # Copy keeps the probe scanner's format, distance included
         self.assertIn("10,63 AU", response.context["copy_text"])
 
-    def test_should_mark_anomalies_and_copy_without_them(self):
-        response = self.client.post(URL, {"text": f"{SCANNED}\n{UNSCANNED}\nbroken"})
+    def test_should_skip_anomalies(self):
+        response = self.client.post(URL, {"text": f"{ANOMALY}\n{UNSCANNED}"})
 
-        self.assertContains(response, "data-eos-sig-checker-anomaly", count=1)
-        self.assertEqual(response.context["copy_text_signatures"], UNSCANNED)
-        self.assertIn("UDN-422", response.context["copy_text"])
+        self.assertEqual(response.context["skipped"], 1)
+        self.assertEqual(response.context["copy_text"], UNSCANNED)
+        self.assertFalse(Signature.objects.filter(signature_id="UDN-422").exists())
 
     def test_should_colour_the_signal(self):
         response = self.client.post(URL, {"text": f"{SCANNED}\n{UNSCANNED}"})
 
         self.assertContains(response, "eos-sig-checker-signal-full")
         self.assertContains(response, "eos-sig-checker-signal-low")
+
+    def test_should_complete_a_line_of_another_client_from_the_list(self):
+        store_client_texts()
+        self.client.post(URL, {"text": DATA_SITE.replace("ACJ-672", "REB-508")})
+        cache.clear()
+
+        response = self.client.post(URL, {"text": FOREIGN["fr"]})
+
+        (row,) = response.context["output"]
+        self.assertEqual((row.line.group, row.site_type, row.name), ("Cosmic Signature", "Data Site", "Unsecured Frontier Server Bank"))
+        self.assertEqual(row.resolved, {"site_type", "name"})
+        # Copy holds English: the list is English for everybody
+        self.assertEqual(response.context["copy_text"], "REB-508\tCosmic Signature\tData Site\tUnsecured Frontier Server Bank\t100,0%\t6,62 UA")
+
+    def test_should_show_the_result_and_copy_in_the_readers_language(self):
+        store_client_texts({
+            ("de", "Cosmic Signature", "Kosmische Signatur"),
+            ("de", "Data Site", "Datengebiet"),
+            ("de", "Unsecured Frontier Server Bank", "Ungesicherte Server-Datenbank im Grenzgebiet"),
+        })
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "de"
+
+        response = self.client.post(URL, {"text": DATA_SITE})
+
+        self.assertContains(response, "<td>Datengebiet</td>", html=True)
+        self.assertContains(response, "Ungesicherte Server-Datenbank im Grenzgebiet")
+        self.assertEqual(
+            response.context["copy_text"],
+            "ACJ-672\tKosmische Signatur\tDatengebiet\tUngesicherte Server-Datenbank im Grenzgebiet\t100,0%\t3,20 AU",
+        )
+        # the list keeps English
+        self.assertEqual(Signature.objects.get(signature_id="ACJ-672").site_type, "Data Site")
+
+    def test_should_keep_english_without_client_texts(self):
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "nl-nl"
+
+        response = self.client.post(URL, {"text": DATA_SITE})
+
+        self.assertEqual(response.context["copy_text"], DATA_SITE)
+
+    def test_should_skip_another_client_until_its_texts_are_imported(self):
+        response = self.client.post(URL, {"text": FOREIGN["ja"]})
+
+        self.assertEqual(response.context["skipped"], 1)
 
     def test_should_count_skipped_lines_only(self):
         ship = "XYZ-123\tShip\tFrigate\tHeron\t100,0%\t2 AU"
@@ -116,7 +165,7 @@ class TestIndex(SigTestCase):
         self.assertIsNone(response.context["output"])
         self.assertContains(response, "Too many checks", status_code=429)
         # the paste stays in the box for the next try
-        self.assertContains(response, "Unsecured Frontier Server", status_code=429)
+        self.assertContains(response, "Unsecured Frontier Server Bank", status_code=429)
         self.assertFalse(Signature.objects.filter(signature_id="ACJ-672").exists())
 
     def test_should_check_again_once_the_second_is_over(self):

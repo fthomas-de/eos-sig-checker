@@ -14,10 +14,10 @@ from esi.models import Scope, Token
 from eos_sig_checker import tracking
 from eos_sig_checker.models import DEFAULT_MAX_AGE_DAYS, NO_SYSTEM, SigCheckerConfiguration, Signature
 from eos_sig_checker.parser import parse
-from eos_sig_checker.sync import merge, system_rows
+from eos_sig_checker.sync import merge, recent_systems, system_rows
 from eos_sig_checker.tracking import Location, LocationError, locate, trackable_characters
 
-from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
+from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user, set_system_hours
 
 INDEX = reverse("eos_sig_checker:index")
 LOCATION = reverse("eos_sig_checker:location")
@@ -31,7 +31,7 @@ JITA = Location(30000142, "Jita")
 AMARR = Location(30002187, "Amarr")
 
 # a relic site in the client's copy, for a second row of a system
-RELIC_SITE = "BXZ-111\tCosmic Signature\tRelic Site\tCrumbling Sansha Antiquities Site\t100,0%\t2,10 AU"
+RELIC_SITE = "BXZ-111\tCosmic Signature\tRelic Site\tForgotten Frontier Quarantine Outpost\t100,0%\t2,10 AU"
 
 
 def add_token(user, character, scopes=(tracking.SCOPE,)):
@@ -94,7 +94,7 @@ class TestMergeWithSystem(TrackingSyncTestCase):
 
         signature = Signature.objects.get()
         self.assertEqual(signature.solar_system_id, JITA.system_id)
-        self.assertEqual(row.name, "Unsecured Frontier Server")
+        self.assertEqual(row.name, "Unsecured Frontier Server Bank")
         self.assertEqual(row.resolved, {"site_type", "name"})
 
     def test_should_resolve_an_untracked_paste_from_a_placed_row(self):
@@ -102,7 +102,7 @@ class TestMergeWithSystem(TrackingSyncTestCase):
 
         (row,) = self.paste(UNSCANNED)
 
-        self.assertEqual(row.name, "Unsecured Frontier Server")
+        self.assertEqual(row.name, "Unsecured Frontier Server Bank")
         self.assertEqual(row.system_name, "Jita")
         signature = Signature.objects.get()
         # the untracked paste does not know better: the row keeps its system
@@ -119,13 +119,28 @@ class TestMergeWithSystem(TrackingSyncTestCase):
         self.assertEqual(Signature.objects.get(solar_system_id=NO_SYSTEM).site_type, "Relic Site")
 
 
+class TestRecentSystems(TrackingSyncTestCase):
+    def test_should_list_each_system_checked_within_the_hours_newest_first(self):
+        # not the default 3, so the test fails if the setting is ignored
+        set_system_hours(10)
+        now = timezone.now()
+        self.paste(DATA_SITE, system=JITA, now=now - timedelta(hours=9))
+        self.paste(RELIC_SITE, system=JITA, now=now - timedelta(hours=8))
+        self.paste(SCANNED, system=AMARR, now=now - timedelta(hours=7))
+        self.paste(SCANNED.replace("UDN-422", "OLD-001"), system=Location(30002659, "Dodixie"), now=now - timedelta(hours=10, minutes=1))
+        self.paste(UNSCANNED.replace("ACJ-672", "NOS-001"), now=now)
+
+        # Jita twice, newest -8 h; Amarr -7 h; Dodixie too old; no system left out
+        self.assertEqual(recent_systems(now), ["Amarr", "Jita"])
+
+
 class TestSystemRows(TrackingSyncTestCase):
     def test_should_list_the_live_rows_of_the_system_only(self):
         now = timezone.now()
         self.paste(DATA_SITE, system=JITA, now=now)
         self.paste(RELIC_SITE, system=JITA, now=now)
         self.paste(SCANNED, system=JITA, now=now - timedelta(days=DEFAULT_MAX_AGE_DAYS, minutes=1))
-        self.paste("XYZ-999\tCosmic Anomaly\tCombat Site\tSansha Den\t100,0%\t1 AU", system=AMARR, now=now)
+        self.paste("XYZ-999\tCosmic Signature\tRelic Site\tRuined Sansha Crystal Quarry\t100,0%\t1 AU", system=AMARR, now=now)
 
         rows = system_rows(JITA, skip_ids=["BXZ-111"], now=now)
 
@@ -306,7 +321,7 @@ class TestTrackingViews(SigTestCase):
 
         response = self.client.get(self.tracked)
 
-        self.assertContains(response, "Unsecured Frontier Server")
+        self.assertContains(response, "Unsecured Frontier Server Bank")
         self.assertContains(response, 'data-eos-sig-checker-system="30000142"')
         self.assertNotContains(response, "not in this paste")
 

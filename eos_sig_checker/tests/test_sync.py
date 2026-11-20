@@ -40,7 +40,7 @@ class TestMerge(SyncTestCase):
         signature = Signature.objects.get(signature_id="UDN-422")
         self.assertEqual(
             (signature.group, signature.site_type, signature.name, signature.signal, signature.distance),
-            ("Cosmic Anomaly", "Combat Site", "Sansha Den", Decimal("100.0"), "10,63 AU"),
+            ("Cosmic Signature", "Relic Site", "Ruined Sansha Crystal Quarry", Decimal("100.0"), "10,63 AU"),
         )
         self.assertEqual(signature.last_checked_by, self.alice)
         self.assertEqual(signature.first_seen, signature.last_checked)
@@ -52,14 +52,14 @@ class TestMerge(SyncTestCase):
 
         (row,) = self.paste(UNSCANNED, character=self.bob)
 
-        self.assertEqual((row.site_type, row.name), ("Data Site", "Unsecured Frontier Server"))
+        self.assertEqual((row.site_type, row.name), ("Data Site", "Unsecured Frontier Server Bank"))
         self.assertEqual(row.resolved, {"site_type", "name"})
         self.assertEqual(row.previous_check, earlier)
         self.assertEqual(row.previous_by, self.alice.character_name)
 
         signature = Signature.objects.get(signature_id="ACJ-672")
         # the weaker scan keeps what was known and only confirms the site
-        self.assertEqual((signature.name, signature.signal), ("Unsecured Frontier Server", Decimal("100.0")))
+        self.assertEqual((signature.name, signature.signal), ("Unsecured Frontier Server Bank", Decimal("100.0")))
         self.assertEqual(signature.first_seen, earlier)
         self.assertGreater(signature.last_checked, earlier)
         self.assertEqual(signature.last_checked_by, self.bob)
@@ -79,7 +79,7 @@ class TestMerge(SyncTestCase):
         (row,) = self.paste("ACJ-672\tCosmic Signature\tData Site\t\t25,0%\t9 AU")
 
         self.assertEqual(row.resolved, {"name"})
-        self.assertEqual(row.name, "Unsecured Frontier Server")
+        self.assertEqual(row.name, "Unsecured Frontier Server Bank")
 
     def test_should_fill_the_list_from_a_better_scan(self):
         self.paste(UNSCANNED)
@@ -88,7 +88,7 @@ class TestMerge(SyncTestCase):
 
         self.assertEqual(row.resolved, set())
         signature = Signature.objects.get(signature_id="ACJ-672")
-        self.assertEqual((signature.site_type, signature.name), ("Data Site", "Unsecured Frontier Server"))
+        self.assertEqual((signature.site_type, signature.name), ("Data Site", "Unsecured Frontier Server Bank"))
 
     def test_should_replace_a_reused_id_with_the_newer_paste(self):
         earlier = timezone.now() - timedelta(days=1)
@@ -97,7 +97,6 @@ class TestMerge(SyncTestCase):
         for other in (
             "ACJ-672\tCosmic Signature\tRelic Site\tForgotten Frontier Quarantine Outpost\t100,0%\t1 AU",
             "ACJ-672\tCosmic Signature\tData Site\tCentral Guristas Sparking Transmitter\t100,0%\t1 AU",
-            "ACJ-672\tCosmic Anomaly\t\t\t0,0%\t1 AU",
         ):
             with self.subTest(other):
                 (row,) = self.paste(other)
@@ -209,5 +208,5 @@ class TestExpiry(SyncTestCase):
 
         (row,) = self.paste(UNSCANNED)
 
-        self.assertEqual(row.name, "Unsecured Frontier Server")
+        self.assertEqual(row.name, "Unsecured Frontier Server Bank")
         self.assertIsNotNone(row.previous_check)

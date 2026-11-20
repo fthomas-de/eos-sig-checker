@@ -4,11 +4,11 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 
 from django.db import transaction
-from django.db.models import Count, Q
-from django.utils import timezone
+from django.db.models import Count, Max, Q
+from django.utils import timezone, translation
 
-from .app_settings import max_age_days, wormhole_hours
-from .models import NO_SYSTEM, Signature
+from .app_settings import error_log_days, max_age_days, system_hours, wormhole_hours
+from .models import NO_SYSTEM, RejectedLine, Signature
 from .parser import Invalid, Line, Skipped
 
 # the probe scanner's group of a wormhole
@@ -211,8 +211,50 @@ def recent_wormholes(now=None):
     ).order_by("-last_checked")
 
 
+def recent_systems(now=None) -> list[str]:
+    """The systems with a row checked within the hours from the settings page, newest first.
+
+    Only tracked pastes know their system; the rest is left out.
+    """
+    now = now or timezone.now()
+    systems = (
+        Signature.objects.filter(
+            solar_system_id__gt=NO_SYSTEM, last_checked__gte=now - timedelta(hours=system_hours())
+        )
+        .values("solar_system_name")
+        .annotate(newest=Max("last_checked"))
+        .order_by("-newest")
+    )
+    return [system["solar_system_name"] for system in systems]
+
+
 def delete_expired(now=None) -> int:
     deleted, _ = Signature.objects.filter(last_checked__lt=cutoff(now)).delete()
+    return deleted
+
+
+def _problems(rows):
+    for row in rows:
+        if isinstance(row, Invalid):
+            yield row.text, str(row.error)
+        elif isinstance(row, Line) and row.problems:
+            yield row.source, "; ".join(str(problem) for problem in row.problems)
+
+
+def log_rejected(rows, character, now=None) -> None:
+    """Keep the refused lines of a paste, and the words another client wrote
+    that could not be translated, for the Errors tab."""
+    now = now or timezone.now()
+    with translation.override("en"):
+        RejectedLine.objects.bulk_create(
+            RejectedLine(text=text, reason=reason[:200], character=character, created=now)
+            for text, reason in _problems(rows)
+        )
+
+
+def delete_old_rejected(now=None) -> int:
+    oldest = (now or timezone.now()) - timedelta(days=error_log_days())
+    deleted, _ = RejectedLine.objects.filter(created__lt=oldest).delete()
     return deleted
 
 

@@ -8,8 +8,8 @@ the .po files and refuses to run while a message is missing here. Add a new
 message here, never in a .po file: the next run would overwrite a hand edit.
 
 EVE jargon stays English in every language: Corporation, Alliance, Main,
-Character, and what the probe scanner shows (Cosmic Signature, Cosmic
-Anomaly, Combat/Data/Relic/Gas/Ore Site, Wormhole) - the pasted text is the
+Character, and what the probe scanner shows (Cosmic Signature,
+Combat/Data/Relic/Gas/Ore Site, Wormhole) - the pasted text is the
 English client's anyway.
 
 A short word Alliance Auth translates differently ("Name", "Type", "Group")
@@ -67,11 +67,14 @@ TRANSLATIONS = {
         "Сила сканирования должна быть процентом от 0 до 100.",
         "扫描强度必须是 0 到 100 之间的百分比。",
     ),
-    "The distance must be a number with AU, km or m.": (
-        "Die Entfernung muss eine Zahl mit AU, km oder m sein.",
-        "Расстояние должно быть числом с AU, km или m.",
-        "距离必须是带有 AU、km 或 m 的数字。",
+    "The distance must be a number with a unit.": (
+        "Die Entfernung muss eine Zahl mit Einheit sein.",
+        "Расстояние должно быть числом с единицей измерения.",
+        "距离必须是带单位的数字。",
     ),
+    "not translated": ("nicht übersetzt", "не переведено", "未翻译"),
+    "several meanings": ("mehrere Bedeutungen", "несколько значений", "有多个含义"),
+    "not in the client texts": ("nicht in den Client-Texten", "нет в текстах клиента", "不在客户端文本中"),
     "The line holds control characters.": (
         "Die Zeile enthält Steuerzeichen.",
         "Строка содержит управляющие символы.",
@@ -104,10 +107,8 @@ TRANSLATIONS = {
         "Скопировать дополненный список в формате Probe Scanner",
         "以 Probe Scanner 格式复制补全后的列表",
     ),
-    # the probe scanner's column words: Kind = Cosmic Signature/Anomaly,
-    # Group = Combat Site, Wormhole ...
+    # the probe scanner's column words: Group = Combat Site, Wormhole ...
     "ID": ("ID", "ID", "ID"),
-    "Kind": ("Art", "Вид", "种类"),
     "Group": ("Gruppe", "Группа", "分组"),
     "Name": ("Name", "Название", "名称"),
     "Signal": ("Signal", "Сигнал", "信号强度"),
@@ -186,7 +187,6 @@ TRANSLATIONS = {
     # location tracking
     "System": ("System", "Система", "星系"),
     "Track location": ("Position verfolgen", "Отслеживать местоположение", "追踪位置"),
-    "Hide Cosmic Anomalies": ("Cosmic Anomalies ausblenden", "Скрыть Cosmic Anomalies", "隐藏 Cosmic Anomalies"),
     "Tracked character": ("Verfolgter Charakter", "Отслеживаемый персонаж", "追踪的角色"),
     "Read the location now": ("Position jetzt lesen", "Прочитать местоположение сейчас", "立即读取位置"),
     "Refresh": ("Aktualisieren", "Обновить", "刷新"),
@@ -225,9 +225,112 @@ TRANSLATIONS = {
         "无法从 ESI 读取位置。请稍后再试。",
     ),
     "No character given.": ("Kein Charakter angegeben.", "Персонаж не указан.", "未指定角色。"),
+    # system list
+    "Show systems (hours)": ("Systeme anzeigen (Stunden)", "Показывать системы (часы)", "显示星系（小时）"),
+    "Hours a system stays in the system list of the paste page after its last check.": (
+        "Stunden, die ein System nach seiner letzten Prüfung in der Systemliste der Paste-Seite bleibt.",
+        "Сколько часов система остаётся в списке систем на странице вставки после последней проверки.",
+        "星系在最后一次检查后在粘贴页面星系列表中保留的小时数。",
+    ),
+    "Systems (%(hours)s h)": ("Systeme (%(hours)s h)", "Системы (%(hours)s ч)", "星系（%(hours)s 小时）"),
+    # client texts on the settings page
+    "Client texts": ("Client-Texte", "Тексты клиента", "客户端文本"),
+    "Update now": ("Jetzt aktualisieren", "Обновить сейчас", "立即更新"),
+    "Site names and the probe scanner's words in every client language, from the archive of client texts. The daily task update_client_texts fetches the languages that changed; Update now starts it at once.": (
+        "Site-Namen und die Wörter des Probe Scanners in jeder Client-Sprache, aus dem Archiv der Client-Texte. Die tägliche Aufgabe update_client_texts holt die Sprachen, die sich geändert haben; Jetzt aktualisieren startet sie sofort.",
+        "Названия сайтов и слова Probe Scanner на всех языках клиента из архива текстов клиента. Ежедневная задача update_client_texts загружает изменившиеся языки; «Обновить сейчас» запускает её сразу.",
+        "来自客户端文本存档的各客户端语言的站点名称和 Probe Scanner 用词。每日任务 update_client_texts 获取有变化的语言；“立即更新”会立即启动它。",
+    ),
+    "An update is running.": ("Eine Aktualisierung läuft.", "Идёт обновление.", "正在更新。"),
+    "The archive could not be asked for updates.": (
+        "Das Archiv konnte nicht nach Aktualisierungen gefragt werden.",
+        "Не удалось запросить у архива обновления.",
+        "无法向存档查询更新。",
+    ),
+    "Latest build in the archive: %(build)s": (
+        "Neuester Build im Archiv: %(build)s",
+        "Последняя сборка в архиве: %(build)s",
+        "存档中的最新版本：%(build)s",
+    ),
+    "Language": ("Sprache", "Язык", "语言"),
+    "Status": ("Status", "Статус", "状态"),
+    "Texts": ("Texte", "Тексты", "文本"),
+    "Build": ("Build", "Сборка", "版本"),
+    "Imported": ("Importiert", "Импортировано", "导入时间"),
+    "update available": ("Aktualisierung verfügbar", "есть обновление", "有更新"),
+    "not imported": ("nicht importiert", "не импортировано", "未导入"),
+    "up to date": ("aktuell", "актуально", "已是最新"),
+    "Update of the client texts started. It runs in the background and takes a few minutes.": (
+        "Aktualisierung der Client-Texte gestartet. Sie läuft im Hintergrund und dauert einige Minuten.",
+        "Обновление текстов клиента запущено. Оно выполняется в фоне и занимает несколько минут.",
+        "客户端文本更新已开始。它在后台运行，需要几分钟。",
+    ),
+    # error log
+    "Errors": ("Fehler", "Ошибки", "错误"),
+    "Rejected line": ("Abgelehnte Zeile", "Отклонённая строка", "被拒绝的行"),
+    "Rejected lines": ("Abgelehnte Zeilen", "Отклонённые строки", "被拒绝的行"),
+    "Keep rejected lines (days)": (
+        "Abgelehnte Zeilen behalten (Tage)",
+        "Хранить отклонённые строки (дни)",
+        "保留被拒绝的行（天）",
+    ),
+    "Days a rejected line stays on the Errors tab. After that the daily cleanup removes it.": (
+        "Tage, die eine abgelehnte Zeile im Tab Fehler bleibt. Danach entfernt sie die tägliche Bereinigung.",
+        "Сколько дней отклонённая строка остаётся на вкладке «Ошибки». После этого её удаляет ежедневная очистка.",
+        "被拒绝的行在“错误”标签页中保留的天数。之后由每日清理删除。",
+    ),
+    "Pasted": ("Eingefügt", "Вставлено", "粘贴时间"),
+    "Pasted by": ("Eingefügt von", "Вставил", "粘贴者"),
+    "Line": ("Zeile", "Строка", "行"),
+    "Reason": ("Grund", "Причина", "原因"),
+    "No rejected lines.": ("Keine abgelehnten Zeilen.", "Отклонённых строк нет.", "没有被拒绝的行。"),
+    "Delete all rejected lines": (
+        "Alle abgelehnten Zeilen löschen",
+        "Удалить все отклонённые строки",
+        "删除所有被拒绝的行",
+    ),
 }
 
 PLURALS = {
+    "No system checked in the last %(hours)s hour.": (
+        ["Kein System in der letzten %(hours)s Stunde geprüft.", "Kein System in den letzten %(hours)s Stunden geprüft."],
+        [
+            "Ни одной системы не проверено за последний %(hours)s час.",
+            "Ни одной системы не проверено за последние %(hours)s часа.",
+            "Ни одной системы не проверено за последние %(hours)s часов.",
+        ],
+        ["过去 %(hours)s 小时内没有检查过的星系。"],
+    ),
+    "Deleted %(count)d rejected line.": (
+        ["%(count)d abgelehnte Zeile gelöscht.", "%(count)d abgelehnte Zeilen gelöscht."],
+        [
+            "Удалена %(count)d отклонённая строка.",
+            "Удалено %(count)d отклонённые строки.",
+            "Удалено %(count)d отклонённых строк.",
+        ],
+        ["已删除 %(count)d 条被拒绝的行。"],
+    ),
+    "Delete %(counter)s rejected line?": (
+        ["%(counter)s abgelehnte Zeile löschen?", "Alle %(counter)s abgelehnten Zeilen löschen?"],
+        [
+            "Удалить %(counter)s отклонённую строку?",
+            "Удалить все %(counter)s отклонённые строки?",
+            "Удалить все %(counter)s отклонённых строк?",
+        ],
+        ["删除全部 %(counter)s 条被拒绝的行？"],
+    ),
+    "Lines a check refused, and words of another client without a single English meaning, with the reason. Kept for %(days)s day, then removed by the daily cleanup.": (
+        [
+            "Zeilen, die eine Prüfung abgelehnt hat, und Wörter eines anderen Clients ohne eindeutige englische Bedeutung, mit Grund. Sie bleiben %(days)s Tag, dann entfernt sie die tägliche Bereinigung.",
+            "Zeilen, die eine Prüfung abgelehnt hat, und Wörter eines anderen Clients ohne eindeutige englische Bedeutung, mit Grund. Sie bleiben %(days)s Tage, dann entfernt sie die tägliche Bereinigung.",
+        ],
+        [
+            "Строки, отклонённые проверкой, и слова другого клиента без однозначного английского значения, с причиной. Хранятся %(days)s день, затем их удаляет ежедневная очистка.",
+            "Строки, отклонённые проверкой, и слова другого клиента без однозначного английского значения, с причиной. Хранятся %(days)s дня, затем их удаляет ежедневная очистка.",
+            "Строки, отклонённые проверкой, и слова другого клиента без однозначного английского значения, с причиной. Хранятся %(days)s дней, затем их удаляет ежедневная очистка.",
+        ],
+        ["检查拒绝的行以及另一客户端中没有唯一英文含义的词语，附原因。保留 %(days)s 天，之后由每日清理删除。"],
+    ),
     "Deleted %(count)d signature.": (
         ["%(count)d Signatur gelöscht.", "%(count)d Signaturen gelöscht."],
         ["Удалена %(count)d сигнатура.", "Удалено %(count)d сигнатуры.", "Удалено %(count)d сигнатур."],
@@ -257,17 +360,17 @@ PLURALS = {
         ],
         ["从共享列表中删除全部 %(counter)s 个信号？"],
     ),
-    "%(counter)s line skipped: no Cosmic Signature or Cosmic Anomaly of an English client (ships, structures, other client languages).": (
+    "%(counter)s line skipped: no Cosmic Signature (anomalies, ships, structures, client languages without client texts).": (
         [
-            "%(counter)s Zeile übersprungen: keine Cosmic Signature oder Cosmic Anomaly eines englischen Clients (Schiffe, Strukturen, andere Client-Sprachen).",
-            "%(counter)s Zeilen übersprungen: keine Cosmic Signature oder Cosmic Anomaly eines englischen Clients (Schiffe, Strukturen, andere Client-Sprachen).",
+            "%(counter)s Zeile übersprungen: keine Cosmic Signature (Anomalien, Schiffe, Strukturen, Client-Sprachen ohne Client-Texte).",
+            "%(counter)s Zeilen übersprungen: keine Cosmic Signature (Anomalien, Schiffe, Strukturen, Client-Sprachen ohne Client-Texte).",
         ],
         [
-            "%(counter)s строка пропущена: не Cosmic Signature и не Cosmic Anomaly английского клиента (корабли, структуры, другие языки клиента).",
-            "%(counter)s строки пропущены: не Cosmic Signature и не Cosmic Anomaly английского клиента (корабли, структуры, другие языки клиента).",
-            "%(counter)s строк пропущено: не Cosmic Signature и не Cosmic Anomaly английского клиента (корабли, структуры, другие языки клиента).",
+            "%(counter)s строка пропущена: не Cosmic Signature (аномалии, корабли, структуры, языки клиента без текстов клиента).",
+            "%(counter)s строки пропущены: не Cosmic Signature (аномалии, корабли, структуры, языки клиента без текстов клиента).",
+            "%(counter)s строк пропущено: не Cosmic Signature (аномалии, корабли, структуры, языки клиента без текстов клиента).",
         ],
-        ["已跳过 %(counter)s 行：不是英文客户端的 Cosmic Signature 或 Cosmic Anomaly（舰船、建筑、其他客户端语言）。"],
+        ["已跳过 %(counter)s 行：不是 Cosmic Signature（异常、舰船、建筑、没有客户端文本的客户端语言）。"],
     ),
     "At most %(max)d line per paste.": (
         ["Höchstens %(max)d Zeile pro Einfügen.", "Höchstens %(max)d Zeilen pro Einfügen."],

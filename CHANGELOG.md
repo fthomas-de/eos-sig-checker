@@ -7,6 +7,88 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.0.10] - 2026-11-20
+
+### Added
+
+- Tab **Errors** (with `manage_settings`): every pasted line the check
+  refused, and every word of another client without a single English
+  meaning, with the reason, who pasted it and when, and **Delete all
+  rejected lines**. Until now a refused line was only shown to its paster
+  and then gone, so a client text the parser does not know could not be
+  collected. The reason is stored in English whatever the paster reads.
+- Card **Systems** below the WH card on the paste page: every system
+  with a signature checked within the hours of the new setting **Show
+  systems (hours)** (default 3, 1 to 48, migration 0008), newest first,
+  the hours in its title. It shows where people scanned lately. The WH
+  card takes two thirds of the column, the system list one third; a long
+  list scrolls in its card instead of stretching the row.
+- Tables for the texts of the EVE client in its languages (`ClientText`,
+  `ClientTextLanguage`, migration 0009) and `client_text.py`, which takes
+  the pairs from one file of the archive of client texts and replaces a
+  language at once. Groundwork for pastes from other client languages and
+  a page in the reader's language; nothing reads the tables yet. Only
+  name-shaped English with a plain translation gets in. A text with two
+  meanings is kept and decided where it is looked up: Japanese, Chinese
+  and Korean have one word for singular and plural, and dropping those
+  lost most probe scanner column words there. A text a language leaves
+  in English is kept as itself: that client shows the English, and a
+  paste of it must still find the name; for the page a real translation
+  wins over it.
+- Task `update_client_texts` and command
+  `eos_sig_checker_update_client_texts` (`--force` for every language):
+  they read the archive's hashes and fetch only the client languages
+  whose file changed, one after the other, at most 300 MB each, and
+  replace a language only once its file was read in full. A second run
+  while one is going is refused. The task needs its own
+  `CELERYBEAT_SCHEDULE` entry (README).
+- Card **Client texts** on the settings page: each language with its
+  texts, build and import time. Opening the page asks the archive (3 s to
+  connect, 5 s to read) whether a newer file waits and marks those
+  languages; an unreachable archive is shown, not an error page. **Update
+  now** starts `update_client_texts` in the background.
+- Pastes from the other clients with client texts (fr, es, ru, ko, ja,
+  zh, de ...): the parser puts their words into English through the
+  client texts, so the list stays English for everybody. Their first
+  word decides the language; the site type is matched only against the
+  probe scanner's types, so one word for "Wormhole" and "Wormholes" does
+  not get in the way. A type or name without a single English meaning is
+  left blank, filled in from the list where the ID is known, and noted on
+  the Errors tab - never guessed. Until now every such line was skipped.
+- The result, the Signatures tab and Copy show site types and names in
+  the client language of the reader's Alliance Auth language (de, es,
+  fr, it, ja, ko, ru, zh), where the client texts have exactly one
+  translation; the list itself stays English, so every reader gets the
+  same sites in their own words. nl, pl and uk have no client texts and
+  stay English.
+- The scan strength may have a space before the percent sign ("0,0 %" in
+  the German, French and Spanish clients), and the distance may have any
+  unit ("10,57 AE", "6,62 UA", "10,02 а.е.", "10,02AU"): it is the
+  paster's own distance,
+  so a line is no longer refused for its unit.
+- Setting **Keep rejected lines (days)**, default 7, 1 to 30; the daily
+  cleanup task removes older lines (migration 0007). The same task as
+  before, so `local.py` needs no new entry.
+
+### Changed
+
+- Only Cosmic Signatures are read; a Cosmic Anomaly line is skipped and
+  counted like a ship. Anomalies show on the overview without probing,
+  and they crowded the list that is meant for what needs scanning. Rows
+  stored before stay until they expire.
+- The Kind column is gone from the result and the Signatures tab: with
+  anomalies out it would say Cosmic Signature on every row.
+
+### Removed
+
+- The switch **Hide Cosmic Anomalies** and its script `anomalies.js`:
+  nothing is left to hide. Copy takes the whole result again.
+
+### Fixed
+
+- The test data site is called "Unsecured Frontier Server Bank", as in
+  the client; the old name existed in no client text.
+
 ## [0.0.9] - 2026-11-18
 
 ### Changed

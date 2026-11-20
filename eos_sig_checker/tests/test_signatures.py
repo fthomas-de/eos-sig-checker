@@ -1,5 +1,6 @@
 from datetime import timedelta
 
+from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -8,7 +9,7 @@ from eos_sig_checker.parser import parse
 from eos_sig_checker.sync import merge
 from eos_sig_checker.tracking import Location
 
-from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user
+from .base import DATA_SITE, SCANNED, UNSCANNED, SigTestCase, make_user, store_client_texts
 
 INDEX = reverse("eos_sig_checker:index")
 SIGNATURES = reverse("eos_sig_checker:signatures")
@@ -44,7 +45,7 @@ class TestSignatures(SigTestCase):
         self.assertEqual(response.status_code, 200)
         # ACJ-672 once: the second paste merged into the first
         self.assertEqual(self.rows(response), ["ACJ-672", "UDN-422"])
-        self.assertContains(response, "Unsecured Frontier Server")
+        self.assertContains(response, "Unsecured Frontier Server Bank")
         self.assertContains(response, "alice main")
 
     def test_should_mark_only_expired_rows(self):
@@ -61,12 +62,22 @@ class TestSignatures(SigTestCase):
 
         self.assertContains(response, 'eos-sig-checker-signal-full" data-order="100.0"')
 
+    def test_should_show_group_and_name_in_the_readers_language(self):
+        store_client_texts({("de", "Data Site", "Datengebiet")})
+        self.client.cookies[settings.LANGUAGE_COOKIE_NAME] = "de"
+
+        response = self.client.get(SIGNATURES)
+
+        self.assertContains(response, "<td>Datengebiet</td>", html=True)
+        self.assertNotContains(response, "<td>Data Site</td>", html=True)
+
     def test_should_offer_a_filter_for_system_id_group_and_name(self):
         response = self.client.get(SIGNATURES)
 
-        # System, ID, Group (site type), Name - the Kind column has none
-        for column in (0, 1, 3, 4):
+        # System, ID, Group (site type), Name - the first four columns
+        for column in (0, 1, 2, 3):
             self.assertContains(response, f'data-eos-sig-checker-column="{column}"')
+        self.assertNotContains(response, ">Kind<")
         # sri_static hashes the file name
         self.assertContains(response, "eos_sig_checker/js/signatures.")
 

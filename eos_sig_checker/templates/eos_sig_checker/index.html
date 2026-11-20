@@ -56,14 +56,15 @@
 
         {# wormholes, input and output side by side, the same height; one above the other on a narrow screen #}
         <div class="row g-3">
-            <div class="col-lg-3">
+            <div class="col-lg-3 position-relative">
+                {# WH card over the system list, 2:1, as tall as the cards beside them (sig-checker.css) #}
+                <div class="eos-sig-checker-stack d-flex flex-column gap-3">
                 {# every system, not only the tracked one: where to go next #}
-                <div class="card h-100">
+                <div class="card">
                     <div class="card-header">
                         <div class="card-title mb-0"><i class="fas fa-hurricane"></i> WH</div>
                     </div>
                     <div class="card-body">
-                        <div class="eos-sig-checker-pane overflow-auto">
                             {% if wormholes %}
                                 <table class="table table-sm table-hover small mb-0">
                                     <thead class="sticky-top">
@@ -88,8 +89,28 @@
                                     {% blocktranslate count hours=wormhole_hours %}No wormhole checked in the last {{ hours }} hour.{% plural %}No wormhole checked in the last {{ hours }} hours.{% endblocktranslate %}
                                 </p>
                             {% endif %}
-                        </div>
                     </div>
+                </div>
+
+                {# the systems people scanned lately, any system; only tracked pastes know theirs #}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title mb-0"><i class="fas fa-location-dot"></i> {% blocktranslate with hours=system_hours %}Systems ({{ hours }} h){% endblocktranslate %}</div>
+                    </div>
+                    <div class="card-body">
+                        {% if systems %}
+                            <ul class="list-unstyled small mb-0">
+                                {% for system in systems %}
+                                    <li>{{ system }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-body-secondary small mb-0">
+                                {% blocktranslate count hours=system_hours %}No system checked in the last {{ hours }} hour.{% plural %}No system checked in the last {{ hours }} hours.{% endblocktranslate %}
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
                 </div>
             </div>
 
@@ -123,15 +144,9 @@
                             {% if location %}<span class="text-body-secondary">&middot; <i class="fas fa-location-dot"></i> {{ location.system_name }}</span>{% endif %}
                         </div>
                         <div class="d-flex align-items-center gap-3">
-                            {# anomalies.js hides the rows marked data-eos-sig-checker-anomaly and points Copy at the list without them; #}
-                            {# shown before the first result too, so it can be set beforehand #}
-                            <div class="form-check form-switch mb-0">
-                                <input class="form-check-input" type="checkbox" role="switch" id="eos-sig-checker-hide-anomalies" checked>
-                                <label class="form-check-label small text-nowrap" for="eos-sig-checker-hide-anomalies">{% translate "Hide Cosmic Anomalies" %}</label>
-                            </div>
                             {% if copy_text %}
                                 <button type="button" class="btn btn-sm btn-outline-secondary text-nowrap"
-                                        data-eos-sig-checker-copy="{{ copy_text }}" data-eos-sig-checker-copy-signatures="{{ copy_text_signatures }}"
+                                        data-eos-sig-checker-copy="{{ copy_text }}"
                                         data-eos-sig-checker-copied="{% translate 'Copied' %}"
                                         title="{% translate 'Copy the completed list in the probe scanner format' %}">
                                     <i class="fas fa-copy"></i> <span>{% translate "Copy" %}</span>
@@ -148,7 +163,6 @@
                                             <th>{% translate "System" %}</th>
                                             {# the probe scanner's own words: its "Group" is Combat Site, Wormhole ... #}
                                             <th>{% translate "ID" context "eos-sig-checker" %}</th>
-                                            <th>{% translate "Kind" context "eos-sig-checker" %}</th>
                                             <th>{% translate "Group" context "eos-sig-checker" %}</th>
                                             <th>{% translate "Name" context "eos-sig-checker" %}</th>
                                             <th class="text-end">{% translate "Signal" context "eos-sig-checker" %}</th>
@@ -159,17 +173,16 @@
                                         {% for row in output %}
                                             {% if row.error %}
                                                 <tr class="table-danger">
-                                                    <td colspan="7">
+                                                    <td colspan="6">
                                                         <div class="font-monospace text-break">{{ row.text }}</div>
                                                         <div><i class="fas fa-triangle-exclamation"></i> {{ row.error }}</div>
                                                     </td>
                                                 </tr>
                                             {% else %}
-                                                <tr{% if row.line.group == "Cosmic Anomaly" %} data-eos-sig-checker-anomaly{% endif %}>
+                                                <tr>
                                                     <td>{{ row.system_name }}</td>
                                                     <td class="font-monospace text-nowrap">{{ row.line.signature_id }}</td>
                                                     {# the text columns may wrap: half a screen cannot hold six columns in one line #}
-                                                    <td>{{ row.line.group }}</td>
                                                     {% include "eos_sig_checker/partials/resolved-cell.html" with value=row.site_type resolved="site_type" %}
                                                     {% include "eos_sig_checker/partials/resolved-cell.html" with value=row.name resolved="name" %}
                                                     <td class="text-end text-nowrap fw-semibold eos-sig-checker-signal-{{ row.line.signal_band }}">{{ row.line.signal_text }}</td>
@@ -208,7 +221,7 @@
                         {% if skipped %}
                             <div class="small text-body-secondary mt-1">
                                 <i class="fas fa-circle-info"></i>
-                                {% blocktranslate count counter=skipped %}{{ counter }} line skipped: no Cosmic Signature or Cosmic Anomaly of an English client (ships, structures, other client languages).{% plural %}{{ counter }} lines skipped: no Cosmic Signature or Cosmic Anomaly of an English client (ships, structures, other client languages).{% endblocktranslate %}
+                                {% blocktranslate count counter=skipped %}{{ counter }} line skipped: no Cosmic Signature (anomalies, ships, structures, client languages without client texts).{% plural %}{{ counter }} lines skipped: no Cosmic Signature (anomalies, ships, structures, client languages without client texts).{% endblocktranslate %}
                             </div>
                         {% endif %}
                     </div>
@@ -223,7 +236,6 @@
 
 {% block extra_javascript %}
     {% sri_static "eos_sig_checker/js/copy.js" %}
-    {% sri_static "eos_sig_checker/js/anomalies.js" %}
     {% sri_static "eos_sig_checker/js/autocheck.js" %}
     {% sri_static "eos_sig_checker/js/tracking.js" %}
 {% endblock %}

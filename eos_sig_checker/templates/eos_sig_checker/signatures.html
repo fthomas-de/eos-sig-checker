@@ -1,6 +1,7 @@
 {% extends "eos_sig_checker/base.html" %}
 {% load i18n %}
 {% load aa_i18n %}
+{% load eos_sig_checker %}
 {% load sri %}
 
 {% block details %}
@@ -20,11 +21,11 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small mb-1" for="eos-sig-checker-filter-group">{% translate "Group" context "eos-sig-checker" %}</label>
-                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-group" data-eos-sig-checker-column="3" autocomplete="off">
+                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-group" data-eos-sig-checker-column="2" autocomplete="off">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small mb-1" for="eos-sig-checker-filter-name">{% translate "Name" context "eos-sig-checker" %}</label>
-                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-name" data-eos-sig-checker-column="4" autocomplete="off">
+                    <input type="search" class="form-control form-control-sm" id="eos-sig-checker-filter-name" data-eos-sig-checker-column="3" autocomplete="off">
                 </div>
             </div>
 
@@ -34,7 +35,6 @@
                         <th>{% translate "System" %}</th>
                         {# the probe scanner's own words: its "Group" is Combat Site, Wormhole ... #}
                         <th>{% translate "ID" context "eos-sig-checker" %}</th>
-                        <th>{% translate "Kind" context "eos-sig-checker" %}</th>
                         <th>{% translate "Group" context "eos-sig-checker" %}</th>
                         <th>{% translate "Name" context "eos-sig-checker" %}</th>
                         <th>{% translate "Signal" context "eos-sig-checker" %}</th>
@@ -49,9 +49,9 @@
                         <tr{% if signature.last_checked < oldest %} class="opacity-50"{% endif %}>
                             <td>{{ signature.solar_system_name }}</td>
                             <td class="font-monospace text-nowrap">{{ signature.signature_id }}</td>
-                            <td>{{ signature.group }}</td>
-                            <td>{{ signature.site_type }}</td>
-                            <td>{{ signature.name }}</td>
+                            {# in the reader's client language; the filters search what is shown #}
+                            <td>{{ signature.site_type|client_text:texts }}</td>
+                            <td>{{ signature.name|client_text:texts }}</td>
                             <td class="text-nowrap fw-semibold eos-sig-checker-signal-{{ signature.signal_band }}" data-order="{{ signature.signal|stringformat:'s' }}">{{ signature.signal|floatformat:1 }}&nbsp;%</td>
                             <td class="text-nowrap" data-order="{{ signature.first_seen|date:'c' }}">{{ signature.first_seen|date:"Y-m-d H:i" }}</td>
                             <td class="text-nowrap" data-order="{{ signature.last_checked|date:'c' }}">
