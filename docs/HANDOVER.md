@@ -6,13 +6,11 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 
 ## State
 
-- Released: `0.0.9`, 2026-11-18, pushed with the annotated tags `v0.0.1` to
-  `v0.0.9`.
-- **Not committed yet** (2026-11-20): a large block of work, all under
-  `[Unreleased]` in `CHANGELOG.md`, migrations 0007 to 0010. The next
-  `/commit` makes it 0.0.10 and runs the translations; the glossary holds
-  every new message.
-- What the unreleased work does:
+- Version: `0.0.10`, 2026-11-20 (see `CHANGELOG.md` under 0.0.10), pushed
+  to `origin/main` with the annotated tags `v0.0.1` to `v0.0.10`
+  ("Release <version>" on the release commit). Migrations 0007 to 0010;
+  catalogues de, ru, zh_Hans complete.
+- What 0.0.10 does:
   - Only Cosmic Signatures are read; anomalies are skipped like ships. The
     anomaly switch (`anomalies.js`) and the Kind column are gone. Rows
     stored before expire on their own.
@@ -56,10 +54,6 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
   built from the client texts, not checked against what a client really
   writes. The first real scanned paste (any language) shows it; a
   mismatch lands on the Errors tab.
-- `/commit`: `tools/translate.py` may report msgid clashes with Alliance
-  Auth for the new short words (Errors, Language, Status, Build, Texts,
-  Line, Reason, Pasted, Imported): give such a word the `eos-sig-checker`
-  context.
 - **No Celery worker runs in the dev instance**: the cleanup is overdue
   (statistics line red), and neither **Update now** nor the daily tasks
   ran through a real worker - the update ran through the command only.
@@ -76,6 +70,9 @@ in `CLAUDE.md`, the history in `CHANGELOG.md`.
 - README's install line still names `@v0.0.1`.
 - `sync.statistics` scans the table on every page view (`shortcut:` in the
   code): cache it past about 100,000 rows.
+- Next sensible step: deploy 0.0.10 to the live instance (steps above,
+  `pip install ...@v0.0.10`), then a real scanned paste from a
+  non-English client and a look at the Errors tab.
 
 ## Decisions (2026-11-20)
 
@@ -171,5 +168,8 @@ this file.
   share `test_aa_dev`.
 - The form field keeps `strip=False`: the trailing tabs of an unscanned
   line are columns.
+- Short column words clash with Alliance Auth's catalogues ("Reason" in
+  zh_Hans at 0.0.10): `tools/translate.py` names them; give the word the
+  `eos-sig-checker` context.
 - `tools/translate.py` stops on a glossary entry the code no longer uses:
   delete it from `tools/glossary.py`.
